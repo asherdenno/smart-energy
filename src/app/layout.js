@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import "./globals.css";
 import styles from "./page.module.css";
 import Sidebar from "./components/sidebar";
 
