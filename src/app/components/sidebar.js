@@ -1,4 +1,4 @@
-import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { Drawer, List, ListItem, ListItemButton, ListItemText, Button } from "@mui/material";
 import "../globals.css";
 import styles from "../page.module.css";
 import Link from "next/link";
@@ -6,34 +6,32 @@ import Link from "next/link";
 const drawerWidth = 300;
 
 const sidebarOptions = [
-    {
-        text: "Overview",
-        to: "/"
-    },
-    {
-        text: "Electricity",
-        to: "/electricity"
-    },
-    {
-        text: "Gas",
-        to: "/gas"
-    },
-    {
-        text: "Reports",
-        to: "/reports"
-    }
+  {
+    text: "Overview",
+    to: "/"
+  },
+  {
+    text: "Electricity",
+    to: "/electricity"
+  },
+  {
+    text: "Gas",
+    to: "/gas"
+  },
+  {
+    text: "Reports",
+    to: "/reports"
+  }
 ]
 
 const Sidebar = () => {
   return (
-    <html lang="en">
-      <body>
-      <div className={styles.page}>
-        {/* Sidebar - Permanent on the left */}
+    <div className={"sidebar"}>
+      {/* Sidebar - Permanent on the left */}
       <Drawer
         sx={{
-          '& .MuiDrawer-paper':{
-            width:drawerWidth
+          '& .MuiDrawer-paper': {
+            width: drawerWidth
           }
         }}
         variant="permanent"
@@ -41,20 +39,18 @@ const Sidebar = () => {
       >
         <List>
           {sidebarOptions.map((item) => {
-            const {text} = item;
-            return(
-            <ListItem component={Link} href={item.to} key={text}>
-            <ListItemButton>
-              <ListItemText primary={text}/>
-            </ListItemButton>
-            </ListItem>
+            const { text } = item;
+            return (
+              <ListItem component={Link} href={item.to} key={text}>
+                <ListItemButton>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
             );
-        })}
+          })}
         </List>
       </Drawer>
-      </div>
-      </body>
-    </html>
+    </div>
   );
 }
 export default Sidebar;
