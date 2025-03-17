@@ -1,10 +1,8 @@
-import styles from "./page.module.css";
+import { Typography } from "@mui/material"
 
 const Home = () => {
   return (
-    <div className={styles.page}>
-      This is the Overview page.
-    </div>
+      <Typography variant="body1">This is the Gas page.</Typography>
   );
 }
 export default Home;

@@ -1,10 +1,8 @@
-import styles from "../page.module.css";
+import { Typography } from "@mui/material"
 
 const Electricity = () => {
   return (
-    <div className={styles.page}>
-      This is the Electricity page.
-    </div>
+      <Typography variant="body1">This is the Electricity page.</Typography>
   );
 }
 export default Electricity;
