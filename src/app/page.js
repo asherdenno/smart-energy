@@ -9,7 +9,7 @@ const Login = () => {
     <div>
       This is the login page.
       <Link href="/dashboard">
-        <Button variant="contained" color="primary">Login</Button>
+        <Button variant="contained" color="primary">Log in</Button>
       </Link>
     </div>
   );
