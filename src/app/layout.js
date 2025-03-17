@@ -23,9 +23,7 @@ export default function RootLayout({children}) {
     <html lang="en">
       <body>
           <div className={styles.container}>
-            <main className={styles.content}>
               {children}
-            </main>
           </div>
       </body>
     </html>
