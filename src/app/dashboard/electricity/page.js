@@ -2,7 +2,7 @@ import styles from "@/app/page.module.css";
 
 const Electricity = () => {
   return (
-    <div className={styles.page}>
+    <div>
       This is the Electricity page.
     </div>
   );

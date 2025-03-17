@@ -29,8 +29,8 @@ const Sidebar = () => {
         {/* Sidebar - Permanent on the left */}
       <Drawer
         sx={{
-          '& .MuiDrawer-paper':{
-            width:drawerWidth
+          '& .MuiDrawer-paper': {
+            width: drawerWidth
           }
         }}
         variant="permanent"
@@ -38,15 +38,15 @@ const Sidebar = () => {
       >
         <List>
           {sidebarOptions.map((item) => {
-            const {text} = item;
-            return(
-            <ListItem component={Link} href={item.to} key={text}>
-            <ListItemButton>
-              <ListItemText primary={text}/>
-            </ListItemButton>
-            </ListItem>
+            const { text } = item;
+            return (
+              <ListItem component={Link} href={item.to} key={text}>
+                <ListItemButton>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
             );
-        })}
+          })}
         </List>
       </Drawer>
       </div>
