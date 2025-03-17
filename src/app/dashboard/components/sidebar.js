@@ -33,13 +33,12 @@ const Sidebar = () => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             backgroundColor: "#B7B7B7",
-
           }
         }}
         variant="permanent"
         anchor="left"
       >
-        <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
+        <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", width:"335px" }}>
           {sidebarOptions.map((item) => {
             const { text } = item;
             return (
@@ -47,7 +46,8 @@ const Sidebar = () => {
                 <ListItemButton sx={{
                   backgroundColor: "white",
                   borderRadius: "37px",
-                  border: "2px solid black"
+                  border: "2px solid black",
+                  width: "100%",
                 }}>
                   <ListItemText primary={text} />
                 </ListItemButton>
