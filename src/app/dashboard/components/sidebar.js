@@ -1,5 +1,5 @@
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import "../globals.css";
+import "@/app/globals.css";
 import Link from "next/link";
 
 const drawerWidth = 300;
@@ -7,19 +7,19 @@ const drawerWidth = 300;
 const sidebarOptions = [
     {
         text: "Overview",
-        to: "/"
+        to: "../dashboard/"
     },
     {
         text: "Electricity",
-        to: "/electricity"
+        to: "../dashboard/electricity"
     },
     {
         text: "Gas",
-        to: "/gas"
+        to: "../dashboard/gas"
     },
     {
         text: "Reports",
-        to: "/reports"
+        to: "../dashboard/reports"
     }
 ]
 

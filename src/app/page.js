@@ -1,10 +1,17 @@
+'use client';
 import styles from "./page.module.css";
+import { useEffect, useState } from 'react';
+import { Button } from "@mui/material";
+import Link from "next/link";
 
-const Home = () => {
+const Login = () => {
   return (
-    <div className={styles.page}>
-      This is the Overview page.
+    <div>
+      This is the login page.
+      <Link href="/dashboard">
+        <Button variant="contained" color="primary">Login</Button>
+      </Link>
     </div>
   );
 }
-export default Home;
+export default Login;

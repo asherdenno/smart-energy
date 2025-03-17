@@ -30,7 +30,7 @@
 
   .sidebar {
     width: 300px;
-    flex-shrink: 0;
+    flex-shrink: 1;
     border-right: 1px solid var(--gray-alpha-200);
     background-color: var(--gray-alpha-100);
     min-height: 100vh;
@@ -67,6 +67,13 @@
   }
   
   @media (max-width: 600px) {
+    .container {
+      flex-direction: column;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 100vw;
+    }
     .page {
       padding: 32px;
       padding-bottom: 80px;

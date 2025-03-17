@@ -1,8 +1,8 @@
-import styles from "../page.module.css";
+import styles from "@/app/page.module.css";
 
 const Gas = () => {
   return (
-    <div className={styles.page}>
+    <div>
       This is the Gas page.
     </div>
   );
