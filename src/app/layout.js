@@ -1,5 +1,4 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import styles from "./page.module.css";
 import Sidebar from "./components/sidebar";
 
@@ -23,10 +22,14 @@ export default function RootLayout({children}) {
   return (
     <html lang="en">
       <body>
-        <Sidebar />
-        <div className={styles.page}>
-          {children}
-        </div>
+          <div className={styles.container}>
+            <aside className={styles.sidebar}>
+              <Sidebar />
+            </aside>
+            <main className={styles.content}>
+              {children}
+            </main>
+          </div>
       </body>
     </html>
   )

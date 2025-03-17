@@ -1,6 +1,5 @@
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import "../globals.css";
-import styles from "../page.module.css";
 import Link from "next/link";
 
 const drawerWidth = 300;
@@ -26,9 +25,7 @@ const sidebarOptions = [
 
 const Sidebar = () => {
   return (
-    <html lang="en">
-      <body>
-      <div className={styles.page}>
+      <div>
         {/* Sidebar - Permanent on the left */}
       <Drawer
         sx={{
@@ -53,8 +50,6 @@ const Sidebar = () => {
         </List>
       </Drawer>
       </div>
-      </body>
-    </html>
   );
 }
 export default Sidebar;
