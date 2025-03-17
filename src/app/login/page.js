@@ -1,6 +1,4 @@
 'use client'
-import Password from "../components/password";
-import Username from "../components/username";
 import Login from "../components/login";
 
 const LoginPage = () => {
