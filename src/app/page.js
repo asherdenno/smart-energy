@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const Login = () => {
   return (
-    <div>
+    <div className={styles.container}>
       This is the login page.
       <Link href="/dashboard">
         <Button variant="contained" color="primary">Log in</Button>

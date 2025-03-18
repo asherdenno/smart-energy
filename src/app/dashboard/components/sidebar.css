@@ -1,4 +1,10 @@
-a{
-    color: red;
+.MuiListItemText-root .MuiTypography-root {
+    color: rgb(0, 0, 0);
+    font-size: 30px;
     text-align: center;
+}
+
+.sidebar {
+    width: 350px;
+    min-height: 100vh;
 }
