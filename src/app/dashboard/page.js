@@ -2,7 +2,7 @@ import styles from "@/app/page.module.css";
 
 const Overview = () => {
   return (
-    <div>
+    <div className={styles.container}>
       This is the Overview page...
     </div>
   );

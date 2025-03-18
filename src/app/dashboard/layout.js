@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function DashboardLayout({ children }) {
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
+      <aside className={"sidebar"}>
         <Sidebar />
       </aside>
       <main className={styles.content}>
