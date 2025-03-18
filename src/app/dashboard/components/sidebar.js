@@ -63,7 +63,7 @@ const Sidebar = () => {
       </List>
 
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
-        <ListItem component={Link} href={"./"} key={"Account"}>
+        <ListItem component={Link} href={"./account"} key={"Account"}>
           <ListItemButton sx={{
             backgroundColor: "white",
             borderRadius: "37px",

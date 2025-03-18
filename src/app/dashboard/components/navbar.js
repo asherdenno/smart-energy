@@ -3,10 +3,11 @@ import "@/app/globals.css";
 import Link from "next/link";
 import "./navbar.css";
 
-const Sidebar = () => {
+const Navbar = ({title = "Add title", hasNotify = false} ) => {
   return (
-    <div>
-
+    <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <h1>{title}</h1>
+        {hasNotify ? <Button variant="contained" color="primary">Notify</Button> : ""}
     </div>
   );
 }
