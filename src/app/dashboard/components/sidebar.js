@@ -78,11 +78,11 @@ const Sidebar = () => {
           const { text } = item;
           return (
             <ListItem key={text} >
-              <ListItemButton onClick={() => handleClick(index, item.to)} sx={{
+              <ListItemButton onClick={() => handleClick(index, item.to)} className={navIndex === index ? "active-button" : ""} sx={{
                 backgroundColor: "white",
                 borderRadius: "37px",
                 border: "2px solid black",
-              }} className={navIndex === index ? "active" : ""}>
+              }}>
                 <ListItemText primary={text} className={navIndex === index ? "active-text" : ""} />
               </ListItemButton>
             </ListItem>

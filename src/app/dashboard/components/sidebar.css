@@ -9,15 +9,14 @@
     min-height: 100vh;
 }
 
-.active {
-    background-color: #F4EEBB;
-    font-weight: 800;
-}
-
 .active-text .MuiTypography-root {
     font-weight: 800;
 }
 
-.active:hover {
+.active-button {
+    background-color: #f4eebb !important;
+}
+
+.active-button:hover {
     background-color: #c5bf93;
 }
