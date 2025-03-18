@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ThemeProvider } from "@mui/material";
 import Theme from "./theme/theme";
 import Sidebar from "./components/sidebar";
@@ -6,6 +7,11 @@ import Electricity from "./electricity/page";
 import Gas from "./gas/page";
 import Reports from "./reports/page";
 import Login from "./login/page";
+=======
+import { Geist, Geist_Mono } from "next/font/google";
+import styles from "./page.module.css";
+import Sidebar from "./dashboard/components/sidebar";
+>>>>>>> 5ddfbbbb3975138a6ab1620514063538be3af44a
 
 // export const metadata = {
 //   title: "Create Next App",
@@ -27,6 +33,7 @@ import Login from "./login/page";
 // }
 // export default Layout;
 
+<<<<<<< HEAD
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -40,6 +47,20 @@ export default function RootLayout({ children }) {
           <Login />
           {children}
         </ThemeProvider>
+=======
+export const metadata = {
+  title: "Overview",
+  description: "Overview page",
+};
+
+export default function RootLayout({children}) {
+  return (
+    <html lang="en">
+      <body>
+          <div className={styles.container}>
+              {children}
+          </div>
+>>>>>>> 5ddfbbbb3975138a6ab1620514063538be3af44a
       </body>
     </html>
   )
