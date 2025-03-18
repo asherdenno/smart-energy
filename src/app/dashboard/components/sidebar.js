@@ -9,7 +9,7 @@ import "./sidebar.css";
 const sidebarOptions = [
   {
     text: "Overview",
-    to: "../dashboard/"
+    to: "../dashboard"
   },
   {
     text: "Electricity",
@@ -63,12 +63,12 @@ const Sidebar = () => {
       </List>
 
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
-        <ListItem component={Link} href={"./account"} key={"Account"}>
-          <ListItemButton sx={{
+        <ListItem component={Link} href={"../dashboard/account"} key={"Account"}>
+          <ListItemButton onClick={() => handleClick(4)} sx={{
             backgroundColor: "white",
             borderRadius: "37px",
             border: "2px solid black"
-          }}>
+          }} className={navIndex === 4 ? "active" : ""}>
             <ListItemText primary={"Account"} />
           </ListItemButton>
         </ListItem>
