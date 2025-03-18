@@ -96,7 +96,7 @@ const Sidebar = () => {
             backgroundColor: "white",
             borderRadius: "37px",
             border: "2px solid black"
-          }} className={navIndex === 4 ? "active" : ""}>
+          }} className={navIndex === 4 ? "active-button" : ""}>
             <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
