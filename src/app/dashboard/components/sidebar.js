@@ -1,3 +1,5 @@
+'use client';
+import { useState } from 'react';
 import { Button, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import "@/app/globals.css";
 import Link from "next/link";
@@ -24,6 +26,12 @@ const sidebarOptions = [
 ]
 
 const Sidebar = () => {
+  const [navIndex, setNavIndex] = useState(0);
+
+  const handleClick = (clickedIndex) => {
+    setNavIndex(clickedIndex);
+  }
+
   return (
     <Drawer
       sx={{
@@ -38,15 +46,15 @@ const Sidebar = () => {
       style={{height: "100%"}}
     >
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", flex: "2" }}>
-        {sidebarOptions.map((item) => {
+        {sidebarOptions.map((item, index) => {
           const { text } = item;
           return (
             <ListItem component={Link} href={item.to} key={text} >
-              <ListItemButton sx={{
+              <ListItemButton onClick={() => handleClick(index)} sx={{
                 backgroundColor: "white",
                 borderRadius: "37px",
                 border: "2px solid black",
-              }}>
+              }} className={navIndex === index ? "active" : ""}>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>

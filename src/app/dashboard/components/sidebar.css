@@ -8,3 +8,11 @@
     width: 200px;
     min-height: 100vh;
 }
+
+.active {
+    background-color: #F4EEBB;
+}
+
+.active:hover {
+    background-color: #c5bf93;
+}
