@@ -4,7 +4,15 @@
     text-align: center;
 }
 
-.sidebar {
+.navbar {
     width: 200px;
     min-height: 100vh;
+}
+
+.active{
+
+}
+
+.hidden{
+    
 }

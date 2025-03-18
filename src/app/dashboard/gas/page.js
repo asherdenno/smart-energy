@@ -1,9 +1,12 @@
 import styles from "@/app/page.module.css";
+import Navbar from "../components/navbar";
 
 const Gas = () => {
   return (
     <div>
-      This is the Gas page.
+      <Navbar title={"Gas"} hasNotify={true}/>
+      <br />
+      <p>This is the Gas page.</p>
     </div>
   );
 }

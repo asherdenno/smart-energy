@@ -1,9 +1,12 @@
 import styles from "@/app/page.module.css";
+import Navbar from "../components/navbar";
 
 const Reports = () => {
   return (
     <div>
-      This is the Reports page.
+      <Navbar title={"Reports"} hasNotify={true}/>
+      <br />
+      <p>This is the Reports page.</p>
     </div>
   );
 }
