@@ -1,24 +1,26 @@
-import mysql from 'mysql2/promise';
+import sql from 'mssql';
 
-// Create a connection pool instead of using top-level await
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
+const config = {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
+  server: process.env.DB_HOST,
   database: process.env.DB_SCHEMA,
-  connectionLimit: 10,
-  queueLimit: 0,
-  connectTimeout: 30000,
-  ssl: {
-    rejectUnauthorized: true
-  }
-});
+  options: {
+    encrypt: true, // Required for Azure
+    trustServerCertificate: false // Set to true only for local dev with self-signed certs
+  },
+  port: 1433,
+  connectionTimeout: 30000
+};
 
 const fetchAll = async () => {
     try {
-        const query = "SELECT * FROM account"; 
-        const [rows] = await pool.execute(query);
-        return rows;
+        await sql.connect(config);
+        const query = 'SELECT TOP (100) * FROM list_data';
+        const result = await sql.query(query);
+        console.log(result.recordset);
+        await sql.close();
+        return result.recordset;
     } catch (error) {
         console.error("Database Error:", error); 
         throw new Error("Failed to fetch data: " + error.message);
