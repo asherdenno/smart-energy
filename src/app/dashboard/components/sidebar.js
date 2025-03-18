@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Button, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import Link from "next/link";
+import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { useRouter, usePathname } from 'next/navigation';
 import "./sidebar.css";
 

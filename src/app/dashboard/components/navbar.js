@@ -1,6 +1,5 @@
-import { Button, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { Button } from "@mui/material";
 import "@/app/globals.css";
-import Link from "next/link";
 import "./navbar.css";
 
 const Navbar = ({title = "Add title", hasNotify = false} ) => {

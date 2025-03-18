@@ -1,6 +1,5 @@
 'use client';
 import styles from "./page.module.css";
-import { useEffect, useState } from 'react';
 import { Button } from "@mui/material";
 import Link from "next/link";
 
