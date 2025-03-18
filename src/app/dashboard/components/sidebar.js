@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import "@/app/globals.css";
 import Link from "next/link";
+import { useRouter, usePathname } from 'next/navigation';
 import "./sidebar.css";
 
 
@@ -26,10 +26,39 @@ const sidebarOptions = [
 ]
 
 const Sidebar = () => {
-  const [navIndex, setNavIndex] = useState(0);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [navIndex, setNavIndex] = useState(-1);
 
-  const handleClick = (clickedIndex) => {
-    setNavIndex(clickedIndex);
+  useEffect(() => {
+    try {
+      if (pathname === "/dashboard") {
+        setNavIndex(0);
+      }
+      if (pathname === "/dashboard/electricity") {
+        setNavIndex(1);
+      }
+      if (pathname === "/dashboard/gas") {
+        setNavIndex(2);
+      }
+      if (pathname === "/dashboard/reports") {
+        setNavIndex(3);
+      }
+      if (pathname === "/dashboard/account") {
+        setNavIndex(4);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [pathname]);
+
+  const handleClick = (clickedIndex, destination) => {
+    try {
+      setNavIndex(clickedIndex);
+      router.push(destination);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -49,13 +78,13 @@ const Sidebar = () => {
         {sidebarOptions.map((item, index) => {
           const { text } = item;
           return (
-            <ListItem component={Link} href={item.to} key={text} >
-              <ListItemButton onClick={() => handleClick(index)} sx={{
+            <ListItem key={text} >
+              <ListItemButton onClick={() => handleClick(index, item.to)} sx={{
                 backgroundColor: "white",
                 borderRadius: "37px",
                 border: "2px solid black",
               }} className={navIndex === index ? "active" : ""}>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} className={navIndex === index ? "active-text" : ""} />
               </ListItemButton>
             </ListItem>
           );
@@ -63,13 +92,13 @@ const Sidebar = () => {
       </List>
 
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
-        <ListItem component={Link} href={"../dashboard/account"} key={"Account"}>
-          <ListItemButton onClick={() => handleClick(4)} sx={{
+        <ListItem key={"Account"}>
+          <ListItemButton onClick={() => handleClick(4, "../dashboard/account")} sx={{
             backgroundColor: "white",
             borderRadius: "37px",
             border: "2px solid black"
           }} className={navIndex === 4 ? "active" : ""}>
-            <ListItemText primary={"Account"} />
+            <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
       </List>
