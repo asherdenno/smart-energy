@@ -1,7 +1,7 @@
 import { Button, IconButton } from "@mui/material";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
-import "./navbar.css";
+import "./Navbar.css";
 
 const Navbar = ({ title = "Add title", hasNotify = false }) => {
   return (
