@@ -1,13 +1,21 @@
-"use client"
-import SearchBar from "../components/SearchBar";
+"use client";
+import SearchBar from "../components/searchbar"; 
+import { useState } from "react";
 
-
-export default function Home() {
+export default function SearchPage() {
   const items = ["Apple", "Banana", "Cherry", "Date", "Grapes", "Mango"];
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const handleItemSelect = (item) => {
+    setSelectedItem(item);
+    alert(`You selected: ${item}`);
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <SearchBar data={items} />
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">Search</h1>
+      <SearchBar data={items} onItemSelect={handleItemSelect} />
+      {selectedItem && <p className="mt-4 text-lg">Selected: {selectedItem}</p>}
     </div>
   );
 }

@@ -1,6 +1,7 @@
+"use client";
 import { useState } from "react";
 
-const SearchBar = ({ data }) => {
+const SearchBar = ({ data, onItemSelect }) => {
   const [query, setQuery] = useState("");
 
   const filteredData = data.filter((item) =>
@@ -16,13 +17,19 @@ const SearchBar = ({ data }) => {
         onChange={(e) => setQuery(e.target.value)}
         className="w-full p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <ul className="mt-2 bg-white border rounded-lg shadow-sm">
-        {filteredData.map((item, index) => (
-          <li key={index} className="p-2 hover:bg-gray-100">
-            {item}
-          </li>
-        ))}
-      </ul>
+      {query && filteredData.length > 0 && (
+        <ul className="mt-2 bg-white border rounded-lg shadow-sm">
+          {filteredData.map((item, index) => (
+            <li
+              key={index}
+              onClick={() => onItemSelect(item)}
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
