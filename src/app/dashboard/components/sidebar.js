@@ -71,9 +71,11 @@ const Sidebar = () => {
         }
       }}
       variant="permanent"
-      style={{height: "100%"}}
+      style={{ height: "100%" }}
     >
-      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", flex: "2" }}>
+      <List style={{
+        display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", gap: "15px"
+      }}>
         {sidebarOptions.map((item, index) => {
           const { text } = item;
           return (
@@ -93,10 +95,8 @@ const Sidebar = () => {
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
         <ListItem key={"Account"}>
           <ListItemButton onClick={() => handleClick(4, "../dashboard/account")} sx={{
-            backgroundColor: "white",
-            borderRadius: "37px",
-            border: "2px solid black"
-          }} className={navIndex === 4 ? "active-button" : ""}>
+
+          }} className={navIndex === 4 ? "active-button AAAAAAAAAAAAAAAAAAAAAAA" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA"}>
             <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
