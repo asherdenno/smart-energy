@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { useRouter, usePathname } from 'next/navigation';
-import "./Sidebar.css";
+import "./sidebar.css";
 
 
 const sidebarOptions = [
@@ -95,8 +95,10 @@ const Sidebar = () => {
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
         <ListItem key={"Account"}>
           <ListItemButton onClick={() => handleClick(4, "../dashboard/account")} sx={{
-
-          }} className={navIndex === 4 ? "active-button AAAAAAAAAAAAAAAAAAAAAAA" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA"}>
+            backgroundColor: "white",
+            borderRadius: "37px",
+            border: "2px solid black"
+          }} className={navIndex === 4 ? "active-button" : ""}>
             <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
