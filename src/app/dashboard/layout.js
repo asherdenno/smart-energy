@@ -1,5 +1,5 @@
 import styles from "@/app/page.module.css";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import { Button } from "@mui/material";
 import Link from "next/link";
 
