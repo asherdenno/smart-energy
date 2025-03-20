@@ -4,7 +4,7 @@ import { FormControl, TextField, Button, Typography, Container, Box, Paper, Stac
 import Grid from '@mui/material/Grid2'
 import Link from "next/link";
 
-const Login = () => {
+const ResetPassword = () => {
   return (
     <Container maxWidth="xs">
       <Paper elevation={10} sx={{ marginTop: 10, marginBottom: 10, p: 1, justifySelf: "center" }}>
@@ -28,4 +28,4 @@ const Login = () => {
     </Container>
   );
 }
-export default Login;
+export default ResetPassword;
