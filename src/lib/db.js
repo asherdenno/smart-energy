@@ -16,9 +16,9 @@ const config = {
 const fetchAll = async () => {
     try {
         await sql.connect(config);
-        const query = 'SELECT TOP (100) * FROM list_data';
+        const query = 'SELECT TOP (100) * FROM energy_data';
         const result = await sql.query(query);
-        console.log(result.recordset);
+        console.log("Data:", result.recordset);
         await sql.close();
         return result.recordset;
     } catch (error) {
