@@ -1,23 +1,27 @@
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Box } from "@mui/material";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
 import "./Navbar.css";
+import CitySelect from "./CitySelect";
 
 const Navbar = ({ title = "Add title", hasNotify = false }) => {
   return (
-    <div style={{
+    <Box sx={{
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
     }}>
       <h1>{title}</h1>
-      {hasNotify ?
-        (<IconButton aria-label="alerts" color="" size="large" 
-            sx={{ border: "2px solid", borderRadius: "45%", padding: "8px" }}>
-          <NotificationsIcon fontSize="inherit" />
-        </IconButton>
-        ) : ""}
-    </div>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <CitySelect />
+        {hasNotify ?
+          (<IconButton aria-label="alerts" color="" size="large" 
+              sx={{ border: "2px solid", borderRadius: "45%", padding: "8px" }}>
+            <NotificationsIcon fontSize="inherit" />
+          </IconButton>
+          ) : ""}
+      </Box>
+    </Box>
   );
 }
 export default Navbar;
