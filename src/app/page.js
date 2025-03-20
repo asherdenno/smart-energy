@@ -16,13 +16,13 @@ const Login = () => {
               <TextField id="login-page-password-textfield" label="Password" type="password" />
               <Grid container justifyContent="flex-end" spacing={1} sx={{ mt: 1 }} >
                 <Grid size="grow">
-                  <Link href='/dashboard'>Reset Password</Link>
+                  <Link href='/reset-password'>Reset Password</Link>
                 </Grid>
               </Grid>
               <Button href="../dashboard/" variant="contained">Log in</Button>
               <Grid container justifyContent="flex-end" spacing={1} sx={{ mt: 1 }} >
                 <Grid size="grow">
-                  <Link href='../dashboard/electricity'>Create Account</Link>
+                  <Link href='/create-account'>Create Account</Link>
                 </Grid>
               </Grid>
             </Stack>

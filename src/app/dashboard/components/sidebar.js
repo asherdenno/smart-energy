@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { useRouter, usePathname } from 'next/navigation';
-import "./Sidebar.css";
+import "./sidebar.css";
 
 
 const sidebarOptions = [
@@ -71,9 +71,11 @@ const Sidebar = () => {
         }
       }}
       variant="permanent"
-      style={{height: "100%"}}
+      style={{ height: "100%" }}
     >
-      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", flex: "2" }}>
+      <List style={{
+        display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", gap: "15px"
+      }}>
         {sidebarOptions.map((item, index) => {
           const { text } = item;
           return (

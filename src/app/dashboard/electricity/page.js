@@ -1,10 +1,12 @@
 'use client';
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 
 const Electricity = () => {
   return (
     <div>
-      <Navbar title={"Electricity"} hasNotify={true}/>
+      <nav>
+        <Navbar title={"Electricity"} hasNotify={true} />
+      </nav>
       <br />
       This is the Electricity page.
     </div>

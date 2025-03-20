@@ -1,10 +1,12 @@
 'use client';
-import Navbar from "./components/Navbar";
+import Navbar from "./components/navbar";
 
 const Overview = () => {
   return (
     <div>
-      <Navbar title={"Hi, User!"} hasNotify={true}/>
+      <nav>
+        <Navbar title={"Hi, User!"} hasNotify={true} />
+      </nav>
       <br />
       <p>is the Overview page...</p>
     </div>
