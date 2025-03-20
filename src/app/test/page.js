@@ -46,20 +46,22 @@ const Test = () => {
             <List>
             {list.map((item, index) => (
                 <ListItem key={index}>
-                    <ListItemText>Data ID: {item.data_id}</ListItemText>
-                    <ListItemText>Purchase Area: {item.purchase_area}</ListItemText>
-                    <ListItemText>Street: {item.street}</ListItemText>
-                    <ListItemText>Zipcode From: {item.zipcode_from}</ListItemText>
-                    <ListItemText>Zipcode To: {item.zipcode_to}</ListItemText>
-                    <ListItemText>Number of Connections: {item.num_connections}</ListItemText>
-                    <ListItemText>Delivery Percentage: {item.delivery_perc}</ListItemText>
-                    <ListItemText>Percentage of Active Connections: {item.perc_of_active_connections}</ListItemText>
-                    <ListItemText>Type of Connection: {item.type_of_connection}</ListItemText>
-                    <ListItemText>Type Connection Percentage: {item.type_conn_perc}</ListItemText>
-                    <ListItemText>Annual Consumption: {item.annual_consume}</ListItemText>
-                    <ListItemText>Annual Consumption Low Tariff Percentage: {item.annual_consume_lowtarif_perc}</ListItemText>
-                    <ListItemText>Smart Meter Percentage: {item.smartmeter_perc}</ListItemText>
-                </ListItem>
+                <ListItemText>Data ID: {item.data_id}</ListItemText>
+                <ListItemText>Purchase Area: {item.purchase_area}</ListItemText>
+                <ListItemText>Street: {item.street}</ListItemText>
+                <ListItemText>Zipcode From: {item.zipcode_from}</ListItemText>
+                <ListItemText>Zipcode To: {item.zipcode_to}</ListItemText>
+                <ListItemText>Number of Connections: {item.num_connections}</ListItemText>
+                <ListItemText>Delivery Percentage: {item.delivery_perc}</ListItemText>
+                <ListItemText>Percentage of Active Connections: {item.perc_of_active_connections}</ListItemText>
+                <ListItemText>Type of Connection: {item.type_of_connection}</ListItemText>
+                <ListItemText>Type Connection Percentage: {item.type_conn_perc}</ListItemText>
+                <ListItemText>Annual Consumption: {item.annual_consume}</ListItemText>
+                <ListItemText>Annual Consumption Low Tariff Percentage: {item.annual_consume_lowtarif_perc}</ListItemText>
+                <ListItemText>Smart Meter Percentage: {item.smartmeter_perc}</ListItemText>
+                <ListItemText>Year: {item.year}</ListItemText>
+                <ListItemText>Electric or Gas: {item.electric_or_gas}</ListItemText>
+              </ListItem>
             ))}
             </List>
             )

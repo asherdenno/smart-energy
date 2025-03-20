@@ -1,4 +1,5 @@
-import Navbar from "../components/navbar";
+'use client';
+import Navbar from "../components/Navbar";
 
 const Gas = () => {
   return (

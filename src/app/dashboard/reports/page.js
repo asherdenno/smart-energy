@@ -1,5 +1,6 @@
+'use client';
 import styles from "@/app/page.module.css";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 
 const Reports = () => {
   return (

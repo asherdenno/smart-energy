@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { useRouter, usePathname } from 'next/navigation';
-import "./sidebar.css";
+import "./Sidebar.css";
 
 
 const sidebarOptions = [
