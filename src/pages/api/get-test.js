@@ -1,4 +1,4 @@
-import fetchAll from '@/lib/db';
+import { fetchAll } from '@/lib/db';
 
 export default async function handler(req, res) {
   try {
