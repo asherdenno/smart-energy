@@ -1,10 +1,10 @@
-import ExampleChart from "@/app/dashboard/components/charts/exampleChart";
-import ExampleChart2 from "../dashboard/components/charts/exampleChart2";
-import ExampleChart3 from "../dashboard/components/charts/exampleChart3";
-import ExampleChart4 from "../dashboard/components/charts/exampleChart4";
-import ExampleChart5 from "../dashboard/components/charts/exampleChart5";
-import ExampleChart6 from "../dashboard/components/charts/exampleChart6";
-import { Height } from "@mui/icons-material";
+import ExampleChart from "@/app/dashboard/components/charts/exampleCharts/exampleChart";
+import ExampleChart2 from "../dashboard/components/charts/exampleCharts/exampleChart2";
+import ExampleChart3 from "../dashboard/components/charts/exampleCharts/exampleChart3";
+import ExampleChart4 from "../dashboard/components/charts/exampleCharts/exampleChart4";
+import ExampleChart5 from "../dashboard/components/charts/exampleCharts/exampleChart5";
+import ExampleChart6 from "../dashboard/components/charts/exampleCharts/exampleChart6";
+import ExampleChart7 from "../dashboard/components/charts/exampleCharts/exampleChart7";
 
 
 export default function Dashboard() {
@@ -29,6 +29,9 @@ export default function Dashboard() {
     </div>
     <div style={{height:"10%"}}>
       <ExampleChart6/>
+    </div>
+    <div>
+      <ExampleChart7/>
     </div>
     </div>
   );
