@@ -4,23 +4,60 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
 export default function CitySelect() {
+    const fetchSearchResults = async (searchString) => {
+        try {
+          const res = await fetch('/api/fetch-cities', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ searchString }),
+          });
+          if (!res.ok) throw new Error('Error fetching cities');
+          const data = await res.json();
+          console.log(data);
+          setResults(data);
+        }
+        catch (error) {
+          console.error('Error fetching cities:', error);
+          return [];
+        }
+        
+      };
+    
+    const [loading, setLoading] = React.useState(true);
+    const [results, setResults] = React.useState([]);
+    const [query, setQuery] = React.useState("");
+
+    React.useEffect(() => {
+        setQuery("Ams");
+        fetchSearchResults("Ams");
+    }, []);
+
     return (
         <Autocomplete
             id="city-select"
+            value={query}
+            onChange={(event, newQuery) => {
+                setQuery(newQuery);
+            }}
+            onInputChange={(event, newQuery) => {
+                fetchSearchResults(newQuery);
+            }}
             disableClearable
             sx={{ width: 200}}
-            options={cities}
+            options={results}
             autoHighlight
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => option.city || ""}
             renderOption={(props, option) => {
-                const { key, ...optionProps } = props;
+                const { city_filter_id, ...optionProps } = props;
                 return (
                     <Box
-                        key = {key}
+                        key = {city_filter_id}
                         component="li"
                         {...optionProps}
                     >
-                        {option.label}
+                        {option.city}
                     </Box>
                 );
             }}
@@ -45,10 +82,9 @@ export default function CitySelect() {
     );
 }
 
-// cities in the netherlands
 // cities in the Netherlands
 const cities = [
-    { label: 'Amsterdam', key: 'amsterdam' },
+    { label: 'Amsterdam', city_filter_id: 'amsterdam' },
     { label: 'Rotterdam', key: 'rotterdam' },
     { label: 'Enter', key: 'enter' },
     { label: 'Utrecht', key: 'utrecht' },
