@@ -44,4 +44,33 @@ const fetchCities = async (userInput) => {
     throw new Error("Failed to fetch cities: " + error.message);  
   }
 }
-export { fetchAll, fetchCities };
+
+const fetchUsageSumPerYear = async (filter_id) => {
+  if (!filter_id) {
+    try {
+      await sql.connect(config);
+      const query = `
+        SELECT 
+          [year],
+          [electric_or_gas],
+          SUM([annual_consume]) AS total_annual_consume
+        FROM 
+          dbo.energy_data
+        GROUP BY 
+          [year], [electric_or_gas]
+        ORDER BY 
+          [year], [electric_or_gas];
+      `;
+      const result = await sql.query(query);
+      await sql.close();
+      return result.recordset;
+    } catch (error) {
+      console.error("Database Error:", error);
+      throw new Error("Failed to fetch usage data: " + error.message);  
+    }
+  } else {
+    throw new Error("Filtering by city is not yet implemented");
+  }
+}
+
+export { fetchAll, fetchCities, fetchUsageSumPerYear };
