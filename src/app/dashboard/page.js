@@ -1,15 +1,15 @@
 'use client';
 import Navbar from "./components/navbar";
+import styles from "@/app/page.module.css";
 
 const Overview = () => {
   return (
-    <div>
+    <main className={styles.content}>
       <nav>
         <Navbar title={"Hi, User!"} hasNotify={true} />
       </nav>
-      <br />
       <p>is the Overview page...</p>
-    </div>
+    </main>
   );
 }
 export default Overview;
