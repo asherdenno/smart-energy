@@ -11,12 +11,6 @@ export default function DashboardLayout({ children }) {
       </aside>
       <main className={styles.content}>
         {children}
-        <Link href="../">
-          <Button variant="outlined" color="primary">Log out</Button>
-        </Link>
-        <Link href="../test">
-          <Button variant="contained" color="primary">Test db</Button>
-        </Link>
       </main>
     </div>
   );
