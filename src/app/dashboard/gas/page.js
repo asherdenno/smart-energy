@@ -1,15 +1,15 @@
 'use client';
 import Navbar from "../components/navbar";
+import styles from "@/app/page.module.css";
 
 const Gas = () => {
   return (
-    <div>
+    <main className={styles.content}>
       <nav>
         <Navbar title={"Gas"} hasNotify={true} />
       </nav>
-      <br />
       <p>This is the Gas page.</p>
-    </div>
+    </main>
   );
 }
 export default Gas;

@@ -4,13 +4,12 @@ import Navbar from "../components/navbar";
 
 const Reports = () => {
   return (
-    <div>
+    <main className={styles.content}>
       <nav>
         <Navbar title={"Reports"} hasNotify={true} />
       </nav>
-      <br />
       <p>This is the Reports page.</p>
-    </div>
+    </main>
   );
 }
 export default Reports;
