@@ -1,19 +1,18 @@
 'use client';
 import Navbar from "../components/navbar";
-import  "@/app/page.module.css";
+import styles from "@/app/page.module.css";
 
 const Admin = () => {
   return (
-    <div>
+    <main className={styles.content}>
       <nav>
         <Navbar title={"UserMangment"} hasCitySelect={false} />
       </nav>
-      <br />
-      <div className="container">
+      <div className={styles.greyContainer}>
         <h2>Mange users </h2>
         <p>Content</p>
       </div>
-    </div>
+    </main>
   );
 }
 export default Admin;
