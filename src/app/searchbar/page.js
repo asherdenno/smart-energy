@@ -3,6 +3,7 @@ import SearchBar from "../components/searchbar";
 import { useState } from "react";
 
 export default function SearchPage() {
+
   const dataOptions = {
     Fruits: ["Apple", "Banana", "Cherry", "Date", "Grapes", "Mango"],
     Vegetables: ["Carrot", "Broccoli", "Spinach", "Potato", "Pepper", "Cucumber"]

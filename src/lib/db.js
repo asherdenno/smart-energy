@@ -27,4 +27,50 @@ const fetchAll = async () => {
     }
 }
 
-export default fetchAll;
+const fetchCities = async (userInput) => {
+  try {
+    await sql.connect(config);
+    const query = 'SELECT TOP (20) * FROM city_has_id WHERE city LIKE @userInput';
+    const request = new sql.Request();
+    request.input('userInput', sql.VarChar, `%${userInput}%`);
+    console.log("Executing query:", query);
+    console.log("With input parameter:", `%${userInput}%`);
+    const result = await request.query(query);
+    console.log("Query result:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch cities: " + error.message);  
+  }
+}
+
+const fetchUsageSumPerYear = async (filter_id) => {
+  if (!filter_id) {
+    try {
+      await sql.connect(config);
+      const query = `
+        SELECT 
+          [year],
+          [electric_or_gas],
+          SUM([annual_consume]) AS total_annual_consume
+        FROM 
+          dbo.energy_data
+        GROUP BY 
+          [year], [electric_or_gas]
+        ORDER BY 
+          [year], [electric_or_gas];
+      `;
+      const result = await sql.query(query);
+      await sql.close();
+      return result.recordset;
+    } catch (error) {
+      console.error("Database Error:", error);
+      throw new Error("Failed to fetch usage data: " + error.message);  
+    }
+  } else {
+    throw new Error("Filtering by city is not yet implemented");
+  }
+}
+
+export { fetchAll, fetchCities, fetchUsageSumPerYear };
