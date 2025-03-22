@@ -11,9 +11,12 @@ import ExampleChart7 from "..//components/charts/exampleCharts/exampleChart7";
 export default function Dashboard() {
   return (
     <div>
-
+      Test
     <div style={{width:'40%'}}>
      <CitiesUnderNetwork/>
+    </div>
+    <div>
+      <ExampleChart2/>
     </div>
     </div>
   );
