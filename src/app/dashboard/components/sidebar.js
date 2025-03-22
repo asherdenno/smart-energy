@@ -25,7 +25,7 @@ const sidebarOptions = [
   {
     text: "Admin",
     to: "../dashboard/admin"
-  }
+  },
 ]
 
 const Sidebar = () => {
@@ -47,7 +47,7 @@ const Sidebar = () => {
       if (pathname === "/dashboard/reports") {
         setNavIndex(3);
       }
-      if (pathname === "/dashboard/account") {
+      if (pathname === "/dashboard/admin") {
         setNavIndex(4);
       }
     } catch (error) {
@@ -98,12 +98,12 @@ const Sidebar = () => {
 
       <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
         <ListItem key={"Account"}>
-          <ListItemButton onClick={() => handleClick(4, "../dashboard/account")} sx={{
+          <ListItemButton onClick={() => handleClick(5, "../dashboard/account")} sx={{
             backgroundColor: "white",
             borderRadius: "37px",
             border: "2px solid black"
-          }} className={navIndex === 4 ? "active-button" : ""}>
-            <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
+          }} className={navIndex === 5 ? "active-button" : ""}>
+            <ListItemText primary={"Account"} className={navIndex === 5 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
       </List>
