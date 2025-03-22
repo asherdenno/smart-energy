@@ -1,6 +1,6 @@
 'use client';
 import Navbar from "../components/navbar";
-import  "@src/app/page.module.css";
+import  "@/app/page.module.css";
 
 const Admin = () => {
   return (
