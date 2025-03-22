@@ -21,6 +21,10 @@ const sidebarOptions = [
   {
     text: "Reports",
     to: "../dashboard/reports"
+  },
+  {
+    text: "Admin",
+    to: "../dashboard/admin"
   }
 ]
 
