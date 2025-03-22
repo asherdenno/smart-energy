@@ -1,14 +1,18 @@
 'use client';
 import Navbar from "../components/navbar";
+import  "@src/app/page.module.css";
 
 const Admin = () => {
   return (
     <div>
       <nav>
-        <Navbar title={"Admin"} hasNotify={true} />
+        <Navbar title={"UserMangment"} hasCitySelect={false} />
       </nav>
       <br />
-      <p>This is the admin page.</p>
+      <div className="container">
+        <h2>Mange users </h2>
+        <p>Content</p>
+      </div>
     </div>
   );
 }
