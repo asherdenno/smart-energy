@@ -1,7 +1,5 @@
 import styles from "@/app/page.module.css";
 import Sidebar from "./components/sidebar";
-import { Button } from "@mui/material";
-import Link from "next/link";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -9,9 +7,7 @@ export default function DashboardLayout({ children }) {
       <aside className={"sidebar"}>
         <Sidebar />
       </aside>
-      <main className={styles.content}>
-        {children}
-      </main>
+      {children}
     </div>
   );
 }
