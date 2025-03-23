@@ -2,6 +2,8 @@
 import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import { Button } from "@mui/material";
+import { Add } from "@mui/icons-material";
+
 
 const Admin = () => {
   return (
@@ -12,7 +14,7 @@ const Admin = () => {
       <div className={styles.greyContainer}>
         <div className={styles.space_between_flex_row} style={{ borderBottom: "1px solid black", padding: "10px 0" }}>
           <h2>Mange users </h2>
-          <Button variant="outlined" color="primary" size="meduim" disableRipple
+          <Button variant="outlined" color="primary" size="large"
             sx={{
               color: 'black',
               backgroundColor: "white",
@@ -20,7 +22,12 @@ const Admin = () => {
               borderRadius: "10px",
               padding: "2px 30px",
               textTransform: 'none',
-            }}>Create new user</Button>
+              '&:hover': {
+                backgroundColor: "#f0f0f0",
+                border: "black 1px solid",
+                color: 'black'
+              }
+            }}>Create new user <Add sx={{fontSize:"23px", paddingLeft:"5px"}} /> </Button>
         </div>
         <p>Content</p>
       </div>
