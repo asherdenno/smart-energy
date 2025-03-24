@@ -12,7 +12,7 @@ export default function Dashboard() {
   return (
     <div>
       Test
-    <div style={{width:'40%'}}>
+    <div style={{height:'40%'}}>
      <CitiesUnderNetwork/>
     </div>
     <div>
