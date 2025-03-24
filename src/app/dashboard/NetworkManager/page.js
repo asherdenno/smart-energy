@@ -13,15 +13,13 @@ export default function Dashboard() {
   return (
     <main className={styles.content}>
       Test
-<<<<<<< HEAD
     <div style={{height:'40%'}}>
      <CitiesUnderNetwork/>
     </div>
     <div>
       <ExampleChart2/>
     </div>
-    </div>
-=======
+
       <div style={{ width: '40%' }}>
         <CitiesUnderNetwork />
       </div>
@@ -29,6 +27,6 @@ export default function Dashboard() {
         <ExampleChart2 />
       </div>
     </main>
->>>>>>> 87b15a1c1279ce46ec0fb2dd23def650194d7158
+
   );
 }
