@@ -1,13 +1,18 @@
 'use client';
 import Navbar from "../components/navbar";
+import styles from "@/app/page.module.css";
+import Link from "next/link";
+import { Button } from "@mui/material";
 
 const Account = () => {
   return (
-    <div>
-      <Navbar title={"Account"} hasNotify={true}/>
-      <br />
+    <main className={styles.content}>
+      <Navbar title={"Account"} hasCitySelect={false} />
       <p>is the Account page...</p>
-    </div>
+      <Link href="../">
+        <Button variant="outlined" color="primary">Log out</Button>
+      </Link>
+    </main>
   );
 }
 export default Account;

@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import "./Navbar.css";
 import CitySelect from "./CitySelect";
 
-const Navbar = ({ title = "Add title", hasNotify = false }) => {
+const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
   return (
     <Box sx={{
       display: "flex",
@@ -12,11 +12,13 @@ const Navbar = ({ title = "Add title", hasNotify = false }) => {
       alignItems: "center"
     }}>
       <h1>{title}</h1>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <CitySelect />
+      <Box sx={{ display: "flex", alignItems: "center", gap: "30px" }}>
+        {hasCitySelect ?
+          (<CitySelect />)
+          : ""}
         {hasNotify ?
-          (<IconButton aria-label="alerts" color="" size="large" 
-              sx={{ border: "2px solid", borderRadius: "45%", padding: "8px" }}>
+          (<IconButton aria-label="alerts" color="" size="large"
+            sx={{ border: "2px solid", borderRadius: "45%", padding: "8px" }}>
             <NotificationsIcon fontSize="inherit" />
           </IconButton>
           ) : ""}
