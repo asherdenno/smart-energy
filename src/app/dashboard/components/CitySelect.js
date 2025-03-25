@@ -2,11 +2,13 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { border } from '@mui/system';
 
 export default function CitySelect() {
     const fetchSearchResults = async (searchString) => {
         try {
-          const res = await fetch('/api/fetch-cities', {
+            setLoading(true);
+            const res = await fetch('/api/fetch-cities', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -15,8 +17,8 @@ export default function CitySelect() {
           });
           if (!res.ok) throw new Error('Error fetching cities');
           const data = await res.json();
-          console.log(data);
           setResults(data);
+          setLoading(false);
         }
         catch (error) {
           console.error('Error fetching cities:', error);
@@ -30,16 +32,15 @@ export default function CitySelect() {
     const [query, setQuery] = React.useState("");
 
     React.useEffect(() => {
-        setQuery("Ams");
-        fetchSearchResults("Ams");
+        fetchSearchResults("");
     }, []);
 
     return (
         <Autocomplete
             id="city-select"
             value={query}
-            onChange={(event, newQuery) => {
-                setQuery(newQuery);
+            onChange={(event, newValue) => {
+                setQuery(newValue);
             }}
             onInputChange={(event, newQuery) => {
                 fetchSearchResults(newQuery);
@@ -50,20 +51,17 @@ export default function CitySelect() {
             autoHighlight
             getOptionLabel={(option) => option.city || ""}
             renderOption={(props, option) => {
-                const { city_filter_id, ...optionProps } = props;
+                const { city_filter_id, ...optionProps } = option;
                 return (
-                    <Box
-                        key = {city_filter_id}
-                        component="li"
-                        {...optionProps}
-                    >
-                        {option.city}
-                    </Box>
-                );
+                    <li {...props} key={city_filter_id}>
+                        {loading ? 'Loading...' : option.city}
+                    </li>
+                )
             }}
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    sx={{ border: '2px solid #757575', borderRadius: '5px', padding: '5px'}}
                     variant="standard"
                     InputProps={{
                         ...params.InputProps,
@@ -74,8 +72,9 @@ export default function CitySelect() {
                         htmlInput: {
                         ...params.inputProps,
                         autoComplete: 'new-password',
-                    },
+                    }
                     }}
+
                 />
             )}
             />
