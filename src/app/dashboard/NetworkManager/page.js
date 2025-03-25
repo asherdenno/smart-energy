@@ -6,6 +6,8 @@ import ExampleChart5 from "..//components/charts/exampleCharts/exampleChart5";
 import ExampleChart6 from "..//components/charts/exampleCharts/exampleChart6";
 import ExampleChart7 from "..//components/charts/exampleCharts/exampleChart7";
 import YearlyEnergyChart from "..//components/charts/genericCharts/yearlyEnergyChart";
+import EnergyUsagePercent from "..//components/charts/genericCharts/energyUsagePercent";
+
 
 import styles from "@/app/page.module.css";
 
@@ -19,7 +21,7 @@ export default function Dashboard() {
      <YearlyEnergyChart/>
     </div>
     <div>
-      <ExampleChart2/>
+      <EnergyUsagePercent/>
     </div>
 
       <div style={{ width: '40%' }}>
