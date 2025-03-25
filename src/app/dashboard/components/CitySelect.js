@@ -39,6 +39,9 @@ export default function CitySelect() {
         <Autocomplete
             id="city-select"
             value={query}
+            onChange={(event, newValue) => {
+                setQuery(newValue);
+            }}
             onInputChange={(event, newQuery) => {
                 fetchSearchResults(newQuery);
             }}
