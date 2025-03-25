@@ -6,7 +6,7 @@ const Map = () => {
   return (
     <main className={styles.content}>
       <nav>
-        <Navbar title={"Map"} hasNotify={true} />
+        <Navbar title={"Map"} hasNotify={true} hasCitySelect={false}/>
       </nav>
       <p>This is the map page.</p>
     </main>

@@ -18,7 +18,7 @@ const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true })
           : ""}
         {hasNotify ?
           (<IconButton aria-label="alerts" color="" size="large"
-            sx={{ border: "2px solid", borderRadius: "45%", padding: "8px" }}>
+            sx={{ border: "2px solid", borderRadius: "45%", padding: "10px", margin: "2px" }}>
             <NotificationsIcon fontSize="inherit" />
           </IconButton>
           ) : ""}
