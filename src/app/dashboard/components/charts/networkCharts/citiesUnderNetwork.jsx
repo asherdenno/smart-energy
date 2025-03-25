@@ -52,6 +52,8 @@ export default class Example extends PureComponent {
 
   render() {
     return (
+      <div style={{maxWidth: "1000px"}}>
+        
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           width={500}
@@ -73,6 +75,7 @@ export default class Example extends PureComponent {
           <Bar dataKey="pv" fill="#8884d8" background={{ fill: '#eee' }} />
         </BarChart>
       </ResponsiveContainer>
+            </div>
     );
   }
 }

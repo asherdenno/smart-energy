@@ -5,6 +5,8 @@ import ExampleChart4 from "..//components/charts/exampleCharts/exampleChart4";
 import ExampleChart5 from "..//components/charts/exampleCharts/exampleChart5";
 import ExampleChart6 from "..//components/charts/exampleCharts/exampleChart6";
 import ExampleChart7 from "..//components/charts/exampleCharts/exampleChart7";
+import YearlyEnergyChart from "..//components/charts/genericCharts/yearlyEnergyChart";
+
 import styles from "@/app/page.module.css";
 
 
@@ -13,6 +15,13 @@ export default function Dashboard() {
   return (
     <main className={styles.content}>
       Test
+    <div style={{height:'40%'}}>
+     <YearlyEnergyChart/>
+    </div>
+    <div>
+      <ExampleChart2/>
+    </div>
+
       <div style={{ width: '40%' }}>
         <CitiesUnderNetwork />
       </div>
@@ -20,5 +29,6 @@ export default function Dashboard() {
         <ExampleChart2 />
       </div>
     </main>
+
   );
 }
