@@ -8,6 +8,9 @@ import ExampleChart7 from "..//components/charts/exampleCharts/exampleChart7";
 import YearlyEnergyChart from "../components/charts/annualConsume/yearlyEnergyChart";
 import EnergyUsagePercent from "../components/charts/annualConsume/energyUsagePercent";
 import SpecificNetworkCity from "../components/charts/annualConsume/specificNetworkCity";
+import Test4 from "../components/charts/exampleCharts/exampleChart9";
+import Test3 from "../components/charts/exampleCharts/exampleChart8";
+
 
 
 
@@ -20,6 +23,9 @@ export default function Dashboard() {
   return (
     <main className={styles.content}>
       Test
+      <div>
+        <Test3/>
+      </div>
       <div style={{border:"#000 1px solid", display:"flex"}}>
     <div style={{height:'40%'}}>
      <YearlyEnergyChart/>
@@ -39,6 +45,9 @@ export default function Dashboard() {
       </div>
       <div>
         {/* <ExampleChart2 /> */}
+      </div>
+      <div>
+        <Test4/>
       </div>
     </main>
 
