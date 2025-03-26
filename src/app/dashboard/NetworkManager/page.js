@@ -10,6 +10,7 @@ import EnergyUsagePercent from "../components/charts/annualConsume/energyUsagePe
 import SpecificNetworkCity from "../components/charts/annualConsume/specificNetworkCity";
 import Test4 from "../components/charts/exampleCharts/exampleChart9";
 import Test3 from "../components/charts/exampleCharts/exampleChart8";
+import AnnualEnergyData from "../components/charts/annualConsume/annualEnergyData";
 
 
 
@@ -22,6 +23,17 @@ import { BorderAll } from "@mui/icons-material";
 export default function Dashboard() {
   return (
     <main className={styles.content}>
+      <div>
+        Annual Energy Consumption
+        <div>
+          <div>
+          <AnnualEnergyData/>
+          </div>
+        <div>
+        <EnergyUsagePercent/>
+        </div>
+        </div>
+      </div>
       Test
       <div>
         <Test3/>
