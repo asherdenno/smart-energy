@@ -86,16 +86,38 @@ const data = [
       gas_low_tar: 12.4,
     },
   ];
-  
+  // export default function ToggleGraph() {
+  //   const [showElectric, setShowElectric] = useState(true);
+  //   const [showGas, setShowGas] = useState(true);
 
 export default class Example extends PureComponent {
   static demoUrl = 'https://codesandbox.io/p/sandbox/synchronized-line-charts-37rhmf';
+  constructor(props) {
+    super(props);
+    this.state = {
+      showElectric: true,
+      showGas: true,
+    };
+  }
 
+  toggleElectric = () => {
+    this.setState((prevState) => ({ showElectric: !prevState.showElectric }));
+  };
+
+  toggleGas = () => {
+    this.setState((prevState) => ({ showGas: !prevState.showGas }));
+  };
   render() {
+    const { showElectric, showGas } = this.state;
       return (
           <div style={{ width: '100%' }}>
         <h4>A demo of synchronized AreaCharts</h4>
-
+        <button onClick={this.toggleElectric}>
+          {showElectric ? "Hide Electric" : "Show Electric"}
+        </button>
+        <button onClick={this.toggleGas}>
+          {showGas ? "Hide Gas" : "Show Gas"}
+        </button>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart
             width={500}
@@ -114,8 +136,8 @@ export default class Example extends PureComponent {
             <YAxis yAxisId="left" orientation="left" />
             <YAxis yAxisId="right" orientation="right" />            
             <Tooltip />
-            <Area yAxisId={"left"} type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
-            <Area yAxisId={"right"} type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />
+            {showElectric&&<Area yAxisId={"left"} type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />}
+            {showGas&&<Area yAxisId={"right"} type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
             <Brush />
           </AreaChart>
         </ResponsiveContainer>
@@ -138,8 +160,8 @@ export default class Example extends PureComponent {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="ele_del_perc" stroke="#8884d8" fill="#8884d8" />
-            <Line type="monotone" dataKey="gas_del_perc" stroke="#82ca9d" fill="#82ca9d" />
+            {showElectric&&<Line type="monotone" dataKey="ele_del_perc" stroke="#8884d8" fill="#8884d8" />}
+            {showGas&&<Line  type="monotone" dataKey="gas_del_perc" stroke="#82ca9d" fill="#82ca9d" />}
           </LineChart>
         </ResponsiveContainer>
 
@@ -160,8 +182,8 @@ export default class Example extends PureComponent {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="ele_low_tar" stroke="#8884d8" fill="#8884d8" />
-            <Line type="monotone" dataKey="gas_low_tar" stroke="#82ca9d" fill="#82ca9d" />
+            <Line showElectric type="monotone" dataKey="ele_low_tar" stroke="#8884d8" fill="#8884d8" />
+            <Line showGas type="monotone" dataKey="gas_low_tar" stroke="#82ca9d" fill="#82ca9d" />
           </LineChart>
         </ResponsiveContainer>
       </div>
