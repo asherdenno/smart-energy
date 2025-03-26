@@ -80,11 +80,36 @@ const data = [
 export default class Example extends PureComponent {
   static demoUrl = 'https://codesandbox.io/p/sandbox/synchronized-line-charts-37rhmf';
 
+//
+constructor(props) {
+    super(props);
+    this.state = {
+      showElectric: true,
+      showGas: true,
+    };
+  }
+
+  toggleElectric = () => {
+    this.setState((prevState) => ({ showElectric: !prevState.showElectric }));
+  };
+
+  toggleGas = () => {
+    this.setState((prevState) => ({ showGas: !prevState.showGas }));
+  };
+//
+
+
   render() {
+    const { showElectric, showGas } = this.state;
       return (
           <div style={{ width: '100%' }}>
-        <h4>A demo of synchronized AreaCharts</h4>
-
+        <h4>Annual Data Usage</h4>
+        <button onClick={this.toggleElectric}>
+          {showElectric ? "Hide Electric" : "Show Electric"}
+        </button>
+        <button onClick={this.toggleGas}>
+          {showGas ? "Hide Gas" : "Show Gas"}
+        </button>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart
             width={500}
@@ -111,8 +136,8 @@ export default class Example extends PureComponent {
                 }
 
                 }}/>
-            <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
-            <Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />
+            {showElectric&&<Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />}
+            {showGas&&<Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
             <Brush />
           </AreaChart>
         </ResponsiveContainer>
@@ -139,8 +164,8 @@ export default class Example extends PureComponent {
             formatter={(value, name) => {
                     return [`${value} %`, name];
                 }}/>
-            <Line type="monotone" dataKey="Electric Delivery Percentage" stroke="#8884d8" fill="#8884d8" />
-            <Line type="monotone" dataKey="Gas Delivery Percentage" stroke="#82ca9d" fill="#82ca9d" />
+            {showElectric&&<Line type="monotone" dataKey="Electric Delivery Percentage" stroke="#8884d8" fill="#8884d8" />}
+            {showGas&&<Line type="monotone" dataKey="Gas Delivery Percentage" stroke="#82ca9d" fill="#82ca9d" />}
           </LineChart>
         </ResponsiveContainer>
 
@@ -164,8 +189,8 @@ export default class Example extends PureComponent {
             formatter={(value, name) => {
                 return [`${value} %`, name];
             }}/>
-            <Line type="monotone" dataKey="Electric Low Tariff Consume" stroke="#8884d8" fill="#8884d8" />
-            <Line type="monotone" dataKey="Gas Low Tariff Consume" stroke="#82ca9d" fill="#82ca9d" />
+            {showElectric&&<Line type="monotone" dataKey="Electric Low Tariff Consume" stroke="#8884d8" fill="#8884d8" />}
+            {showGas&&<Line type="monotone" dataKey="Gas Low Tariff Consume" stroke="#82ca9d" fill="#82ca9d" />}
           </LineChart>
         </ResponsiveContainer>
       </div>
