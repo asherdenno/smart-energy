@@ -10,7 +10,7 @@ export default function AnnualEnergyOverview() {
 
   return (
 <div>
-       <h>Annual Energy Consumption</h>
+       {/* <h>Annual Energy Consumption</h> */}
         {/* <ToddleEleGas/> */}
         <div style={{border:"#000 1px solid"/*, width:"30%", height:"30%"*/}}>
           <div style={{display:"flex"}}>
