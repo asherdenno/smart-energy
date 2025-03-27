@@ -16,7 +16,7 @@ export default function Dashboard() {
   return (
     <main className={styles.content}>
     <div /*Overview */>
-    <h>Annual Energy Consumption Overview</h>
+    <h1>Annual Energy Consumption Overview</h1>
     <AnnualEnergyOverview/>
       </div>
     <div /*Specific areas */>
