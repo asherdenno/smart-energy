@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react";
-import EleGasButtons from "./eleGasButtons";
-import AnnualEnergyData from "./annualEnergyData";
-import EnergyUsagePercent from "./energyUsagePercent";
+import EleGasButtons from "../charts/overview/eleGasButtons";
+import AnnualEnergyData from "../charts/overview/annualEnergyData";
+import EnergyUsagePercent from "../charts/overview/energyUsagePercent";
 
 export default function AnnualEnergyOverview() {
   const [showElectric, setShowElectric] = useState(true);
