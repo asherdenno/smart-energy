@@ -81,35 +81,36 @@ export default class Example extends PureComponent {
   static demoUrl = 'https://codesandbox.io/p/sandbox/synchronized-line-charts-37rhmf';
 
 //
-constructor(props) {
-    super(props);
-    this.state = {
-      showElectric: true,
-      showGas: true,
-    };
-  }
+// constructor(props) {
+//     super(props);
+//     this.state = {
+//       showElectric: true,
+//       showGas: true,
+//     };
+//   }
 
-  toggleElectric = () => {
-    this.setState((prevState) => ({ showElectric: !prevState.showElectric }));
-  };
+//   toggleElectric = () => {
+//     this.setState((prevState) => ({ showElectric: !prevState.showElectric }));
+//   };
 
-  toggleGas = () => {
-    this.setState((prevState) => ({ showGas: !prevState.showGas }));
-  };
+//   toggleGas = () => {
+//     this.setState((prevState) => ({ showGas: !prevState.showGas }));
+//   };
 //
 
 
   render() {
-    const { showElectric, showGas } = this.state;
+    const { showElectric, showGas } = this.props;
+    // const { showElectric, showGas } = this.state;
       return (
           <div style={{ width: '100%' }}>
         <h4>Annual Data Usage</h4>
-        <button onClick={this.toggleElectric}>
+        {/* <button onClick={this.toggleElectric}>
           {showElectric ? "Hide Electric" : "Show Electric"}
         </button>
         <button onClick={this.toggleGas}>
           {showGas ? "Hide Gas" : "Show Gas"}
-        </button>
+        </button> */}
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart
             width={500}
@@ -136,7 +137,7 @@ constructor(props) {
                 }
 
                 }}/>
-            {showElectric&&<Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />}
+            {showElectric && <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />}
             {showGas&&<Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
             <Brush />
           </AreaChart>

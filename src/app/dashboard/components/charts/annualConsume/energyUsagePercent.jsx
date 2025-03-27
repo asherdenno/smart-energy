@@ -66,11 +66,12 @@ const dataOuter = [
 
 export default class CustomPieChart extends PureComponent {
   render() {
+    const { showElectric, showGas } = this.props;
     return (
       <div style={{ width: "100%", minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <ResponsiveContainer width="50%" height={400}>
           <PieChart>
-            <Pie 
+            {showElectric && <Pie 
               data={dataOuter} 
               dataKey="value" 
               cx="50%" 
@@ -83,9 +84,9 @@ export default class CustomPieChart extends PureComponent {
               {dataOuter.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
-            </Pie>
+            </Pie>}
 
-            <Pie 
+            {showGas && <Pie 
               data={dataInner} 
               dataKey="value" 
               cx="50%" 
@@ -98,7 +99,7 @@ export default class CustomPieChart extends PureComponent {
               {dataInner.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
-            </Pie>
+            </Pie>}
 
                 {/* <Legend verticalAlign="bottom" height={36} /> */}
                 <Legend 
