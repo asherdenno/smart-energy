@@ -15,10 +15,13 @@
     "@mui/material": "^6.4.8",
     "@mui/styled-engine-sc": "^6.4.6",
     "dotenv": "^16.4.7",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0",
     "mssql": "^11.0.1",
     "next": "15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0",
     "recharts": "^2.15.1"
   },
   "devDependencies": {

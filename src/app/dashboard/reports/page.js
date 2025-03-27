@@ -5,10 +5,10 @@ import Navbar from "../components/navbar";
 const Reports = () => {
   return (
     <main className={styles.content}>
-      <nav>
-        <Navbar title={"Reports"} hasNotify={true} />
-      </nav>
-      <p>This is the Reports page.</p>
+      <Navbar title={"Reports"} hasNotify={true} />
+      <div className={styles.greyContainer}>
+        <p>This is the Reports page.</p>
+      </div>
     </main>
   );
 }
