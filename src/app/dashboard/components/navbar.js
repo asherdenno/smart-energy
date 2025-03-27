@@ -6,24 +6,26 @@ import CitySelect from "./CitySelect";
 
 const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
   return (
-    <Box sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    }}>
-      <h1>{title}</h1>
-      <Box sx={{ display: "flex", alignItems: "center", gap: "30px" }}>
-        {hasCitySelect ?
-          (<CitySelect />)
-          : ""}
-        {hasNotify ?
-          (<IconButton aria-label="alerts" color="" size="large"
-            sx={{ border: "2px solid", borderRadius: "45%", padding: "10px", margin: "2px" }}>
-            <NotificationsIcon fontSize="inherit" />
-          </IconButton>
-          ) : ""}
+    <nav>
+      <Box sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+        <h1>{title}</h1>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "30px" }}>
+          {hasCitySelect ?
+            (<CitySelect />)
+            : ""}
+          {hasNotify ?
+            (<IconButton aria-label="alerts" color="" size="large"
+              sx={{ border: "2px solid", borderRadius: "45%", padding: "10px", margin: "2px" }}>
+              <NotificationsIcon fontSize="inherit" />
+            </IconButton>
+            ) : ""}
+        </Box>
       </Box>
-    </Box>
+    </nav>
   );
 }
 export default Navbar;

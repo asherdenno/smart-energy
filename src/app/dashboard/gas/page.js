@@ -5,10 +5,10 @@ import styles from "@/app/page.module.css";
 const Gas = () => {
   return (
     <main className={styles.content}>
-      <nav>
-        <Navbar title={"Gas"} hasNotify={true} />
-      </nav>
-      <p>This is the Gas page.</p>
+      <Navbar title={"Gas"} hasNotify={true} />
+      <div className={styles.greyContainer}>
+        <p>This is the Gas page.</p>
+      </div>
     </main>
   );
 }

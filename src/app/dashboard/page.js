@@ -5,10 +5,10 @@ import styles from "@/app/page.module.css";
 const Overview = () => {
   return (
     <main className={styles.content}>
-      <nav>
-        <Navbar title={"Hi, User!"} hasNotify={true} />
-      </nav>
-      <p>is the Overview page...</p>
+      <Navbar title={"Hi, User!"} hasNotify={true} />
+      <div className={styles.greyContainer}>
+        <p>is the Overview page...</p>
+      </div>
     </main>
   );
 }

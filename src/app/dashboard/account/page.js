@@ -8,10 +8,12 @@ const Account = () => {
   return (
     <main className={styles.content}>
       <Navbar title={"Account"} hasCitySelect={false} />
-      <p>is the Account page...</p>
-      <Link href="../">
-        <Button variant="outlined" color="primary">Log out</Button>
-      </Link>
+      <div className={styles.greyContainer}>
+        <p>is the Account page...</p>
+        <Link href="../">
+          <Button variant="outlined" color="primary">Log out</Button>
+        </Link>
+      </div>
     </main>
   );
 }
