@@ -46,7 +46,7 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
   );
 };
 
-const dataInner = [
+const dataOuter = [
   { name: "2015", value: 400 },
   { name: "2016", value: 300 },
   { name: "2017", value: 300 },
@@ -55,7 +55,7 @@ const dataInner = [
   { name: "2020", value: 400 },
 ];
 
-const dataOuter = [
+const dataInner = [
   { name: "2015", value: 100 },
   { name: "2016", value: 300 },
   { name: "2017", value: 100 },
@@ -72,7 +72,7 @@ export default class CustomPieChart extends PureComponent {
         <ResponsiveContainer width="50%" height={400}>
           <PieChart>
             {showElectric && <Pie 
-              data={dataOuter} 
+              data={dataInner} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -81,13 +81,13 @@ export default class CustomPieChart extends PureComponent {
               label={renderOuterLabel} 
               labelLine
               >
-              {dataOuter.map((entry, index) => (
+              {dataInner.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
 
             {showGas && <Pie 
-              data={dataInner} 
+              data={dataOuter} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -96,7 +96,7 @@ export default class CustomPieChart extends PureComponent {
               labelLine={false} 
             //   nameKey={"yearKeys"}
             >
-              {dataInner.map((entry, index) => (
+              {dataOuter.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
