@@ -13,22 +13,22 @@ export default function AnnualEnergyOverview() {
        {/* <h>Annual Energy Consumption</h> */}
         {/* <ToddleEleGas/> */}
         <div style={{border:"#000 1px solid"/*, width:"30%", height:"30%"*/}}>
-          <div style={{display:"flex"}}>
-          <div style={{width:"50%"}}>
-          <AnnualEnergyData showElectric={showElectric} showGas={showGas} />
-          </div>
-        <div style={{ width:"50%", height:"100%"}}>
-        <EnergyUsagePercent showElectric={showElectric} showGas={showGas} />
-        </div>
-        <div>
+          <div style={{display:"flex", flexWrap:"wrap", flexDirection:"row"}}>
+        <div style={{width:"100%"}}>
         <EleGasButtons 
         showElectric={showElectric} 
         setShowElectric={setShowElectric} 
         showGas={showGas} 
         setShowGas={setShowGas} 
       />
-        </div>
           </div>
+          <div style={{width:"50%"}}>
+          <AnnualEnergyData showElectric={showElectric} showGas={showGas} />
+          </div>
+        <div style={{ width:"50%", height:"100%"}}>
+        <EnergyUsagePercent showElectric={showElectric} showGas={showGas} />
+        </div>
+        </div>
       </div>
       </div>
   );

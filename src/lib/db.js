@@ -53,10 +53,10 @@ const fetchUsageSumPerYear = async (account_id) => {
         SELECT 
           e.year,
           e.electric_or_gas,
-          SUM(e.annual_consume) AS total_annual_consume,
+          ROUND(SUM(e.annual_consume),3) AS total_annual_consume,
           d.city,
-          SUM(e.delivery_perc) AS total_delivery_perc,
-          SUM(e.annual_consume_lowtarif_perc) AS total_annual_consume_lowtarif_perc
+          ROUND(AVG(e.delivery_perc),2) AS total_delivery_perc,
+          ROUND(AVG(e.annual_consume_lowtarif_perc),2) AS total_annual_consume_lowtarif_perc
         FROM
           dbo.energy_data e
         INNER JOIN
