@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react";
-import EleGasButtons from "./eleGasButtons";
-import AnnualEnergyData from "./annualEnergyData";
-import EnergyUsagePercent from "./energyUsagePercent";
+import EleGasButtons from "../overview/eleGasButtons";
+import AnnualEnergyData from "../overview/annualEnergyData";
+import EnergyUsagePercent from "../overview/energyUsagePercent";
 
 export default function ToddleEleGas() {
   const [showElectric, setShowElectric] = useState(true);

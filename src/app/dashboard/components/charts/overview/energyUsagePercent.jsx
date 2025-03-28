@@ -1,11 +1,32 @@
 "use client";
-import React, { PureComponent } from "react";
+import React, { PureComponent, useEffect } from "react";
+import { useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6699", "#33CC33", "#FF9900"];
 const RADIAN = Math.PI / 180;
 
+const fetchData = async (account_id) => {
+  try {
+    const res = await fetch('/api/usage-sum-per-year', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ account_id }),
+    });
+    if (!res.ok) throw new Error('Error fetching usage data');
+    const data = await res.json();
+    return data;
+  }
+  catch (error) {
+    console.error('Error fetching usage data:', error);
+    return [];
+  }
+}
+
 const renderInnerLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+
   const radius = innerRadius + (outerRadius - innerRadius) * 0.65; 
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -46,33 +67,63 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
   );
 };
 
-const dataInner = [
-  { name: "2015", value: 400 },
-  { name: "2016", value: 300 },
-  { name: "2017", value: 300 },
-  { name: "2018", value: 200 },
-  { name: "2019", value: 400 },
-  { name: "2020", value: 400 },
-];
+// const dataOuter = [
+//   { name: "2015", value: 400 },
+//   { name: "2016", value: 300 },
+//   { name: "2017", value: 300 },
+//   { name: "2018", value: 200 },
+//   { name: "2019", value: 400 },
+//   { name: "2020", value: 400 },
+// ];
 
-const dataOuter = [
-  { name: "2015", value: 100 },
-  { name: "2016", value: 300 },
-  { name: "2017", value: 100 },
-  { name: "2018", value: 80 },
-  { name: "2019", value: 40 },
-  { name: "2020", value: 40 },
-];
+// var dataInner = [
+//   { name: "2015", value: 100 },
+//   { name: "2016", value: 300 },
+//   { name: "2017", value: 100 },
+//   { name: "2018", value: 80 },
+//   { name: "2019", value: 40 },
+//   { name: "2020", value: 40 },
+// ];
 
 export default class CustomPieChart extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataOuter: [],
+      dataInner: [],
+    };
+  }
+
+  componentDidMount() {
+    fetchData("2").then((response) => {
+      const { data } = response;
+
+      const dataInner = [];
+      const dataOuter = [];
+
+      data.forEach((item) => {
+        if (item.electric_or_gas === "Electricity") {
+          dataInner.push({ name: item.year, value: item.total_annual_consume });
+        } else if (item.electric_or_gas === "Gas") {
+          dataOuter.push({ name: item.year, value: item.total_annual_consume });
+        } else {
+          console.error("Invalid electric_or_gas value:", item.electric_or_gas);
+        }
+      });
+      this.setState({ dataInner, dataOuter });
+    })
+  }
   render() {
     const { showElectric, showGas } = this.props;
+    
+    console.log("Data inner:", this.state.dataInner);
+    console.log("Data outer:", this.state.dataOuter);
     return (
       <div style={{ width: "100%", minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <ResponsiveContainer width="50%" height={400}>
           <PieChart>
             {showElectric && <Pie 
-              data={dataOuter} 
+              data={this.state.dataInner} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -81,13 +132,13 @@ export default class CustomPieChart extends PureComponent {
               label={renderOuterLabel} 
               labelLine
               >
-              {dataOuter.map((entry, index) => (
+              {this.state.dataInner.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
 
             {showGas && <Pie 
-              data={dataInner} 
+              data={this.state.dataOuter} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -96,7 +147,7 @@ export default class CustomPieChart extends PureComponent {
               labelLine={false} 
             //   nameKey={"yearKeys"}
             >
-              {dataInner.map((entry, index) => (
+              {this.state.dataOuter.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
@@ -105,10 +156,10 @@ export default class CustomPieChart extends PureComponent {
                 <Legend 
   verticalAlign="bottom" 
   height={36} 
-  payload={dataOuter.map((entry, index) => ({
-    value: entry.name, 
-    type: "circle", 
-    color: COLORS[index % COLORS.length]
+  payload={this.state.dataOuter.map((entry, index) => ({
+    value: `${entry.name}`, // Include both name and value in the legend
+    type: "circle", // Legend marker type
+    color: COLORS[index % COLORS.length], // Dynamically assign colors
   }))}
 />
           </PieChart>

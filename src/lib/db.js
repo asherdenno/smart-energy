@@ -45,22 +45,32 @@ const fetchCities = async (userInput) => {
   }
 }
 
-const fetchUsageSumPerYear = async (filter_id) => {
-  if (!filter_id) {
+const fetchUsageSumPerYear = async (account_id) => {
+  if (!account_id) {
     try {
       await sql.connect(config);
       const query = `
         SELECT 
-          [year],
-          [electric_or_gas],
-          SUM([annual_consume]) AS total_annual_consume
-        FROM 
-          dbo.energy_data
+          e.year,
+          e.electric_or_gas,
+          ROUND(SUM(e.annual_consume),3) AS total_annual_consume,
+          d.city,
+          ROUND(AVG(e.delivery_perc),2) AS total_delivery_perc,
+          ROUND(AVG(e.annual_consume_lowtarif_perc),2) AS total_annual_consume_lowtarif_perc
+        FROM
+          dbo.energy_data e
+        INNER JOIN
+          data_filter d
+        ON
+          (e.data_id = d.data_id)
+        WHERE
+          (d.city = 'ENTER')
         GROUP BY 
-          [year], [electric_or_gas]
+          e.year, e.electric_or_gas, d.city
         ORDER BY 
-          [year], [electric_or_gas];
+          e.year, e.electric_or_gas;
       `;
+
       const result = await sql.query(query);
       await sql.close();
       return result.recordset;
