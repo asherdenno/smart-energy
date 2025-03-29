@@ -80,6 +80,13 @@
   align-items: center;
 }
 
+.right_center_flex_row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .searchBar {
   display: flex;
   flex-direction: row;

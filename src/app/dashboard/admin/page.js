@@ -17,16 +17,26 @@ const allUserRows = [
 const TbHeadCell = styled(TableCell)({
   fontSize: '20px',
   fontWeight: 600,
-  padding: '10px 0 20px 0'
+  padding: '10px 0 20px 0',
+  textAlign: 'left',
+  boxSizing: 'border-box',
+  '&:last-child': {
+    textAlign: 'right',
+  }
 });
 
 const TbBodyCell = styled(TableCell)({
   padding: "10px 0",
-  fontSize: "15px"
+  fontSize: "15px",
+  textAlign: 'left',
+  boxSizing: 'border-box',
+  '&:last-child': {
+    textAlign: 'right',
+  },
 });
 
 const Admin = () => {
-  const [users, setUsers] = useState(allUserRows); 
+  const [users, setUsers] = useState(allUserRows);
   const [searchQuery, setSearchQuery] = useState("");
 
   const searchUser = (query) => {
@@ -38,7 +48,7 @@ const Admin = () => {
         user[0].toLowerCase().includes(query.toLowerCase())
       );
       setUsers(filteredUsers);
-    } 
+    }
   };
 
   return (
@@ -58,8 +68,8 @@ const Admin = () => {
         >
           <h2>Manage users</h2>
           <div
-            className={styles.space_between_flex_row}
-            style={{ gap: "10px", width: "40%" }}
+            className={styles.right_center_flex_row}
+            style={{ gap: "10px", width: "50%" }}
           >
             <input
               onChange={(e) => searchUser(e.target.value)}
@@ -67,7 +77,7 @@ const Admin = () => {
               type="search"
               className={styles.searchBar}
               placeholder="Search users"
-              style={{ maxWidth: "500px", minWidth: "300px" }}
+              style={{ maxWidth: "500px", width: "100%" }}
             />
             <Button
               variant="outlined"
@@ -80,6 +90,7 @@ const Admin = () => {
                 borderRadius: "10px",
                 padding: "2px 30px",
                 textTransform: "none",
+                minWidth: "fit-content",
                 "&:hover": {
                   backgroundColor: "#f0f0f0",
                   border: "black 1px solid",
@@ -100,37 +111,37 @@ const Admin = () => {
             padding: "0 10px",
           }}
         >
-          <Table sx={{ width: "100%" }} aria-label="user management table">
+          <Table
+            sx={{
+              width: "100%",
+              tableLayout: "fixed",
+            }}
+            aria-label="user management table"
+          >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell align="right">Manage user</TbHeadCell>
+                <TbHeadCell >Manage user</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length > 0 ? (
                 users.map((row, index) => (
                   <TableRow key={index}>
-                    <TbBodyCell component="th" scope="row">
-                      {row[0]}
-                    </TbBodyCell>
+                    <TbBodyCell>{row[0]}</TbBodyCell>
                     <TbBodyCell>{row[1]}</TbBodyCell>
-                    <TbBodyCell align="right">
+                    <TbBodyCell>
                       <Button>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
-              ) : allUserRows.length > 0 ? (
-                <TableRow>
-                  <TbBodyCell colSpan={3} align="center">
-                    No users found
-                  </TbBodyCell>
-                </TableRow>
               ) : (
                 <TableRow>
-                  <TbBodyCell colSpan={3} align="center">
-                    No users available! Create one to get started.
+                  <TbBodyCell colSpan={3} style={{ textAlign: "center" }}>
+                    {allUserRows.length > 0 ?
+                      "No users found" :
+                      "No users available! Create one to get started."}
                   </TbBodyCell>
                 </TableRow>
               )}
