@@ -10,7 +10,6 @@ const config = {
     trustServerCertificate: false // Set to true only for local dev with self-signed certs
   },
   port: 1433,
-  connectionTimeout: 30000
 };
 
 const fetchAll = async () => {
@@ -87,7 +86,7 @@ const fetchElectricityUsagePerZipcode = async(city) => {
   try {
     await sql.connect(config);
     const query = 
-    `SELECT TOP(10000) e.zipcode_from,
+    `SELECT TOP(1000) e.zipcode_from,
       e.annual_consume,
       d.city,
       e.num_connections

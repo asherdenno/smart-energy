@@ -119,8 +119,15 @@ export default class CustomPieChart extends PureComponent {
     console.log("Data inner:", this.state.dataInner);
     console.log("Data outer:", this.state.dataOuter);
     return (
-      <div style={{ width: "100%", minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <ResponsiveContainer width="50%" height={400}>
+      <div style={{ 
+        width: "100%",
+        minHeight: "400px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center", padding: "20px",
+        boxSizing: "border-box" 
+        }}>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 

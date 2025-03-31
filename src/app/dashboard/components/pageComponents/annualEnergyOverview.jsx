@@ -1,18 +1,19 @@
 "use client"
+import styles from "@/app/page.module.css";
 import { useState } from "react";
 import EleGasButtons from "../charts/overview/eleGasButtons";
 import AnnualEnergyData from "../charts/overview/annualEnergyData";
 import EnergyUsagePercent from "../charts/overview/energyUsagePercent";
+import { ToggleButton } from "@mui/material";
 
 export default function AnnualEnergyOverview() {
   const [showElectric, setShowElectric] = useState(true);
   const [showGas, setShowGas] = useState(true);
 
   return (
-<div>
+<div className={styles.greyContainer}>
        {/* <h>Annual Energy Consumption</h> */}
         {/* <ToddleEleGas/> */}
-        <div style={{border:"#000 1px solid"/*, width:"30%", height:"30%"*/}}>
           <div style={{display:"flex", flexWrap:"wrap", flexDirection:"row"}}>
         <div style={{width:"100%"}}>
         <EleGasButtons 
@@ -29,7 +30,6 @@ export default function AnnualEnergyOverview() {
         <EnergyUsagePercent showElectric={showElectric} showGas={showGas} />
         </div>
         </div>
-      </div>
       </div>
   );
 }

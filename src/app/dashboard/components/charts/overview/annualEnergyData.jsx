@@ -13,6 +13,9 @@ import {
   Area,
   ResponsiveContainer,
 } from 'recharts';
+
+const GAS_TO_KWH_MULTIPLIER = 11.164;
+
 const fetchData = async (account_id) => {
   try {
     const res = await fetch('/api/usage-sum-per-year', {
@@ -44,36 +47,7 @@ constructor(props) {
     };
   }
 
-//   toggleElectric = () => {
-//     this.setState((prevState) => ({ showElectric: !prevState.showElectric }));
-//   };
 
-//   toggleGas = () => {
-//     this.setState((prevState) => ({ showGas: !prevState.showGas }));
-//   };
-//
-
-// constructor(props) {
-//   super(props);
-//   this.state = {
-//     Energy: [],
-//   };
-// }
-
-// componentDidMount() {
-//   fetchData("1").then((response) => {
-//     const { data } = response;
-
-//     const AnnualEnergy = [];
-//     const AnnualDel = [];
-//     const AnnualLowtarif = [];
-
-//     data.forEach((item) => {
-      
-//         AnnualEnergy.push({ name: item.year, dataKey: item.electric_or_gas, value: item.total_annual_consume });
-//         AnnualDel.push({ name: item.year, dataKey: (item.electric_or_gas + " Delivery Percentage"), value: item.total_delivery_perc });
-//         AnnualLowtarif.push({ name: item.year, dataKey: item.electric_or_gas + " Low Tariff Consume", value: item.total_annual_consume_lowtarif_perc  });
-//       });
 componentDidMount() {
   fetchData("1").then((response) => {
     const { data } = response;
@@ -142,10 +116,10 @@ componentDidMount() {
             <Tooltip 
             formatter={(value, name) => {
                 if (name.includes("Electric")) {
-                  return [`${value} KwH`, name];
+                  return [`${value} kWh`, name];
                 }
                 if (name.includes("Gas")){
-                    return [`${value} m3`, name];
+                    return [`${value} m³`, name];
                 }
 
                 }}/>

@@ -16,7 +16,7 @@ export default function Graphs() {
     <CityProvider>
       <main className={styles.content}>
         <Navbar title={"Graphs"} hasNotify={true} />
-        <div /*Overview */>
+        <div>
         <h1>Annual Energy Consumption Overview</h1>
         <AnnualEnergyOverview/>
         </div>
