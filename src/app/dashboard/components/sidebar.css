@@ -13,10 +13,10 @@
     font-weight: 800;
 }
 
-.active-button {
-    background-color: #f4eebb !important;
+.MuiListItemButton-root.active-button {
+    background-color: #f4eebb ;
 }
 
-.active-button:hover {
+.MuiListItemButton-root.active-button:hover {
     background-color: #c5bf93;
 }
