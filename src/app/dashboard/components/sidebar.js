@@ -11,12 +11,8 @@ const sidebarOptions = [
     to: "../dashboard"
   },
   {
-    text: "Electricity",
-    to: "../dashboard/electricity"
-  },
-  {
-    text: "Gas",
-    to: "../dashboard/gas"
+    text: "Graphs",
+    to: "../dashboard/graphs"
   },
   {
     text: "Reports",

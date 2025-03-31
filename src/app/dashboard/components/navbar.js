@@ -1,8 +1,9 @@
-import { Button, IconButton, Box } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
 import "./Navbar.css";
 import CitySelect from "./CitySelect";
+import NotificationBell from "./NotificationBell";
 
 const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
   return (
@@ -18,10 +19,7 @@ const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true })
             (<CitySelect />)
             : ""}
           {hasNotify ?
-            (<IconButton aria-label="alerts" color="" size="large"
-              sx={{ border: "2px solid", borderRadius: "45%", padding: "10px", margin: "2px" }}>
-              <NotificationsIcon fontSize="inherit" />
-            </IconButton>
+            (<NotificationBell />
             ) : ""}
         </Box>
       </Box>
