@@ -1,5 +1,5 @@
 import { Margin } from "@mui/icons-material";
-import { Button, TableCell, TextField } from "@mui/material";
+import { Button, TableCell, TextField, Autocomplete } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const TbHeadCell = styled(TableCell)({
@@ -83,5 +83,40 @@ export const LargeInputBox = styled(InputBox)({
         padding: "0 12px",
         borderRadius: "12px",
         height: "40px",
+    },
+});
+export const AutocompleteField = styled(Autocomplete)({
+    width: "100%",
+    '& .MuiAutocomplete-root': {
+        padding: 0,
+        margin: 0,
+    },
+    '& .MuiInputBase-root': {
+        padding: "0px",
+        margin: 0,
+    },
+    '& .MuiInputBase-input': {
+        padding: "0px",
+        height: '40px',
+        fontSize: '15px',
+        borderRadius: '10px',
+        backgroundColor: 'white',
+        color: "#000000",
+        outline: "none",
+        transition: "background-color 0.1s, box-shadow 0.1s",
+        boxShadow: 'inset 0 0 0 1px #000000',
+    },
+    '& .MuiInputBase-input.MuiAutocomplete-input': {
+        padding: "0px 12px"
+    },
+    '& .MuiInputBase-input:focus, & .MuiInputBase-input:active, & .MuiInputBase-input:hover': {
+        outline: 'none',
+        backgroundColor: '#f0f0f0',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+    },
+    '& .MuiAutocomplete-endAdornment': {
+        right: '8px',
     },
 });
