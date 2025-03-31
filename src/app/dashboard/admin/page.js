@@ -2,16 +2,18 @@
 import React, { useState } from "react";
 import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
+
 import {
-  Button, Table, TableBody, InputLabel,
-  TableCell, TableContainer, TableHead, TableRow, Paper
+  Button, Table, TableBody, InputLabel, Autocomplete,
+  TableCell, TableContainer, TableHead, TableRow, Paper,
+  Dialog, DialogTitle, DialogContent, DialogContentText,
+  DialogActions
 } from "@mui/material";
+
 import { Add } from "@mui/icons-material";
 
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
-
 import {
-  TbHeadCell, TbBodyCell, LargeBtn,
+  TbHeadCell, TbBodyCell, LargeBtn, AutocompleteField,
   ClassicBtn, InputBox, LargeInputBox
 } from "../components/muiStyledComponents";
 import { Label } from "recharts";
@@ -24,12 +26,25 @@ const allUserRows = [
   ['User 2', 'City council']
 ];
 
+const vacantNetwork = [
+  'Network 1',
+  'Network 2'
+];
+
+const vacantCity = [
+  'Halland',
+  'alvsborg',
+  'Vastra Gotaland',
+];
 
 const Admin = () => {
   const [users, setUsers] = useState(allUserRows);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [openDialog, setOpenDialog] = useState(false);
+
+  const [activeRole, setActiveRole] = useState("Network manager");
+
 
   const searchUser = (query) => {
     setSearchQuery(query);
@@ -112,13 +127,53 @@ const Admin = () => {
                   To create a new user, please fill in the required information.
                 </DialogContentText>
 
-                  <div className={styles.left_start_flex_column} style={{ gap: "3px"}}>
-                    <InputLabel htmlFor="user-role" sx={{ fontSize: "15px", fontWeight: "600" }}>User role</InputLabel>
-                    <div className={styles.center_center_flex_row} style={{ gap: "5px",  width: "100%"  }}>
-                      <LargeBtn sx={{ width: "100%" }}>Network manger</LargeBtn>
-                      <LargeBtn sx={{ width: "100%" }}>City council</LargeBtn>
-                    </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "3px" }}>
+                  <InputLabel htmlFor="user-role" sx={{ fontSize: "15px", fontWeight: "600" }}>User role</InputLabel>
+                  <div className={styles.center_center_flex_row} style={{ gap: "5px", width: "100%" }}>
+                    <LargeBtn
+                      sx={{
+                        width: "100%",
+                        backgroundColor: activeRole === "Network manager" ? "#919191" : "white",
+                        border: activeRole === "Network manager" ? "1px solid black" : "1px solid grey",
+                        color: activeRole === "Network manager" ? "white" : "black",
+                        fontWeight: activeRole === "Network manager" ? "600" : "400",
+                      }}
+                      onClick={() => setActiveRole("Network manager")}
+                    >Network manger
+                    </LargeBtn>
+                    <LargeBtn
+                      sx={{
+                        width: "100%",
+                        backgroundColor: activeRole === "City council" ? "#919191" : "white",
+                        border: activeRole === "City council" ? "1px solid black" : "1px solid grey",
+                        color: activeRole === "City council" ? "white" : "black",
+                        fontWeight: activeRole === "City council" ? "600" : "400",
+                      }}
+                      onClick={() => setActiveRole("City council")}
+                    >City council
+                    </LargeBtn>
                   </div>
+                </div>
+
+                {activeRole === "Network manager" ?
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select network </InputLabel>
+                    <AutocompleteField
+                      id="network"
+                      options={vacantNetwork}
+                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter network name" />}
+                    />
+                  </div>
+                  :
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select city</InputLabel>
+                    <AutocompleteField
+                      id="city"
+                      options={vacantCity}
+                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter city name" />}
+                    />
+                  </div>
+                }
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="first-name" sx={{ fontSize: "15px", fontWeight: "600" }}>First name</InputLabel>
@@ -130,18 +185,15 @@ const Admin = () => {
                   <LargeInputBox id="last-name" type="text" placeholder="Enter last name" />
                 </div>
 
-
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>Email</InputLabel>
                   <LargeInputBox id="email" type="text" placeholder="Enter email" />
                 </div>
 
-
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>Password</InputLabel>
-                  <LargeInputBox id="password" type="text" placeholder="Enter password" />
+                  <LargeInputBox id="password" type="password" placeholder="Enter password" />
                 </div>
-
 
               </DialogContent>
               <DialogActions
@@ -152,7 +204,6 @@ const Admin = () => {
                 }}>
                 <LargeBtn
                   onClick={() => setOpenDialog(false)}
-
                 >Create new user</LargeBtn>
                 <LargeBtn
                   onClick={() => setOpenDialog(false)}
