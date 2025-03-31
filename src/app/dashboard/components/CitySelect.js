@@ -3,8 +3,11 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { border } from '@mui/system';
+import { CityContext } from '../context/CityContext';
 
 export default function CitySelect() {
+    const { city, setCity } = React.useContext(CityContext);
+
     const fetchSearchResults = async (searchString) => {
         try {
             setLoading(true);
@@ -24,7 +27,6 @@ export default function CitySelect() {
           console.error('Error fetching cities:', error);
           return [];
         }
-        
       };
     
     const [loading, setLoading] = React.useState(true);
@@ -38,9 +40,9 @@ export default function CitySelect() {
     return (
         <Autocomplete
             id="city-select"
-            value={query}
+            value={city}
             onChange={(event, newValue) => {
-                setQuery(newValue);
+                setCity(newValue);
             }}
             onInputChange={(event, newQuery) => {
                 fetchSearchResults(newQuery);

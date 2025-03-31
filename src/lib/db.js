@@ -50,7 +50,7 @@ const fetchUsageSumPerYear = async (account_id) => {
     try {
       await sql.connect(config);
       const query = `
-        SELECT 
+        SELECT
           e.year,
           e.electric_or_gas,
           ROUND(SUM(e.annual_consume),3) AS total_annual_consume,
@@ -83,4 +83,32 @@ const fetchUsageSumPerYear = async (account_id) => {
   }
 }
 
-export { fetchAll, fetchCities, fetchUsageSumPerYear };
+const fetchElectricityUsagePerZipcode = async(city) => {
+  try {
+    await sql.connect(config);
+    const query = 
+    `SELECT TOP(10000) e.zipcode_from,
+      e.annual_consume,
+      d.city,
+      e.num_connections
+      FROM energy_data e
+      INNER JOIN data_filter d
+      ON e.data_id = d.data_id
+      WHERE electric_or_gas = \'Electricity\' 
+      AND d.city = @city
+      ORDER BY e.annual_consume DESC`;
+    const request = new sql.Request();
+    request.input('city', sql.VarChar, city);
+    console.log("Executing query:", query);
+    console.log("With input parameter:", city);
+    const result = await request.query(query);
+    console.log("Data:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error); 
+    throw new Error("Failed to fetch data: " + error.message);
+  }
+}
+
+export { fetchAll, fetchCities, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode };
