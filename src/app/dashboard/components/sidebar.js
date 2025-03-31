@@ -71,11 +71,10 @@ const Sidebar = () => {
           backgroundColor: "#B7B7B7",
           width: "auto",
           position: "relative",
-          height: "100%"
+          height: "100vh"
         }
       }}
       variant="permanent"
-      style={{ height: "100%" }}
     >
       <List style={{
         display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative", gap: "15px"
