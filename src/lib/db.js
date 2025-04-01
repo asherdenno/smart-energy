@@ -10,6 +10,8 @@ const config = {
     trustServerCertificate: false // Set to true only for local dev with self-signed certs
   },
   port: 1433,
+  requestTimeout: 0,
+  connectionTimeout: 30000
 };
 
 const fetchAll = async () => {

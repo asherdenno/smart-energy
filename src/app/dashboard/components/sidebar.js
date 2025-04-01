@@ -15,6 +15,10 @@ const sidebarOptions = [
     to: "../dashboard/graphs"
   },
   {
+    text: "Map",
+    to: "../dashboard/map"
+  },
+  {
     text: "Reports",
     to: "../dashboard/reports"
   },
@@ -30,26 +34,19 @@ const Sidebar = () => {
   const [navIndex, setNavIndex] = useState(-1);
 
   useEffect(() => {
+    console.log("Current pathname:", pathname);
     try {
-      if (pathname === "/dashboard") {
-        setNavIndex(0);
-      }
-      if (pathname === "/dashboard/electricity") {
-        setNavIndex(1);
-      }
-      if (pathname === "/dashboard/gas") {
-        setNavIndex(2);
-      }
-      if (pathname === "/dashboard/reports") {
-        setNavIndex(3);
-      }
-      if (pathname === "/dashboard/admin") {
-        setNavIndex(4);
-      }
+      if (pathname === "/dashboard") setNavIndex(0);
+      if (pathname === "/dashboard/graphs") setNavIndex(1);
+      if (pathname === "/dashboard/map") setNavIndex(2);
+      if (pathname === "/dashboard/reports") setNavIndex(3);
+      if (pathname === "/dashboard/admin") setNavIndex(4);
+      if (pathname === "/dashboard/account") setNavIndex(5);
     } catch (error) {
       console.error(error);
     }
   }, [pathname]);
+
 
   const handleClick = (clickedIndex, destination) => {
     try {
