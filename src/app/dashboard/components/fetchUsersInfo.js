@@ -3,25 +3,29 @@ import * as React from 'react';
 const cities = [];
 const networks = [];
 
-export const getUnassignedCities = async () => {
-    try {
-        const res = await fetch('/api/fetch-cities', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: 'SELECT * FROM city_has_id' }),
-        });
+export const GetUnassignedCities = () => {
+    const getUnassignedCities = async () => {
+        try {
+            const res = await fetch('/api/fetch-cities', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: 'SELECT * FROM city_has_id' }),
+            });
 
-        if (!res.ok) throw new Error('Error fetching cities');
+            if (!res.ok) throw new Error('Error fetching cities');
 
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching cities:', error);
-        return NULL;
-    }
-};
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching cities:', error);
+            return NULL;
+        }
+    };
+
+    return getUnassignedCities;
+}
 
 export const GetUnassignedNetworks = () => {
     const [loading, setLoading] = React.useState(true);
@@ -30,7 +34,6 @@ export const GetUnassignedNetworks = () => {
     const { city, setCity } = React.useContext(CityContext);
 
     const getUnassignedNetworks = async (searchString) => {
-
         try {
             setLoading(true);
             const res = await fetch('/api/fetch-cities', {
@@ -53,22 +56,24 @@ export const GetUnassignedNetworks = () => {
     };
 
 }
-export const getUsers = async () => {
-    try {
-        const res = await fetch('/api/fetch-networks', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: 'SELECT * FROM network_has_id' }),
-        });
+export const GetUsers = async () => {
+    const getUsers = async () => {
+        try {
+            const res = await fetch('/api/fetch-networks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: 'SELECT * FROM network_has_id' }),
+            });
 
-        if (!res.ok) throw new Error('Error fetching networks');
+            if (!res.ok) throw new Error('Error fetching networks');
 
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching networks:', error);
-        return NULL;
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching networks:', error);
+            return NULL;
+        }
     }
-};
+}
