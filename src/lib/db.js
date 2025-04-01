@@ -35,10 +35,7 @@ const fetchCities = async (userInput) => {
     const query = 'SELECT TOP (20) * FROM city_has_id WHERE city LIKE @userInput';
     const request = new sql.Request();
     request.input('userInput', sql.VarChar, `%${userInput}%`);
-    console.log("Executing query:", query);
-    console.log("With input parameter:", `%${userInput}%`);
     const result = await request.query(query);
-    console.log("Query result:", result.recordset);
     await sql.close();
     return result.recordset;
   } catch (error) {
@@ -105,7 +102,7 @@ const fetchUserData = async () => {
 }
 
 const fetchAnnualNetworkEnergy = async (userNetwork) => {
-  if (account_id) {
+  if (userNetwork) {
     try {
       await sql.connect(config);
       const query = `
