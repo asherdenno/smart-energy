@@ -91,10 +91,12 @@ export default class CustomPieChart extends PureComponent {
     this.state = {
       dataOuter: [],
       dataInner: [],
+      loading: true,
     };
   }
 
   componentDidMount() {
+
     fetchData("2").then((response) => {
       const { data } = response;
 
@@ -110,14 +112,27 @@ export default class CustomPieChart extends PureComponent {
           console.error("Invalid electric_or_gas value:", item.electric_or_gas);
         }
       });
-      this.setState({ dataInner, dataOuter });
+      this.setState({ dataInner, dataOuter, loading: false });
+    })
+    .catch((error) => {
+      console.error("Error fetching data:")
+      this.setState({ loading: false });
     })
   }
+
   render() {
+    const { dataOuter, dataInner, loading } = this.state;
     const { showElectric, showGas } = this.props;
+    console.log("Show Electric:", showElectric);
+    console.log("Show Gas:", showGas);
     
-    console.log("Data inner:", this.state.dataInner);
-    console.log("Data outer:", this.state.dataOuter);
+    console.log("Data outer:", dataOuter);
+    console.log("Data inner:", dataInner);
+    console.log("Loading:", loading);
+
+    if (loading) {
+      return <div>Loading...</div>;
+    }
     return (
       <div style={{ 
         width: "100%",
