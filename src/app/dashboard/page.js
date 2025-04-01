@@ -2,8 +2,17 @@
 import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { CityProvider } from "./context/CityContext";
+import { useEffect } from "react";
+
+const fetchAccountInfo = async () => {
+
+}
 
 const Overview = () => {
+  useEffect(() => {
+
+  }, [])
+
   return (
     <CityProvider>
       <main className={styles.content}>
