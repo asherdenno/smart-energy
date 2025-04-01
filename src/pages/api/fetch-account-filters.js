@@ -24,11 +24,11 @@ export default async function handler(req, res) {
 
     try {
         if (accountTypeId = 2){
-        const CityData = fetchFilteredCity(cityFilterId);
+        const data = fetchFilteredCity(cityFilterId);
         console.log("fetchFilteredCity2");
         }
         if (accountTypeId = 3){
-        const NetworkData = fetchFilteredNetwork(networkFilterId);
+        const data = fetchFilteredNetwork(networkFilterId);
         console.log("fetchFilteredNetwork2");
         }
         
