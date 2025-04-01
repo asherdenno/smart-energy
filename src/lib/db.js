@@ -88,7 +88,7 @@ const fetchUserData = async () => {
   }
 }
 
-const fetchAnnualNetworkEnergy = async () => {
+const fetchAnnualNetworkEnergy = async (userNetwork) => {
   if (account_id) {
     try {
       await sql.connect(config);
@@ -107,7 +107,7 @@ const fetchAnnualNetworkEnergy = async () => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          (d.net_manager = '`+`')
+          (d.net_manager = '`+userNetwork+`')
         GROUP BY 
           e.year, e.electric_or_gas, d.net_manager
         ORDER BY 
@@ -125,7 +125,7 @@ const fetchAnnualNetworkEnergy = async () => {
     throw new Error("Filtering by city is not yet implemented");
   }
 }
-const fetchAnnualCityEnergy = async () => {
+const fetchAnnualCityEnergy = async (userCity) => {
   if (account_id) {
     try {
       await sql.connect(config);
@@ -144,7 +144,7 @@ const fetchAnnualCityEnergy = async () => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          (d.city = '`+`')
+          (d.city = '`+userCity+`')
         GROUP BY 
           e.year, e.electric_or_gas, d.city
         ORDER BY 
