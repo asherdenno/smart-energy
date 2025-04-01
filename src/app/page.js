@@ -1,7 +1,7 @@
 import "./page.module.css";
 import "./globals.css";
 import { Box, Typography, Button } from "@mui/material";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Landing = () => {
   const router = useRouter();
