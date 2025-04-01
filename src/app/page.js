@@ -1,3 +1,4 @@
+'use client';
 import "./page.module.css";
 import "./globals.css";
 import { Box, Typography, Button } from "@mui/material";
