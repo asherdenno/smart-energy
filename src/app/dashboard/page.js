@@ -30,7 +30,7 @@ const fetchFilterInfo = async ( accountTypeId, cityFilterId, networkFilterId) =>
 const Overview = () => {
   useEffect(() => {
     console.log("useeffect preformed");
- fetchFilterInfo();
+    fetchFilterInfo(3, null, 2);
   }, [])
 
   return (
