@@ -48,7 +48,7 @@ const fetchCities = async (userInput) => {
 }
 //account type 1 = admin  2 = city council 3 = network manager
 // const account_id = 2;
-const fetchUsername = async () => {
+const findUsername = async () => {
   if (usernameInput) {
     try {
       await sql.connect(config);
@@ -230,4 +230,4 @@ const fetchElectricityUsagePerZipcode = async(city) => {
   }
 }
 
-export { fetchAll, fetchCities, fetchUsername, fetchUserData, fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode };
+export { fetchAll, fetchCities, findUsername, fetchUserData, fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode };

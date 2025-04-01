@@ -1,4 +1,4 @@
-import { fetchUserFilterData, fetchAnnualNetworkEnergy, fetchAnnualCityEnergy } from "@/lib/db";
+import { findUsername, fetchUserData, fetchAnnualNetworkEnergy, fetchAnnualCityEnergy } from "@/lib/db";
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const data = await fetchUserFilterData();
+        const data = await fetchUserData();
         res.status(200).json({ message: 'Filtering by account ID is not yet implemented', data });
     } catch (error) {
         console.error("API Error:", error);
