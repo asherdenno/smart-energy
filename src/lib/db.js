@@ -139,7 +139,7 @@ const fetchAnnualNetworkEnergy = async (userNetwork) => {
   }
 }
 const fetchAnnualCityEnergy = async (userCity) => {
-  if (account_id) {
+  if (userCity) {
     try {
       await sql.connect(config);
       const query = `
