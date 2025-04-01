@@ -13,17 +13,17 @@ const config = {
 };
 
 const fetchAll = async () => {
-    try {
-        await sql.connect(config);
-        const query = 'SELECT TOP (100) * FROM energy_data';
-        const result = await sql.query(query);
-        console.log("Data:", result.recordset);
-        await sql.close();
-        return result.recordset;
-    } catch (error) {
-        console.error("Database Error:", error); 
-        throw new Error("Failed to fetch data: " + error.message);
-    }
+  try {
+    await sql.connect(config);
+    const query = 'SELECT TOP (100) * FROM energy_data';
+    const result = await sql.query(query);
+    console.log("Data:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch data: " + error.message);
+  }
 }
 
 const fetchCities = async (userInput) => {
@@ -40,7 +40,23 @@ const fetchCities = async (userInput) => {
     return result.recordset;
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to fetch cities: " + error.message);  
+    throw new Error("Failed to fetch cities: " + error.message);
+  }
+}
+
+const fetchNetworks = async () => {
+  try {
+    await sql.connect(config);
+    const query = 'SELECT* FROM network_has_id';
+    const request = new sql.Request();
+    console.log("Executing query:", query);
+    const result = await request.query(query);
+    console.log("Query result:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch networks: " + error.message);
   }
 }
 
@@ -75,18 +91,18 @@ const fetchUsageSumPerYear = async (account_id) => {
       return result.recordset;
     } catch (error) {
       console.error("Database Error:", error);
-      throw new Error("Failed to fetch usage data: " + error.message);  
+      throw new Error("Failed to fetch usage data: " + error.message);
     }
   } else {
     throw new Error("Filtering by city is not yet implemented");
   }
 }
 
-const fetchElectricityUsagePerZipcode = async(city) => {
+const fetchElectricityUsagePerZipcode = async (city) => {
   try {
     await sql.connect(config);
-    const query = 
-    `SELECT TOP(1000) e.zipcode_from,
+    const query =
+      `SELECT TOP(1000) e.zipcode_from,
       e.annual_consume,
       d.city,
       e.num_connections
@@ -105,9 +121,12 @@ const fetchElectricityUsagePerZipcode = async(city) => {
     await sql.close();
     return result.recordset;
   } catch (error) {
-    console.error("Database Error:", error); 
+    console.error("Database Error:", error);
     throw new Error("Failed to fetch data: " + error.message);
   }
 }
 
-export { fetchAll, fetchCities, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode };
+export {
+  fetchAll, fetchCities, fetchNetworks,
+  fetchUsageSumPerYear, fetchElectricityUsagePerZipcode
+};
