@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }) {
       <aside className={"sidebar"}>
         <Sidebar />
       </aside>
-      {children}
+        {children}
     </div>
   );
 }
