@@ -16,7 +16,10 @@ const fetchUser = async (userName, password) => {
         const result = await request.query(query);
         console.log("Query result:", result.recordset);
         await sql.close();
-        return result.recordset;
+        // console.log(result.recordset[0])
+        // console.log("recordset count: " + result.recordset.length)
+        // return result.recordset.length > 0 ? result.recordset[0] : result.recordset;
+        return result.recordset
     }
     catch (error) {
         console.error("Database Error:", error);

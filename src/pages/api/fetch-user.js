@@ -1,19 +1,13 @@
 import { fetchUser } from '@/lib/db_users';
 
 export default async function handler(req, res) {
-    console.log('Made it to here **1')
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
-    console.log('Made it to here **2')
-    const { userName, password } = req.body;
-    console.log('The user name is: ' + userName)
-    console.log('Password is: ' + password)
-    console.log('Made it to here **3')
-    
+    const { userName, password } = req.body;  
 
-    if (!userName) {
-        return res.status(400).json({ message : 'Username is required' });
+    if (!userName || !password) {
+        return res.status(400).json({ message : 'Username and password are required' });
     }
 
     try {

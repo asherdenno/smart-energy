@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import styles from "./page.module.css";
+import Providers from "./Providers";
 
 // export const metadata = {
 //   title: "Create Next App",
@@ -26,13 +27,26 @@ export const metadata = {
   description: "Overview page",
 };
 
-export default function RootLayout({children}) {
+// export default function RootLayout({children}) {
+//   return (
+//     <html lang="en">
+//       <body>
+//           <div className={styles.container}>
+//               {children}
+//           </div>
+//       </body>
+//     </html>
+//   )
+// }
+
+
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-          <div className={styles.container}>
-              {children}
-          </div>
+        <Providers>
+          <div className={styles.container}>{children}</div>
+        </Providers>
       </body>
     </html>
   )
