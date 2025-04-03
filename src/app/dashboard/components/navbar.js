@@ -3,10 +3,12 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
 import "./Navbar.css";
 import CitySelect from "./CitySelect";
+import Link from 'next/Link';
 
 const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
   return (
     <nav>
+      <Link href="/dashboard/notification">Notifications</Link>
       <Box sx={{
         display: "flex",
         justifyContent: "space-between",
