@@ -4,6 +4,8 @@ import "@/app/globals.css";
 import "./Navbar.css";
 import CitySelect from "./CitySelect";
 import NotificationBell from "./NotificationBell";
+import { useEffect } from "react";
+import YearRangeFilter from "./YearRangeFilter";
 
 const accountTypeId = 3;
 const cityFilterId = null;
@@ -28,9 +30,17 @@ const fetchFilterInfo = async ( accountTypeId, cityFilterId, networkFilterId) =>
     }
 };
 
+
 const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
+  useEffect(() => {
+    const data = fetchFilterInfo(3, null, 2);
+    console.log("useeffect preformed");
+    localStorage.setItem("filteredData", JSON.stringify(data));
+    console.log("stored data", data);
+    }, [])
   return (
     <nav>
+      {/* <YearRangeFilter/> */}
       <Box sx={{
         display: "flex",
         justifyContent: "space-between",
