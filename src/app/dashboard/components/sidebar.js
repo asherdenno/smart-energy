@@ -62,8 +62,8 @@ const Sidebar = () => {
       sx={{
         '& .MuiDrawer-paper': {
           backgroundColor: "#B7B7B7",
-          width: "auto",
-          position: "relative",
+          width: "250px",
+          position: "fixed",
           height: "100vh"
         }
       }}
