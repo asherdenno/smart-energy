@@ -10,8 +10,27 @@ export default function DownloadButtons() {
   
     return (
   <div>
-         <button onClick={DownloadCharts}>Download Charts (Downloads charts as pdf with their data)</button>
-         <button onClick={DownloadData} style={{background:"blue"}}>Download Data (Downloads all data related to network and/or city as csv)</button>
+         <button onClick={DownloadCharts}
+         style={{
+          background: "#87CEEB", 
+          width: "200px",  
+          whiteSpace: "normal", 
+          wordWrap: "break-word",
+          textAlign: "center", 
+          padding: "10px"}}>
+          Download Charts <br/>(Downloads charts as pdf with their data)
+          </button>
+         <button onClick={DownloadData} 
+         style={{ 
+          background: "#87CEEB", 
+          width: "200px",  
+          whiteSpace: "normal", 
+          wordWrap: "break-word",
+          textAlign: "center", 
+          padding: "10px" }}>
+          Download Data <br/>(Downloads all data related to network and/or city as csv)
+          </button>
+
         </div>
     );
   }

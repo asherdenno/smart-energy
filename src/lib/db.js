@@ -56,10 +56,8 @@ const fetchNetworks = async () => {
     // await sql.close();
     // return result.recordset;
     await sql.connect(config);
-    const query = 'SELECT TOP (20) * FROM network_has_id WHERE city LIKE @userInput';
-    const request = new sql.Request();
-    request.input('userInput', sql.VarChar, `%${userInput}%`);
-    const result = await request.query(query);
+    const query = 'SELECT TOP (20) * FROM network_has_id';
+    const result = await sql.query(query);
     await sql.close();
     return result.recordset;
   } catch (error) {
@@ -335,7 +333,7 @@ const fetchElectricityUsagePerZipcode = async (city) => {
   try {
     await sql.connect(config);
     const query =
-      `SELECT TOP(1000) e.zipcode_from,
+      `SELECT TOP(5000) e.zipcode_from,
       e.annual_consume,
       d.city,
       e.num_connections

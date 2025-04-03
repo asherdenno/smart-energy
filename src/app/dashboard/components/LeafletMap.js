@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, useMap, Polygon } from 'react-leaflet';
 import { Button } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-import { CityContext } from '../context/CityContext';
+import { NavbarContext } from '../context/NavbarContext';
 
 const getZipcodeCoordinates = async (zipcodeQuery) => {
     console.log("Fetching zipcode coordinates for", zipcodeQuery);
@@ -71,7 +71,7 @@ const LeafletMap = () => {
         }
     };
 
-    const { city } = React.useContext(CityContext);
+    const { city } = React.useContext(NavbarContext);
     const [zipcodeData, setZipcodeData] = useState([]);
     const [dataLoading, setDataLoading] = useState(true);
     const [mapLoading, setMapLoading] = useState(true);
@@ -100,7 +100,7 @@ const LeafletMap = () => {
         if (zipcodeData.length === 0) return; // Avoid running if no data
         setHasFetched(true);
         const processZipcodeData = async () => {
-            const intensityMultiplier = 0.1 / (zipcodeData[0].annual_consume || 1);
+            const intensityMultiplier = 0.2 / (zipcodeData[0].annual_consume || 1);
             console.log("Intensity multiplier:", intensityMultiplier);
             let firstLat = null;
             let firstLon = null;

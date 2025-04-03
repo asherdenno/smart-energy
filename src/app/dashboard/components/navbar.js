@@ -3,9 +3,11 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
 import "./Navbar.css";
 import CitySelect from "./CitySelect";
+import NetworkSelect from "./NetworkSelect";
 import NotificationBell from "./NotificationBell";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import YearRangeFilter from "./YearRangeFilter";
+import { NavbarContext } from "../context/NavbarContext";
 
 const accountTypeId = 3;
 const cityFilterId = null;
@@ -31,7 +33,8 @@ const fetchFilterInfo = async ( accountTypeId, cityFilterId, networkFilterId) =>
 };
 
 
-const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true }) => {
+const Navbar = ({ title = "Add title", hasNetworkSelect = true, hasCitySelect = true, hasNotify = true }) => {
+
   useEffect(() => {
     const data = fetchFilterInfo(3, null, 2);
     console.log("useeffect preformed");
@@ -48,6 +51,9 @@ const Navbar = ({ title = "Add title", hasNotify = true, hasCitySelect = true })
       }}>
         <h1>{title}</h1>
         <Box sx={{ display: "flex", alignItems: "center", gap: "30px" }}>
+          {hasNetworkSelect ?
+            (<NetworkSelect />)
+            : ""}
           {hasCitySelect ?
             (<CitySelect />)
             : ""}

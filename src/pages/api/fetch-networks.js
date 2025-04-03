@@ -3,8 +3,8 @@ import { fetchNetworks } from '@/lib/db';
 export default async function handler(req, res) {
     try {
         if (req.method === 'POST') {
-            const cities = await fetchNetworks();
-            res.status(200).json(cities);
+            const networks = await fetchNetworks();
+            res.status(200).json(networks);
         } else {
             res.setHeader('Allow', ['POST']);
             res.status(405).end(`Method ${req.method} Not Allowed`);
