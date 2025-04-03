@@ -47,7 +47,7 @@ const fetchCities = async (userInput) => {
 const fetchNetworks = async () => {
   try {
     await sql.connect(config);
-    const query = 'SELECT TOP (20) * FROM network_has_id net_manger LIKE @userInput';
+    const query = 'SELECT TOP (20) * FROM network_has_id WHERE net_manger LIKE @userInput';
     const request = new sql.Request();
     console.log("Executing query:", query);
     const result = await request.query(query);
@@ -57,6 +57,22 @@ const fetchNetworks = async () => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch networks: " + error.message);
+  }
+}
+
+const fetchAllUserFilterIds = async () => {
+  try {
+    await sql.connect(config);
+    const query = 'SELECT network_filter_id,city_filter_id FROM account;';
+    const request = new sql.Request();
+    console.log("Executing query:", query);
+    const result = await request.query(query);
+    console.log("Query result:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch networks and city id: " + error.message);
   }
 }
 //account type 1 = admin  2 = city council 3 = network manager
@@ -243,6 +259,6 @@ const fetchElectricityUsagePerZipcode = async (city) => {
   }
 }
 
-export { fetchAll, fetchCities, findUsername, fetchUserData, fetchNetworks,
+export { fetchAll, fetchCities, findUsername, fetchUserData, fetchNetworks, fetchAllUserFilterIds,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode
 };

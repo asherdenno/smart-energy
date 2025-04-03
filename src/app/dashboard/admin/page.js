@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
+import { GetUsers } from "../components/fetchUsersInfo";
+
+
 
 import {
   Button, Table, TableBody, InputLabel, Autocomplete,
@@ -58,7 +61,12 @@ const Admin = () => {
     }
   };
 
+  let dataValues = await GetUsers();
+  console.log("Data values:", dataValues);
+
   return (
+
+
     <main className={styles.content}>
       <Navbar title={"User Management"} hasCitySelect={false} />
       <div className={styles.greyContainer}>
