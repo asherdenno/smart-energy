@@ -63,7 +63,10 @@ const fetchNetworks = async () => {
 const fetchAllUserFilterIds = async () => {
   try {
     await sql.connect(config);
-    const query = 'SELECT network_filter_id,city_filter_id FROM account;';
+    const query = `
+      SELECT user_filter_id, user_name
+      FROM users
+     `;
     const request = new sql.Request();
     console.log("Executing query:", query);
     const result = await request.query(query);
@@ -75,6 +78,71 @@ const fetchAllUserFilterIds = async () => {
     throw new Error("Failed to fetch networks and city id: " + error.message);
   }
 }
+
+const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
+  try {
+    skipRows = (page - 1) * pageSize;
+    await sql.connect(config);
+    const query = `
+      SELECT *
+      FROM users
+      ORDER BY user_id
+      OFFSET @offset ROWS
+      FETCH NEXT @pageSize ROWS ONLY;
+    `;
+    await sql.connect(config);
+    const request = new sql.Request();
+    request.input('offset', sql.Int, offset);
+    request.input('pageSize', sql.Int, pageSize);
+    console.log(`Fetching page ${page} with page size ${pageSize}`);
+    const result = await request.query(query);
+    console.log("Query result:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch users: " + error.message);
+  }
+}
+
+const countTotalUsers = async () => {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT COUNT(*) AS total
+      FROM users;
+    `;
+    const result = await sql.query(query);
+    await sql.close();
+    return result.recordset[0].total; // Return the total count of users
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to count total users: " + error.message);
+  }
+};
+
+const findUsers = async (userInput) => {
+  try{
+    await sql.connect(config);
+    const query = `
+      SELECT (TOP 20) user_id, user_name
+      FROM users
+      WHERE user_name LIKE @userInput;
+    `;
+    const request = new sql.Request();
+    request.input('userInput', sql.VarChar, `%${userInput}%`);
+    console.log("Executing query:", query);
+    const result = await request.query(query);
+    console.log("Query result:", result.recordset);
+    await sql.close();
+    return result.recordset;
+  }
+  catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch users: " + error.message);
+  }
+}
+
 //account type 1 = admin  2 = city council 3 = network manager
 // const account_id = 2;
 const findUsername = async () => {
@@ -136,7 +204,7 @@ const fetchAnnualNetworkEnergy = async (userNetwork) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          (d.net_manager = '`+userNetwork+`')
+          (d.net_manager = '`+ userNetwork + `')
         GROUP BY 
           e.year, e.electric_or_gas, d.net_manager
         ORDER BY 
@@ -173,7 +241,7 @@ const fetchAnnualCityEnergy = async (userCity) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          (d.city = '`+userCity+`')
+          (d.city = '`+ userCity + `')
         GROUP BY 
           e.year, e.electric_or_gas, d.city
         ORDER BY 
@@ -259,6 +327,7 @@ const fetchElectricityUsagePerZipcode = async (city) => {
   }
 }
 
-export { fetchAll, fetchCities, findUsername, fetchUserData, fetchNetworks, fetchAllUserFilterIds,
+export {
+  fetchAll, fetchCities, findUsername, fetchUserData, fetchNetworks, fetchAllUserFilterIds,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode
 };

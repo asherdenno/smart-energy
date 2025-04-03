@@ -1,10 +1,8 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import { GetUsers } from "../components/fetchUsersInfo";
-
-
 
 import {
   Button, Table, TableBody, InputLabel, Autocomplete,
@@ -19,14 +17,9 @@ import {
   TbHeadCell, TbBodyCell, LargeBtn, AutocompleteField,
   ClassicBtn, InputBox, LargeInputBox
 } from "../components/muiStyledComponents";
-import { Label } from "recharts";
 
-
-//This will be replaced with the actual data from the database and 
-//will be fetched from the backend so code here is temporary
 const allUserRows = [
-  ['User 1', 'Network manager'],
-  ['User 2', 'City council']
+  
 ];
 
 const vacantNetwork = [
@@ -41,18 +34,28 @@ const vacantCity = [
 ];
 
 const Admin = () => {
-  const [users, setUsers] = useState(allUserRows);
+  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [openDialog, setOpenDialog] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log("Fetching data...");
+        const dataValues = await GetUsers(); // Fetch user data
+        console.log("Data values:", dataValues);
+        setUsers(dataValues); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
-  const [activeRole, setActiveRole] = useState("Network manager");
-
+    fetchData(); // Call the async function
+  }, []); // Empty dependency array ensures this runs only once
 
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
-      setUsers(allUserRows); // reset back to the list of all user
+      setUsers(allUserRows); // Reset back to the list of all users
     } else {
       const filteredUsers = allUserRows.filter((user) =>
         user[0].toLowerCase().includes(query.toLowerCase())
@@ -61,8 +64,10 @@ const Admin = () => {
     }
   };
 
-  let dataValues = await GetUsers();
-  console.log("Data values:", dataValues);
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const [activeRole, setActiveRole] = useState("Network manager");
 
   return (
 

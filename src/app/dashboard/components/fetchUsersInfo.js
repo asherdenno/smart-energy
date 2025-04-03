@@ -3,8 +3,6 @@ import * as React from 'react';
 const cities = [];
 const networks = [];
 
-
-
 export const GetUnassignedCities = () => {
     const getUnassignedCities = async () => {
         try {
@@ -55,8 +53,9 @@ export const GetUnassignedNetworks = () => {
 
     };
 
+    return getUnassignedNetworks();
 }
-export const GetUsers = async () => {
+export const GetUserFilters = async () => {
     const fetchUserFilters = async () => {
         const response = await fetch('/api/fetch-users-filter-id', {
             method: 'POST',
@@ -73,5 +72,5 @@ export const GetUsers = async () => {
         console.log(data);
     };
 
-    return fetchUserFilters;
+    return await fetchUserFilters();
 }
