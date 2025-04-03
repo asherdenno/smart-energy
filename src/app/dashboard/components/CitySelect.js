@@ -2,13 +2,13 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { border } from '@mui/system';
-import { CityContext } from '../context/CityContext';
+import { NavbarContext } from '../context/NavbarContext';
 
 export default function CitySelect() {
-    const { city, setCity } = React.useContext(CityContext);
+    const { city, setCity } = React.useContext(NavbarContext);
 
     const fetchSearchResults = async (searchString) => {
+        console.log("fetchSearchResults:", searchString);
         try {
             setLoading(true);
             const res = await fetch('/api/fetch-cities', {
