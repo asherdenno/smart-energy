@@ -1,9 +1,3 @@
-import "./page.module.css";
-import "./globals.css";
-import { FormControl, TextField, Button, Typography, Container, Box, Paper, Stack } from "@mui/material";
-import Grid from '@mui/material/Grid2'
-import Link from "next/link";
-
 const Login = () => {
   return (
     <Container maxWidth="xs">

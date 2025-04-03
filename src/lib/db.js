@@ -83,4 +83,33 @@ const fetchUsageSumPerYear = async (account_id) => {
   }
 }
 
-export { fetchAll, fetchCities, fetchUsageSumPerYear };
+const fetchNotif = async (targetAccountId) => {
+  try{
+    await sql.connect(config);
+    const query = `SELECT * FROM [dbo].[notification] where target_account_id = @targetAccountId order by time desc;`;
+    const request = new sql.Request();
+    request.input('targetAccountId', sql.Int, targetAccountId);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  }catch(error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch notifications: " + error.message);
+  }
+};
+const fetchAllNotif = async () => {
+  let pool;
+  try{
+    pool = await sql.connect(config);
+    const result = await pool.request().query(`select * from [dbo].[notification]`);
+    return result.recordset;
+  }catch (error){
+    console.error("Database Error:", error);
+    throw error
+  }finally {
+    if (pool){
+      pool.close();
+    }
+  }
+}
+export { fetchAll, fetchCities, fetchUsageSumPerYear, fetchNotif, fetchAllNotif };

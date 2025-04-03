@@ -1,5 +1,6 @@
 import styles from "@/app/page.module.css";
 import Sidebar from "./components/sidebar";
+import Notif from '../../components/notification'
 
 export default function DashboardLayout({ children }) {
   return (

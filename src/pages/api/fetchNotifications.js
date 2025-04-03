@@ -1,0 +1,1 @@
+import {  fetchAllNotif  } from '@/lib/db'
