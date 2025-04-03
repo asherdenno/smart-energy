@@ -47,7 +47,7 @@ const fetchCities = async (userInput) => {
 const fetchNetworks = async () => {
   try {
     await sql.connect(config);
-    const query = 'SELECT* FROM network_has_id';
+    const query = 'SELECT TOP (20) * FROM network_has_id net_manger LIKE @userInput';
     const request = new sql.Request();
     console.log("Executing query:", query);
     const result = await request.query(query);
@@ -139,7 +139,7 @@ const fetchAnnualNetworkEnergy = async (userNetwork) => {
   }
 }
 const fetchAnnualCityEnergy = async (userCity) => {
-  if (account_id) {
+  if (userCity) {
     try {
       await sql.connect(config);
       const query = `
