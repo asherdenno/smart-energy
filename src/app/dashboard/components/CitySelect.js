@@ -1,14 +1,14 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
+import { Box, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { NavbarContext } from '../context/NavbarContext';
 
 export default function CitySelect() {
+    const { searchString, setSearchString } = React.useState(null);
     const { city, setCity } = React.useContext(NavbarContext);
 
     const fetchSearchResults = async (searchString) => {
-        console.log("fetchSearchResults:", searchString);
         try {
             setLoading(true);
             const res = await fetch('/api/fetch-cities', {
@@ -38,48 +38,62 @@ export default function CitySelect() {
     }, []);
 
     return (
-        <Autocomplete
-            id="city-select"
-            value={city}
-            onChange={(event, newValue) => {
-                setCity(newValue);
-            }}
-            onInputChange={(event, newQuery) => {
-                fetchSearchResults(newQuery);
-            }}
-            disableClearable
-            sx={{ width: 200}}
-            options={results}
-            autoHighlight
-            getOptionLabel={(option) => option.city || ""}
-            renderOption={(props, option) => {
-                const { city_filter_id, ...optionProps } = option;
-                return (
-                    <li {...props} key={city_filter_id}>
-                        {loading ? 'Loading...' : option.city}
-                    </li>
-                )
-            }}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    sx={{ border: '2px solid #757575', borderRadius: '5px', padding: '5px'}}
-                    variant="standard"
-                    InputProps={{
-                        ...params.InputProps,
-                        disableUnderline: true,
-                        sx: { fontSize: '1.4rem'},
-                    }}
-                    slotProps={{
-                        htmlInput: {
-                        ...params.inputProps,
-                        autoComplete: 'new-password',
-                    }
-                    }}
+        <Box sx={{ display: "flex", alignItems: "center", gap: "0px" }}>
+            <Autocomplete
+                id="city-select"
+                value={searchString}
+                onChange={(event, newValue) => {
+                    setSearchString(newValue);
+                }}
+                onInputChange={(event, newQuery) => {
+                    fetchSearchResults(newQuery);
+                }}
+                disableClearable
+                sx={{ width: 200}}
+                options={results}
+                autoHighlight
+                getOptionLabel={(option) => option.city || ""}
+                renderOption={(props, option) => {
+                    const { city_filter_id, ...optionProps } = option;
+                    return (
+                        <li {...props} key={city_filter_id}>
+                            {loading ? 'Loading...' : option.city}
+                        </li>
+                    )
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        sx={{ border: '2px solid #757575', borderRadius: '5px 0px 0px 5px', padding: '5px'}}
+                        variant="standard"
+                        InputProps={{
+                            ...params.InputProps,
+                            disableUnderline: true,
+                            sx: { fontSize: '1.4rem'},
+                        }}
+                        slotProps={{
+                            htmlInput: {
+                            ...params.inputProps,
+                            autoComplete: 'new-password',
+                        }
+                        }}
 
+                    />
+                )}
                 />
-            )}
-            />
+                <Button
+                onClick={() => {
+                    setCity(searchString);
+                }}
+                variant="contained"
+                sx={{
+                    width: 100,
+                    height: "55px", 
+                    backgroundColor: "#555555",
+                    borderRadius: "0px 5px 5px 0px",
+                }}
+                >Go!</Button>
+            </Box>
     );
 }
 
