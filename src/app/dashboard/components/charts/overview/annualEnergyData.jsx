@@ -110,7 +110,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
   return (
     <div style={{ width: '100%' }}>
       <h4>Annual Energy Consumption</h4>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
         <AreaChart
           width={500}
           height={200}
@@ -146,7 +146,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
 
       <h4>Annual Energy Delivery Percentage</h4>
 
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
         <LineChart
           width={500}
           height={200}
@@ -187,7 +187,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
       </ResponsiveContainer>
       <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
 
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
         <LineChart
           width={500}
           height={200}

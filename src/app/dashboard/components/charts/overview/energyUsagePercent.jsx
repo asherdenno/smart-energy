@@ -142,7 +142,7 @@ export default class CustomPieChart extends PureComponent {
         alignItems: "center", padding: "20px",
         boxSizing: "border-box" 
         }}>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={400} className="energyChart">
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 
