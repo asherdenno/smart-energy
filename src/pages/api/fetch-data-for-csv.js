@@ -1,46 +1,42 @@
-import {fetchAnnualNetworkEnergy, fetchAnnualCityEnergy } from "@/lib/db";
-
-const fetchFilteredCity = async (cityFilterId) => {
-    const data = await fetchAnnualCityEnergy(cityFilterId);
-    console.log("fetchFilteredCity");
-    return data;
-}
-const fetchFilteredNetwork = async (networkFilterId) => {
-    const data = await fetchAnnualNetworkEnergy(networkFilterId);
-    console.log("fetchFilteredNetwork");
-    return data;
-}
+import { sql } from "@/lib/db";
+import { fetchFilteredEnergyData } from "@/lib/db";
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  try {
+    const { filterString } = req.body;
+    if (!filterString) {
+      return res.status(400).json({ error: "Missing filterString parameter" });
+    }
+
+    const fetchFilteredDataForCSV = async (filterString) => {
+        const data = await fetchFilteredEnergyData(filterString);
+        console.log("fetchFilteredCSVData");
+        return data;
     }
     
-    const { accountTypeId, cityFilterId, networkFilterId } = req.body;
+    const result = await sql.query(query);
+    const data = result.recordset;
 
-    console.log("accountTypeId", accountTypeId);
-    console.log("cityFilterId", cityFilterId);
-    console.log("networkFilterId", networkFilterId);
-
-    if (!accountTypeId) {
-        return res.status(400).json({ message: 'account_type_id not detected' });
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: "No data found" });
     }
 
-    try {
-        if (accountTypeId == 2){
-        const data = fetchFilteredCity(cityFilterId);
-        console.log("fetchFilteredCity2");
-        res.status(200).json({ message: 'Filtered data retrieved', data });
-        }
-        if (accountTypeId == 3){
-        const data = fetchFilteredNetwork(networkFilterId);
-        console.log("fetchFilteredNetwork2");
-        res.status(200).json({ message: 'Filtered data retrieved', data });
-        }
-        
-    } catch (error) {
-        console.error("API Error:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
+    // Set response headers for CSV
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", 'attachment; filename="energy_data.csv"');
 
+    // Stream CSV data to client
+    const csvStream = stringify({ header: true });
+    csvStream.pipe(res);
+
+    data.forEach(row => csvStream.write(row));
+    csvStream.end();
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({ error: "Failed to fetch and generate CSV" });
+  }
 }
