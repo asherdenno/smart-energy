@@ -59,29 +59,38 @@ const DownloadCharts = async () => {
 }
 
 const DownloadData = async () => {
-  const filterString = "WHERE d.city = 'ENTER'";
-  try {
-    const response = await fetch("/api/fetch-data-for-csv", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filterString }),
-    });
+  const res = await fetch('/api/download-annual-energy-data');
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'filtered_data.csv';
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+  // const filterString = "WHERE d.city = 'ENTER'";
+  // try {
+  //   const response = await fetch("/api/", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ filterString }),
+  //   });
 
-    if (!response.ok) throw new Error("Failed to download CSV");
+  //   if (!response.ok) throw new Error("Failed to download CSV");
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+  //   const blob = await response.blob();
+  //   const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "energy_data.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error("CSV Download Error:", err);
-  }
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = "energy_data.csv";
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url);
+  // } catch (err) {
+  //   console.error("CSV Download Error:", err);
+  // }
 };
 
 export default function DownloadButtons() {

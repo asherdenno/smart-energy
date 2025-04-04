@@ -1,0 +1,20 @@
+import path from 'path';
+import fs from 'fs';
+import { fetchFilteredEnergyData } from '@/lib/db';
+
+const filterString = " d.city = 'ENTER'";
+export default async function handler(req, res) {
+    try {
+        const dataForCSV = await fetchFilteredEnergyData(filterString);
+        const headers = Object.keys(dataForCSV[0]).join(',') + '\n';
+        const rows = dataForCSV.map(row => Object.values(row).join(',')).join('\n');
+        const csvContent = headers + rows;
+         
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=filtered_data.csv');
+        res.status(200).send(csvContent);
+    } catch (error) {
+        console.error("Error in api for csv:", error);
+        res.status(500).json({ error: error.message });
+    }
+}
