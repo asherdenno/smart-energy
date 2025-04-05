@@ -27,12 +27,12 @@ export default async function handler(req, res) {
     }
 
     try {
-        if (accountTypeId == 2){
+        if (accountTypeId == 1){
         const data = fetchFilteredCity(cityFilterId);
         console.log("fetchFilteredCity2");
         res.status(200).json({ message: 'Filtered data retrieved', data });
         }
-        if (accountTypeId == 3){
+        if (accountTypeId == 2){
         const data = fetchFilteredNetwork(networkFilterId);
         console.log("fetchFilteredNetwork2");
         res.status(200).json({ message: 'Filtered data retrieved', data });

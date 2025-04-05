@@ -12,6 +12,7 @@ import {
   Area,
   ResponsiveContainer,
 } from 'recharts';
+import { NavbarContext } from '@/app/dashboard/context/NavbarContext';
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
@@ -26,6 +27,7 @@ const fetchData = async (account_id) => {
     });
     if (!res.ok) throw new Error('Error fetching usage data');
     const data = await res.json();
+    console.log("Fetched graph data:", data);
     return data;
   } catch (error) {
     console.error('Error fetching usage data:', error);
@@ -34,69 +36,79 @@ const fetchData = async (account_id) => {
 };
 
 const EnergyUsageCharts = ({showElectric, showGas}) => {
+  const { annualEnergyData, setAnnualEnergyData } = React.useContext(NavbarContext);
   const [loading, setLoading] = useState(true);
   const [AnnualEnergy, setAnnualEnergy] = useState([]);
   const [AnnualDel, setAnnualDel] = useState([]);
   const [AnnualLowtarif, setAnnualLowtarif] = useState([]);
 
   useEffect(() => {
+    const updateGraph = (data) => {
+      // const { data } = response;
+      setAnnualEnergyData(data);
+      console.log("Filtered data:", data);
+
+      const energyData = [];
+      const delData = [];
+      const lowtarifData = [];
+
+      data.forEach((item) => {
+        let yearData = energyData.find((entry) => entry.name === item.year);
+        let yearDelData = delData.find((entry) => entry.name === item.year);
+        let yearLowTarifData = lowtarifData.find(
+          (entry) => entry.name === item.year
+        );
+
+        if (!yearData) {
+          yearData = { name: item.year, Electric: null, Gas: null };
+          energyData.push(yearData);
+        }
+        if (!yearDelData) {
+          yearDelData = {
+            name: item.year,
+            "Electric Delivery Percentage": null,
+            "Gas Delivery Percentage": null,
+          };
+          delData.push(yearDelData);
+        }
+        if (!yearLowTarifData) {
+          yearLowTarifData = {
+            name: item.year,
+            "Electric Low Tariff Consume": null,
+            "Gas Low Tariff Consume": null,
+          };
+          lowtarifData.push(yearLowTarifData);
+        }
+
+        if (item.electric_or_gas === "Electricity") {
+          yearData.Electric = item.total_annual_consume;
+          yearDelData["Electric Delivery Percentage"] =
+            item.total_delivery_perc;
+          yearLowTarifData["Electric Low Tariff Consume"] =
+            item.total_annual_consume_lowtarif_perc;
+        } else if (item.electric_or_gas === "Gas") {
+          yearData.Gas = item.total_annual_consume;
+          yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
+          yearLowTarifData["Gas Low Tariff Consume"] =
+            item.total_annual_consume_lowtarif_perc;
+        }
+      });
+
+      setAnnualEnergy(energyData);
+      setAnnualDel(delData);
+      setAnnualLowtarif(lowtarifData);
+      setLoading(false);
+    };
+
+    if (annualEnergyData) {
+      console.log("Using context data:", annualEnergyData);
+      updateGraph(annualEnergyData);
+      return;
+    }
+    console.log("Fetching data...");
 
     fetchData("1")
-      .then((response) => {
-        const { data } = response;
-
-        const energyData = [];
-        const delData = [];
-        const lowtarifData = [];
-
-        data.forEach((item) => {
-          let yearData = energyData.find((entry) => entry.name === item.year);
-          let yearDelData = delData.find((entry) => entry.name === item.year);
-          let yearLowTarifData = lowtarifData.find(
-            (entry) => entry.name === item.year
-          );
-
-          if (!yearData) {
-            yearData = { name: item.year, Electric: null, Gas: null };
-            energyData.push(yearData);
-          }
-          if (!yearDelData) {
-            yearDelData = {
-              name: item.year,
-              "Electric Delivery Percentage": null,
-              "Gas Delivery Percentage": null,
-            };
-            delData.push(yearDelData);
-          }
-          if (!yearLowTarifData) {
-            yearLowTarifData = {
-              name: item.year,
-              "Electric Low Tariff Consume": null,
-              "Gas Low Tariff Consume": null,
-            };
-            lowtarifData.push(yearLowTarifData);
-          }
-
-          if (item.electric_or_gas === "Electricity") {
-            yearData.Electric = item.total_annual_consume;
-            yearDelData["Electric Delivery Percentage"] =
-              item.total_delivery_perc;
-            yearLowTarifData["Electric Low Tariff Consume"] =
-              item.total_annual_consume_lowtarif_perc;
-          } else if (item.electric_or_gas === "Gas") {
-            yearData.Gas = item.total_annual_consume;
-            yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
-            yearLowTarifData["Gas Low Tariff Consume"] =
-              item.total_annual_consume_lowtarif_perc;
-          }
-        });
-
-        setAnnualEnergy(energyData);
-        setAnnualDel(delData);
-        setAnnualLowtarif(lowtarifData);
-        setLoading(false);
-
-      })
+      .then((response) => updateGraph(response.data))
       .catch((error) => {
         console.error("Error fetching data:", error);
         setLoading(false);

@@ -5,7 +5,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { NavbarContext } from '../context/NavbarContext';
 
 export default function CitySelect() {
-    const { searchString, setSearchString } = React.useState(null);
     const { city, setCity } = React.useContext(NavbarContext);
 
     const fetchSearchResults = async (searchString) => {
@@ -28,13 +27,15 @@ export default function CitySelect() {
           return [];
         }
       };
-    
+
+    const [searchString, setSearchString] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [results, setResults] = React.useState([]);
     const [query, setQuery] = React.useState("");
 
     React.useEffect(() => {
         fetchSearchResults("");
+        setSearchString(city || "");
     }, []);
 
     return (
@@ -64,7 +65,12 @@ export default function CitySelect() {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        sx={{ border: '2px solid #757575', borderRadius: '5px 0px 0px 5px', padding: '5px'}}
+                        sx={{ border: '2px solid #757575',
+                              borderRadius: '5px 0px 0px 5px',
+                              padding: '5px',
+                              borderColor: (searchString == city) ? "#757575" : "#CCAA00",
+                              transition: "border-color 0.3s ease-in-out",
+                            }}
                         variant="standard"
                         InputProps={{
                             ...params.InputProps,
@@ -82,8 +88,10 @@ export default function CitySelect() {
                 )}
                 />
                 <Button
+                disabled={(searchString == city) ? true : false}
                 onClick={() => {
                     setCity(searchString);
+                    console.log("City selected:", searchString);
                 }}
                 variant="contained"
                 sx={{

@@ -149,7 +149,7 @@ const findUsers = async (userInput) => {
   }
 }
 
-//account type 1 = admin  2 = city council 3 = network manager
+//account type 0 = admin  1 = city council 2 = network manager
 // const account_id = 2;
 const findUsername = async () => {
   if (usernameInput) {
@@ -245,12 +245,16 @@ const fetchFilteredEnergyData = async (filterString) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          `+filterString+`
+          d.city LIKE @filterString
         ORDER BY 
           e.year, e.electric_or_gas;
       `;
-
-      const result = await sql.query(query);
+      const request = new sql.Request();
+      request.input('filterString', sql.VarChar, `%${filterString}%`);
+      console.log("FilterString:", filterString);
+      console.log("Executing query:", query);
+      const result = await request.query(query);
+      console.log("Query result:", result.recordset);
       await sql.close();
       return result.recordset;
     } catch (error) {

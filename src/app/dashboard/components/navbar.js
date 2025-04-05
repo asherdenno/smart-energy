@@ -9,7 +9,7 @@ import { useContext, useEffect } from "react";
 import YearRangeFilter from "./YearRangeFilter";
 import { NavbarContext } from "../context/NavbarContext";
 
-const accountTypeId = 3;
+const accountTypeId = 2;
 const cityFilterId = null;
 const networkFilterId = 2;
 const fetchFilterInfo = async ( accountTypeId, cityFilterId, networkFilterId) => {
