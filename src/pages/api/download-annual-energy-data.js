@@ -3,9 +3,13 @@ import fs from 'fs';
 import { fetchFilteredEnergyData } from '@/lib/db';
 
 const filterString = " d.city = 'ENTER'";
+// const filterString = " d.city != 'ENTER'";
+
 export default async function handler(req, res) {
     try {
+        console.log("fetching data for csv");
         const dataForCSV = await fetchFilteredEnergyData(filterString);
+        console.log("fetched data for csv");
         const headers = Object.keys(dataForCSV[0]).join(',') + '\n';
         const rows = dataForCSV.map(row => Object.values(row).join(',')).join('\n');
         const csvContent = headers + rows;

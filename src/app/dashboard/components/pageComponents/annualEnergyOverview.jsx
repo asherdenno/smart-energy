@@ -30,6 +30,9 @@ export default function AnnualEnergyOverview() {
         <div style={{ width:"50%", height:"100%"}}>
         <EnergyUsagePercent showElectric={showElectric} showGas={showGas} />
         </div>
+        <div>
+          <DownloadButtons/>
+        </div>
         </div>
       </div>
   );

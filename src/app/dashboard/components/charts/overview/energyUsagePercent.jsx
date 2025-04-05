@@ -173,9 +173,9 @@ export default class CustomPieChart extends PureComponent {
   verticalAlign="bottom" 
   height={36} 
   payload={this.state.dataOuter.map((entry, index) => ({
-    value: `${entry.name}`, // Include both name and value in the legend
-    type: "circle", // Legend marker type
-    color: COLORS[index % COLORS.length], // Dynamically assign colors
+    value: `${entry.name}`, 
+    type: "circle", 
+    color: COLORS[index % COLORS.length], 
   }))}
 />
           </PieChart>
