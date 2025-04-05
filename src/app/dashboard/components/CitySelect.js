@@ -38,6 +38,11 @@ export default function CitySelect() {
         setSearchString(city || "");
     }, []);
 
+    const handleButtonClick = () => {
+        setCity(searchString);
+        console.log("City selected", searchString)
+    }
+
     return (
         <Box sx={{ display: "flex", alignItems: "center", gap: "0px" }}>
             <Autocomplete
@@ -48,6 +53,12 @@ export default function CitySelect() {
                 }}
                 onInputChange={(event, newQuery) => {
                     fetchSearchResults(newQuery);
+                }}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        handleButtonClick();
+                    }
                 }}
                 disableClearable
                 sx={{ width: 200}}
@@ -89,10 +100,7 @@ export default function CitySelect() {
                 />
                 <Button
                 disabled={(searchString == city) ? true : false}
-                onClick={() => {
-                    setCity(searchString);
-                    console.log("City selected:", searchString);
-                }}
+                onClick={handleButtonClick}
                 variant="contained"
                 sx={{
                     width: 100,
