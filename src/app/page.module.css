@@ -24,6 +24,7 @@
   display: flex;
   flex-direction: row;
   width: 100vw;
+  height: 100vh;
   margin: 0;
   padding: 0;
 }
@@ -32,6 +33,7 @@
   flex: 1;
   display: flex;
   width: 100%;
+  height: 100%;
   flex-direction: column;
   padding: 20px;
   margin: 0px;
@@ -52,11 +54,38 @@
   padding: 15px 30px;
 }
 
-.space_between_flex_row {
+.popupContainer {
+  left: 20%;
+  top: 20%;
+  width: 600px;
+  height: 500px;
+  z-index: 1000;
+  position: absolute;
+  border: #000000 2px solid;
+  background-color: #F0F0F0;
+  border-radius: 12px;
+  padding: 15px 30px;
+}
+
+.space_between_center_flex_row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.space_between_center_flex_column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.space_between_left_flex_column{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .center_center_flex_row {
@@ -66,12 +95,6 @@
   align-items: center;
 }
 
-.space_between_flex_column  {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .center_center_flex_column {
   display: flex;
@@ -87,28 +110,20 @@
   align-items: center;
 }
 
-.searchBar {
+.left_start_flex_column {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  border: #000000 1px solid;
-  border-radius: 10px;
-  background-color: #ffffff;
-  color: #000000;
-  transition: background-color 0.1s, box-shadow 0.1s;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
-.searchBar:focus,
-.searchBar:active {
-  outline: none;
-  background-color: #e0e0e0; /* Slightly darker background for focus */
-  border: #000000 1px solid;
+.right_center_flex_column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
 }
-.searchBar input::placeholder {
-  color: #000000; /* Change placeholder text color */
-}
+
 
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {

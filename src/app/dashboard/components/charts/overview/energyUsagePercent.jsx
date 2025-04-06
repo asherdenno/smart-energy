@@ -1,6 +1,7 @@
 "use client";
 import React, { PureComponent, useEffect } from "react";
-import { useState } from "react";
+import { useState,  useContext } from "react";
+import { NavbarContext } from "@/app/dashboard/context/NavbarContext";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6699", "#33CC33", "#FF9900"];
@@ -91,17 +92,12 @@ export default class CustomPieChart extends PureComponent {
     this.state = {
       dataOuter: [],
       dataInner: [],
+      loading: true,
     };
   }
 
-  componentDidMount() {
-    fetchData("2").then((response) => {
-      const { data } = response;
-
-      const dataInner = [];
-      const dataOuter = [];
-
-      data.forEach((item) => {
+  updateGraph = (item) => {
+        const { dataInner, dataOuter } = this.state;
         if (item.electric_or_gas === "Electricity") {
           dataInner.push({ name: item.year, value: item.total_annual_consume });
         } else if (item.electric_or_gas === "Gas") {
@@ -109,18 +105,38 @@ export default class CustomPieChart extends PureComponent {
         } else {
           console.error("Invalid electric_or_gas value:", item.electric_or_gas);
         }
-      });
-      this.setState({ dataInner, dataOuter });
+        this.setState({ dataInner, dataOuter, loading: false });
+      };
+
+  componentDidMount() {
+    fetchData("2")
+    .then((response) => {
+      const { data } = response;
+      data.forEach((item) => this.updateGraph(item));
     })
+    .catch((error) => {
+      console.error("Error fetching data:")
+      this.setState({ loading: false });
+    });
   }
+
   render() {
+    const { dataOuter, dataInner, loading } = this.state;
     const { showElectric, showGas } = this.props;
-    
-    console.log("Data inner:", this.state.dataInner);
-    console.log("Data outer:", this.state.dataOuter);
+
+    if (loading) {
+      return <div>Loading...</div>;
+    }
     return (
-      <div style={{ width: "100%", minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <ResponsiveContainer width="50%" height={400}>
+      <div style={{ 
+        width: "100%",
+        minHeight: "400px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center", padding: "20px",
+        boxSizing: "border-box" 
+        }}>
+        <ResponsiveContainer width="100%" height={400} className="energyChart">
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 
@@ -157,9 +173,9 @@ export default class CustomPieChart extends PureComponent {
   verticalAlign="bottom" 
   height={36} 
   payload={this.state.dataOuter.map((entry, index) => ({
-    value: `${entry.name}`, // Include both name and value in the legend
-    type: "circle", // Legend marker type
-    color: COLORS[index % COLORS.length], // Dynamically assign colors
+    value: `${entry.name}`, 
+    type: "circle", 
+    color: COLORS[index % COLORS.length], 
   }))}
 />
           </PieChart>

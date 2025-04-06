@@ -11,12 +11,12 @@ const sidebarOptions = [
     to: "../dashboard"
   },
   {
-    text: "Electricity",
-    to: "../dashboard/electricity"
+    text: "Graphs",
+    to: "../dashboard/graphs"
   },
   {
-    text: "Gas",
-    to: "../dashboard/gas"
+    text: "Map",
+    to: "../dashboard/map"
   },
   {
     text: "Reports",
@@ -34,26 +34,19 @@ const Sidebar = () => {
   const [navIndex, setNavIndex] = useState(-1);
 
   useEffect(() => {
+    console.log("Current pathname:", pathname);
     try {
-      if (pathname === "/dashboard") {
-        setNavIndex(0);
-      }
-      if (pathname === "/dashboard/electricity") {
-        setNavIndex(1);
-      }
-      if (pathname === "/dashboard/gas") {
-        setNavIndex(2);
-      }
-      if (pathname === "/dashboard/reports") {
-        setNavIndex(3);
-      }
-      if (pathname === "/dashboard/admin") {
-        setNavIndex(4);
-      }
+      if (pathname === "/dashboard") setNavIndex(0);
+      if (pathname === "/dashboard/graphs") setNavIndex(1);
+      if (pathname === "/dashboard/map") setNavIndex(2);
+      if (pathname === "/dashboard/reports") setNavIndex(3);
+      if (pathname === "/dashboard/admin") setNavIndex(4);
+      if (pathname === "/dashboard/account") setNavIndex(5);
     } catch (error) {
       console.error(error);
     }
   }, [pathname]);
+
 
   const handleClick = (clickedIndex, destination) => {
     try {
@@ -69,8 +62,8 @@ const Sidebar = () => {
       sx={{
         '& .MuiDrawer-paper': {
           backgroundColor: "#B7B7B7",
-          width: "auto",
-          position: "relative",
+          width: "250px",
+          position: "fixed",
           height: "100vh"
         }
       }}
