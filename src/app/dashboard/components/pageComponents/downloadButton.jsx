@@ -64,7 +64,7 @@ const DownloadData = async () => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'filtered_data.csv';
+  a.download = 'annual energy data.csv';
   a.click();
   a.remove();
   window.URL.revokeObjectURL(url);
@@ -96,7 +96,7 @@ const DownloadData = async () => {
 export default function DownloadButtons() {
   return (
       <div>
-         <button
+         <button onClick={DownloadCharts}
          style={{
           background: "#87CEEB", 
           width: "200px",  
