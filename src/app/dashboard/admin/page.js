@@ -70,8 +70,6 @@ const Admin = () => {
   const [activeRole, setActiveRole] = useState("Network manager");
 
   return (
-
-
     <main className={styles.content}>
       <Navbar title={"User Management"} hasCitySelect={false} />
       <div className={styles.greyContainer}>
