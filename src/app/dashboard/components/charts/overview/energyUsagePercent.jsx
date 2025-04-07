@@ -86,7 +86,8 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
 //   { name: "2020", value: 40 },
 // ];
 
-export default class CustomPieChart extends PureComponent {
+export default class EnergyUsagePercent extends PureComponent {
+  static contextType = NavbarContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -96,23 +97,40 @@ export default class CustomPieChart extends PureComponent {
     };
   }
 
-  updateGraph = (item) => {
-        const { dataInner, dataOuter } = this.state;
-        if (item.electric_or_gas === "Electricity") {
-          dataInner.push({ name: item.year, value: item.total_annual_consume });
-        } else if (item.electric_or_gas === "Gas") {
-          dataOuter.push({ name: item.year, value: item.total_annual_consume });
-        } else {
-          console.error("Invalid electric_or_gas value:", item.electric_or_gas);
-        }
-        this.setState({ dataInner, dataOuter, loading: false });
-      };
+  resetGraph = () => {
+    this.setState({ dataOuter: [], dataInner: [] });
+  }
+
+  updateGraph = (items) => {
+    const newDataInner = [];
+    const newDataOuter = [];
+    items.forEach((item) => {
+      if (item.electric_or_gas === "Electricity") {
+        newDataInner.push({ name: item.year, value: item.total_annual_consume });
+      } else if (item.electric_or_gas === "Gas") {
+        newDataOuter.push({ name: item.year, value: item.total_annual_consume });
+      } else {
+        console.error("Invalid electric_or_gas value:", item.electric_or_gas);
+      }
+    })
+    this.setState({ dataInner: newDataInner, dataOuter: newDataOuter, loading: false });
+  };
 
   componentDidMount() {
+    const { energyUsagePercent, setEnergyUsagePercent} = this.context;
+
+    if (energyUsagePercent) {
+      console.log("Using context data:", energyUsagePercent);
+      this.updateGraph(energyUsagePercent);
+      return;
+    }
+    
     fetchData("2")
     .then((response) => {
       const { data } = response;
-      data.forEach((item) => this.updateGraph(item));
+      setEnergyUsagePercent(data);
+      this.resetGraph();
+      this.updateGraph(data);
     })
     .catch((error) => {
       console.error("Error fetching data:")
@@ -136,7 +154,7 @@ export default class CustomPieChart extends PureComponent {
         alignItems: "center", padding: "20px",
         boxSizing: "border-box" 
         }}>
-        <ResponsiveContainer width="100%" height={400} className="energyChart">
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 
