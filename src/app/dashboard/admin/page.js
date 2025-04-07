@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
-import { GetUsers } from "../components/fetchUsersInfo";
 
 import {
   Button, Table, TableBody, InputLabel, Autocomplete,
@@ -19,7 +18,7 @@ import {
 } from "../components/muiStyledComponents";
 
 const allUserRows = [
-  
+
 ];
 
 const vacantNetwork = [
@@ -38,27 +37,26 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUsers = async () => {
       try {
-        console.log("Fetching data...");
-        const dataValues = await GetUsers(); // Fetch user data
-        console.log("Data values:", dataValues);
-        setUsers(dataValues); // Update state with fetched data
+        const response = await fetch(`/api/users?page=1&pageSize=20`);
+        const data = await response.json();
+        setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
 
-    fetchData(); // Call the async function
-  }, []); // Empty dependency array ensures this runs only once
+    fetchUsers();
+  }, []);
 
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
       setUsers(allUserRows); // Reset back to the list of all users
     } else {
-      const filteredUsers = allUserRows.filter((user) =>
-        user[0].toLowerCase().includes(query.toLowerCase())
+      const filteredUsers = users.filter((user) =>
+        user.user_name.toLowerCase().includes(query.toLowerCase())
       );
       setUsers(filteredUsers);
     }
@@ -69,9 +67,113 @@ const Admin = () => {
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
+  const [warning, setWarningDisplay] = useState(false);
+
+  const [warnings, setWarnings] = useState({
+    network: "",
+    city: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
+  const fields = [
+    { id: "network" },
+    { id: "city" },
+    { id: "firstName" },
+    { id: "lastName" },
+    { id: "email" },
+    { id: "password" },
+  ];
+
+  let emptyFieldMsg = "Field cannot be empty";
+
+  const checkUserInput = () => {
+    if (!checkUserInputMeetsRequirements()) {
+    }
+  }
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{10,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const checkUserInputMeetsRequirements = () => {
+    let allFieldsFilled = true;
+
+    const newWarnings = { ...warnings };
+
+    fields.forEach(({ id }) => {
+      const inputElement = document.getElementById(id);
+      const value = inputElement?.value;
+
+      if (!value) {
+        allFieldsFilled = false;
+        newWarnings[id] = emptyFieldMsg;
+        if (inputElement) inputElement.value = ""; // Clear the value if empty
+      } else {
+        if (id === "email" && !validateEmail(value)) {
+          allFieldsFilled = false;
+          newWarnings[id] = "Invalid email format";
+        } else if (id === "password" && !validatePassword(value)) {
+          allFieldsFilled = false;
+          newWarnings[id] = "Password must be at least 10 characters, include 1 uppercase, 1 lowercase, and 1 special character";
+        } else {
+          newWarnings[id] = "";
+          allFieldsFilled = true;
+        }
+      }
+    });
+
+    setWarnings({ ...newWarnings });
+    return allFieldsFilled;
+  };
+
+  const handleBlur = (id) => {
+    const value = document.getElementById(id)?.value;
+    setWarnings((prevWarnings) => ({
+      ...prevWarnings,
+      [id]: value ? "" : emptyFieldMsg,
+    }));
+  };
+
+  const handleAddUser = async (userData) => {
+    // Check if user input meets requirements
+    if (!checkUserInputMeetsRequirements()) {
+      alert('Please fix the input errors before submitting.');
+      return; // Stop execution if validation fails
+    }
+
+    try {
+      const response = await fetch('/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        alert('User added successfully');
+        setOpenDialog(false); // Close the dialog
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error adding user:', error);
+      alert('Failed to add user');
+    }
+  };
+
   return (
     <main className={styles.content}>
-      <Navbar title={"User Management"} hasCitySelect={false} />
+      <Navbar title={"User Management"} hasCitySelect={false} hasNetworkSelect={false} />
       <div className={styles.greyContainer}>
         <div
           className={styles.space_between_center_flex_row}
@@ -172,8 +274,10 @@ const Admin = () => {
                     <AutocompleteField
                       id="network"
                       options={vacantNetwork}
-                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter network name" />}
+                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter network name" value="" onBlur={() => handleBlur("network")} />}
                     />
+                    <span className={styles.warning} id="warningForSelection"> {warnings.network}</span>
+
                   </div>
                   :
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
@@ -181,29 +285,34 @@ const Admin = () => {
                     <AutocompleteField
                       id="city"
                       options={vacantCity}
-                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter city name" />}
+                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter city name" value="" onBlur={() => handleBlur("city")} />}
                     />
+                    <span className={styles.warning} id="warningForSelection"> {warnings.city}</span>
                   </div>
                 }
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="first-name" sx={{ fontSize: "15px", fontWeight: "600" }}>First name</InputLabel>
-                  <LargeInputBox id="first-name" type="text" placeholder="Enter first name" />
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First name</InputLabel>
+                  <LargeInputBox id="firstName" type="text" placeholder="Enter first name" onBlur={() => handleBlur("firstName")} />
+                  <span className={styles.warning}>{warnings["firstName"]}</span>
                 </div>
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="last-name" sx={{ fontSize: "15px", fontWeight: "600" }}>Last name</InputLabel>
-                  <LargeInputBox id="last-name" type="text" placeholder="Enter last name" />
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last name</InputLabel>
+                  <LargeInputBox id="lastName" type="text" placeholder="Enter last name" onBlur={() => handleBlur("lastName")} />
+                  <span className={styles.warning}>{warnings["lastName"]}</span>
                 </div>
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>Email</InputLabel>
-                  <LargeInputBox id="email" type="text" placeholder="Enter email" />
+                  <LargeInputBox id="email" type="text" placeholder="Enter email" onBlur={() => handleBlur("email")} />
+                  <span className={styles.warning}>{warnings["email"]}</span>
                 </div>
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>Password</InputLabel>
-                  <LargeInputBox id="password" type="password" placeholder="Enter password" />
+                  <LargeInputBox id="password" type="text" placeholder="Enter password" onBlur={() => handleBlur("password")} />
+                  <span className={styles.warning}>{warnings["password"]}</span>
                 </div>
 
               </DialogContent>
@@ -214,10 +323,24 @@ const Admin = () => {
                   gap: "2px",
                 }}>
                 <LargeBtn
-                  onClick={() => setOpenDialog(false)}
-                >Create new user</LargeBtn>
+                  onClick={() => {
+                    const userData = {
+                      email: document.getElementById('email').value,
+                      f_name: document.getElementById('firstName').value,
+                      l_name: document.getElementById('lastName').value,
+                      username: document.getElementById('firstName').value + document.getElementById('lastName').value,
+                      password: document.getElementById('password').value,
+                      account_type_id: activeRole === 'Network manager' ? 2 : 3,
+                      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
+                      city_filter_id: activeRole === 'City council' ? document.getElementById('cities').value : null,
+                    };
+                    handleAddUser(userData);
+                  }}
+                >
+                  Create new user
+                </LargeBtn>
                 <LargeBtn
-                  onClick={() => setOpenDialog(false)}
+                  onClick={() => { setOpenDialog(false); setWarningDisplay(false); }}
                 >Cancel</LargeBtn>
               </DialogActions>
             </Dialog>
@@ -248,10 +371,16 @@ const Admin = () => {
             </TableHead>
             <TableBody>
               {users.length > 0 ? (
-                users.map((row, index) => (
+                users.map((user, index) => (
                   <TableRow key={index}>
-                    <TbBodyCell>{row[0]}</TbBodyCell>
-                    <TbBodyCell>{row[1]}</TbBodyCell>
+                    <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
+                    <TbBodyCell>
+                      {user.account_type_id === 1
+                        ? "Admin"
+                        : user.account_type_id === 2
+                          ? "Network Manager"
+                          : "City Council"}
+                    </TbBodyCell>
                     <TbBodyCell>
                       <Button>Manage user</Button>
                     </TbBodyCell>
