@@ -3,6 +3,7 @@ import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import Link from "next/link";
 import { Button } from "@mui/material";
+import { signOut } from "next-auth/react"
 import { NavbarContext } from "../context/NavbarContext";
 import { useContext, useEffect } from "react";
 
@@ -38,9 +39,7 @@ const Account = () => {
         <p>Account Type ID: {account.account_type_id}</p>
         <p>Network Filter ID: {account.network_filter_id}</p>
         <p>City Filter ID: {account.city_filter_id}</p>
-        <Link href="../">
-          <Button variant="outlined" color="primary">Log out</Button>
-        </Link>
+          <Button variant="outlined" color="primary" onClick={() => signOut({ callbackUrl: "/" })}>Log out</Button>
       </div>
     </main>
   );
