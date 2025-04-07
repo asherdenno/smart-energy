@@ -18,7 +18,7 @@ const LoginPage = () => {
   }
 
   return (
-    <Container maxWidth="xs">
+    <Container sx={{backgroundImage: "url('/wind-turbines-background.jpg')", backgroundSize: "cover", backgroundRepeat: "no-repeat", height: "100%", padding: 0}}>
       <Paper elevation={10} sx={{ marginTop: 10, marginBottom: 10, p: 1, justifySelf: "center" }}>
         <FormControl sx={{ p: 2, bgcolor: "white", margin: 2 }}>
           <Typography sx={{ p: 2, textAlign: "center" }} variant="h3" color="primary.main">Log in</Typography>
