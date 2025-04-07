@@ -71,7 +71,7 @@ const Admin = () => {
 
   return (
     <main className={styles.content}>
-      <Navbar title={"User Management"} hasCitySelect={false} />
+      <Navbar title={"User Management"} hasCitySelect={false} hasNetworkSelect={false} />
       <div className={styles.greyContainer}>
         <div
           className={styles.space_between_center_flex_row}

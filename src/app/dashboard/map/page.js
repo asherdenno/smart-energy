@@ -3,7 +3,7 @@ import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import dynamic from 'next/dynamic';
 import React from 'react';
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import ReferenceBar from "./components/ReferenceBar";
 
 // Dynamically import the Leaflet map component
@@ -15,9 +15,10 @@ const Map = () => {
             <nav>
                 <Navbar title={"Map"} hasNotify={true} hasCitySelect={true} />
             </nav>
-            <Box sx={{display: 'flex', alignItems: "start", justifyContent: "center", height: '100vh'}}>
+            <Typography variant="h5" sx={{display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>Total annual consume of electricity</Typography>
+            <Box sx={{display: 'flex', alignItems: "start", justifyContent: "center", height: '100vh', width: '100%'}}>
               <LeafletMap />
-              <ReferenceBar />
+              <ReferenceBar sx={{marginLeft: "10px"}} />
             </Box>
         </main>
   );

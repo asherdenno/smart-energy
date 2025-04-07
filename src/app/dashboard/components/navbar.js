@@ -47,12 +47,6 @@ const fetchFilterInfo = async ( accountTypeId, cityFilterId, networkFilterId) =>
 
 const Navbar = ({ title = "Add title", hasNetworkSelect = true, hasCitySelect = true, hasNotify = true }) => {
 
-  useEffect(() => {
-    const data = fetchFilterInfo(3, null, 2);
-    console.log("useeffect preformed");
-    localStorage.setItem("filteredData", JSON.stringify(data));
-    console.log("stored data", data);
-    }, [])
   return (
     <nav>
       {/* <YearRangeFilter/> */}
