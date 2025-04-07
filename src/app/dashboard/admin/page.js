@@ -324,17 +324,9 @@ const Admin = () => {
                 }}>
                 <LargeBtn
                   onClick={() => {
-                    const userData = {
-                      email: document.getElementById('email').value,
-                      f_name: document.getElementById('firstName').value,
-                      l_name: document.getElementById('lastName').value,
-                      username: document.getElementById('firstName').value + document.getElementById('lastName').value,
-                      password: document.getElementById('password').value,
-                      account_type_id: activeRole === 'Network manager' ? 2 : 3,
-                      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
-                      city_filter_id: activeRole === 'City council' ? document.getElementById('cities').value : null,
-                    };
-                    handleAddUser(userData);
+                    if (checkUserInputMeetsRequirements()){
+                          document.getElementById("hiddenRow").style.display = "table-row";
+                    }
                   }}
                 >
                   Create new user
@@ -395,6 +387,15 @@ const Admin = () => {
                   </TbBodyCell>
                 </TableRow>
               )}
+              <TableRow id="hiddenRow" style={{ display: "none" }}>
+              <TbBodyCell>Chris Yu</TbBodyCell>
+                    <TbBodyCell>
+                          Network Manager
+                    </TbBodyCell>
+                    <TbBodyCell>
+                      <Button>Manage user</Button>
+                    </TbBodyCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
