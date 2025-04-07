@@ -25,7 +25,9 @@ const HeatmapLayer = ({ data }) => {
     useEffect(() => {
         if (!map) return;
 
-        const heatLayer = L.heatLayer(data, { radius: 80, blur: 40 }).addTo(map);
+        const heatLayer = L.heatLayer(data, 
+            { radius: 80, blur: 40, gradient: { 0.4: '#458cff', 0.65: '#5bde09', 0.8: '#ffc32b', 1: '#ed3300' } })
+            .addTo(map);
 
         return () => {
             map.removeLayer(heatLayer);

@@ -10,6 +10,11 @@ export default function NotificationBell() {
     const handleClick = (event) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
     };
+    const exampleNotifications = [
+        { id: 1, message: "cooluser2 logged in at 12:30 on Sunday" },
+        { id: 2, message: "Peak energy usage in town Enter at 17:00 on Friday" },
+        { id: 3, message: "You haven't checked on town Goor in a while." },
+    ]
     return (
         <>
             <IconButton aria-label="alerts" aria-describedby={id} color="" size="large"
@@ -20,16 +25,13 @@ export default function NotificationBell() {
             <Popper id={id} open={open} anchorEl={anchorEl}>
             <Box sx={{ border: 1, p: 0, bgcolor: 'background.paper' }}>
             <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                <ListItem>
-                    <ListItemButton>
-                        <ListItemText primary="Notification 1" />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem>
-                    <ListItemButton>
-                        <ListItemText primary="Notification 2" />
-                    </ListItemButton>
-                </ListItem>
+                {exampleNotifications.map((notification) => (
+                    <ListItem key={notification.id} disablePadding>
+                        <ListItemButton>
+                            <ListItemText primary={notification.message}/>
+                        </ListItemButton>
+                    </ListItem>
+                ))}
             </List>
             </Box>
             </Popper>
