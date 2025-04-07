@@ -2,7 +2,7 @@
 import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
 import { useSession } from "next-auth/react"
 
 const Overview = () => {
@@ -23,10 +23,13 @@ const Overview = () => {
   })
   return (
       <main className={styles.content}>
-        <Navbar title={"Hi, User!"} hasNotify={true}/>
-        <Typography variant="body1">Eco tip: {randomTip}</Typography>
+        <Navbar title={"Hi, Carlos!"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
-          <p>is the Overview page...</p>
+          <Typography variant="h6">Eco tip: {randomTip}</Typography>
+          <Typography>This page is not complete as we don't have the data to construct it.</Typography>
+          <Typography>Other pages:</Typography>
+          <Button variant="outlined" color="primary" href="/dashboard/graphs">Detailed graphs</Button>
+          <Button variant="outlined" color="primary" href="/dashboard/map">Interactive Map</Button>
         </div>
       </main>
 

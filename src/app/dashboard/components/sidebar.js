@@ -19,10 +19,6 @@ const sidebarOptions = [
     to: "../dashboard/map"
   },
   {
-    text: "Reports",
-    to: "../dashboard/reports"
-  },
-  {
     text: "Admin",
     to: "../dashboard/admin"
   },
@@ -39,9 +35,8 @@ const Sidebar = () => {
       if (pathname === "/dashboard") setNavIndex(0);
       if (pathname === "/dashboard/graphs") setNavIndex(1);
       if (pathname === "/dashboard/map") setNavIndex(2);
-      if (pathname === "/dashboard/reports") setNavIndex(3);
-      if (pathname === "/dashboard/admin") setNavIndex(4);
-      if (pathname === "/dashboard/account") setNavIndex(5);
+      if (pathname === "/dashboard/admin") setNavIndex(3);
+      if (pathname === "/dashboard/account") setNavIndex(4);
     } catch (error) {
       console.error(error);
     }
@@ -94,8 +89,8 @@ const Sidebar = () => {
             backgroundColor: "white",
             borderRadius: "37px",
             border: "2px solid black"
-          }} className={navIndex === 5 ? "active-button" : ""}>
-            <ListItemText primary={"Account"} className={navIndex === 5 ? "active-text" : ""} />
+          }} className={navIndex === 4 ? "active-button" : ""}>
+            <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>
         </ListItem>
       </List>

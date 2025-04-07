@@ -12,11 +12,11 @@ const Account = () => {
     useEffect(() => {
       const accountData = {
         account_id : 1,
-        email : "example@gmail.com",
-        f_name : "John",
-        l_name : "Smith",
-        username : "jsmith",
-        password : "Password1",
+        email : "carlosrodriguez1@gmail.com",
+        f_name : "Carlos",
+        l_name : "Rodriguez",
+        username : "CarlosRodriguez1",
+        password : "•••••••••",
         account_type_id : 2,
         network_filter_id : 2,
         city_filter_id : null
@@ -26,10 +26,11 @@ const Account = () => {
 
   return (
     <main className={styles.content}>
-      <Navbar title={"Account"} hasCitySelect={false} />
+      <Navbar title={"Account"} hasCitySelect={false} hasNetworkSelect={false}/>
       <div className={styles.greyContainer}>
         
         <h1>Account Information</h1>
+        <p>Account type: Admin</p>
         <p>Account ID: {account.account_id}</p>
         <p>Email: {account.email}</p>
         <p>First Name: {account.f_name}</p>
@@ -38,7 +39,6 @@ const Account = () => {
         <p>Password: {account.password}</p>
         <p>Account Type ID: {account.account_type_id}</p>
         <p>Network Filter ID: {account.network_filter_id}</p>
-        <p>City Filter ID: {account.city_filter_id}</p>
           <Button variant="outlined" color="primary" onClick={() => signOut({ callbackUrl: "/" })}>Log out</Button>
       </div>
     </main>
