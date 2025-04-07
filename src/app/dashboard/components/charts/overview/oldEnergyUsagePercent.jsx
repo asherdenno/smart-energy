@@ -86,7 +86,7 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
 //   { name: "2020", value: 40 },
 // ];
 
-const {
+export default class CustomPieChart extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -109,8 +109,6 @@ const {
       };
 
   componentDidMount() {
-    const { energyUsagePercentage, setEnergyUsagePercentage} = useContext(NavbarContext);
-    console.log("This is the current energyUsagePercentage:", energyUsagePercentage);
     fetchData("2")
     .then((response) => {
       const { data } = response;
@@ -138,7 +136,7 @@ const {
         alignItems: "center", padding: "20px",
         boxSizing: "border-box" 
         }}>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={400} className="energyChart">
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 
