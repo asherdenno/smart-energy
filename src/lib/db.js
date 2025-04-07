@@ -228,7 +228,6 @@ const fetchAnnualFilteredEnergy = async (filterString) => {
     throw new Error("Filtering by city is not yet implemented");
   }
 }
-
 const fetchFilteredEnergyData = async (filterString) => {
   if (filterString) {
     try {
@@ -245,16 +244,11 @@ const fetchFilteredEnergyData = async (filterString) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          d.city LIKE @filterString
+        `+filterString+`
         ORDER BY 
           e.year, e.electric_or_gas;
       `;
-      const request = new sql.Request();
-      request.input('filterString', sql.VarChar, `%${filterString}%`);
-      console.log("FilterString:", filterString);
-      console.log("Executing query:", query);
-      const result = await request.query(query);
-      console.log("Query result:", result.recordset);
+      const result = await sql.query(query);
       await sql.close();
       return result.recordset;
     } catch (error) {
@@ -265,6 +259,43 @@ const fetchFilteredEnergyData = async (filterString) => {
     throw new Error("Filtering by city is not yet implemented");
   }
 }
+
+// const fetchFilteredEnergyData = async (filterString) => {
+//   if (filterString) {
+//     try {
+//       await sql.connect(config);
+//       const query = `
+//         SELECT
+//           e.*,
+//           d.net_manager,
+//           d.city
+//         FROM
+//           dbo.energy_data e
+//         INNER JOIN
+//           data_filter d
+//         ON
+//           (e.data_id = d.data_id)
+//         WHERE
+//           `+filterString+`
+//         ORDER BY 
+//           e.year, e.electric_or_gas;
+//       `;
+//       const request = new sql.Request();
+//       request.input('filterString', sql.VarChar, `%${filterString}%`);
+//       console.log("FilterString:", filterString);
+//       console.log("Executing query:", query);
+//       const result = await request.query(query);
+//       console.log("Query result:", result.recordset);
+//       await sql.close();
+//       return result.recordset;
+//     } catch (error) {
+//       console.error("Database Error:", error);
+//       throw new Error("Failed to fetch usage data: " + error.message);
+//     }
+//   } else {
+//     throw new Error("Filtering by city is not yet implemented");
+//   }
+// }
 
 const fetchAnnualNetworkEnergy = async (userNetwork) => {
   if (userNetwork) {
