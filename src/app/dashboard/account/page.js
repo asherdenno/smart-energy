@@ -3,6 +3,7 @@ import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import Link from "next/link";
 import { Button } from "@mui/material";
+import { signOut } from "next-auth/react"
 
 const Account = () => {
   return (
@@ -10,9 +11,7 @@ const Account = () => {
       <Navbar title={"Account"} hasCitySelect={false} />
       <div className={styles.greyContainer}>
         <p>is the Account page...</p>
-        <Link href="../">
-          <Button variant="outlined" color="primary">Log out</Button>
-        </Link>
+          <Button variant="outlined" color="primary" onClick={() => signOut({ callbackUrl: "/" })}>Log out</Button>
       </div>
     </main>
   );
