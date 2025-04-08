@@ -1,29 +1,34 @@
-const Login = () => {
+"use client"
+
+import "./globals.css";
+import styles from "@/app/page.module.css";
+import { signIn } from 'next-auth/react';
+import { Button, Typography, Box } from "@mui/material";
+
+const Landing = () => {
+
   return (
-    <Container maxWidth="xs">
-      <Paper elevation={10} sx={{ marginTop: 10, marginBottom: 10, p: 1, justifySelf: "center" }}>
-        <FormControl sx={{ p: 2, bgcolor: "white", margin: 2 }}>
-          <Typography sx={{ p: 2, textAlign: "center" }} variant="h3" color="primary.main">Log in</Typography>
-          <Box sx={{ justifySelf: "center" }}>
-            <Stack spacing={2}>
-              <TextField id="login-page-username-textfield" label="Username" />
-              <TextField id="login-page-password-textfield" label="Password" type="password" />
-              <Grid container justifyContent="flex-end" spacing={1} sx={{ mt: 1 }} >
-                <Grid size="grow">
-                  <Link href='/reset-password/email'>Reset Password</Link>
-                </Grid>
-              </Grid>
-              <Button href="../dashboard/" variant="contained">Log in</Button>
-              <Grid container justifyContent="flex-end" spacing={1} sx={{ mt: 1 }} >
-                <Grid size="grow">
-                  <Link href='/create-account'>Create Account</Link>
-                </Grid>
-              </Grid>
-            </Stack>
-          </Box>
-        </FormControl>
-      </Paper>
-    </Container>
+
+    <main className={styles.content}>
+      <Box
+        className={styles.center_center_flex_column} 
+        sx={{
+          textAlign: "center",
+          gap: "20px",
+          padding: "20px",
+          height: "100%",
+          width: "100%"
+        }}>
+        <Typography variant="h2">Smart Energy Management</Typography>
+        <Typography>
+          Our cutting edge tool provides you with the necessary insights to
+          make smart decisions about your energy.
+        </Typography>
+        <Typography>Click the button below to save today:</Typography>
+        <Button onClick={() => signIn()} variant="contained">Log in</Button>
+      </Box>
+    </main>
+  
   );
 }
-export default Login;
+export default Landing;
