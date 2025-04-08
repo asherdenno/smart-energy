@@ -3,6 +3,7 @@ import React, { PureComponent, useEffect } from "react";
 import { useState,  useContext } from "react";
 import { NavbarContext } from "@/app/dashboard/context/NavbarContext";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
+import styles from "@/app/page.module.css";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6699", "#33CC33", "#FF9900"];
 const RADIAN = Math.PI / 180;
@@ -67,7 +68,14 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
     </text>
   );
 };
+const data01 = [
+  { name: 'Gas', value: 400 },
 
+];
+const data02 = [
+  { name: 'Electric', value: 100 },
+  
+];
 // const dataOuter = [
 //   { name: "2015", value: 400 },
 //   { name: "2016", value: 300 },
@@ -147,13 +155,17 @@ export default class EnergyUsagePercent extends PureComponent {
       return <div>Loading...</div>;
     }
     return (
+      <div className={styles.greyContainer+" energyChart"}>
+
       <div style={{ 
         width: "100%",
         minHeight: "400px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center", padding: "20px",
-        boxSizing: "border-box" 
+        boxSizing: "border-box", 
+        display:"flex", 
+        flexWrap:"wrap"
         }}>
         <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}} className="energyChart">
           <h4>Yearly Energy Usage Percentages</h4>
@@ -200,6 +212,16 @@ export default class EnergyUsagePercent extends PureComponent {
 />
           </PieChart>
         </ResponsiveContainer>
+        <br></br>
+        Inner circle: Electric <br></br>
+        Outer circle: Gas
+             </div>
+      {/* <ResponsiveContainer width="100%" height="100%">
+              <PieChart width={400} height={400}>
+                <Pie data={data01} dataKey="value" cx="50%" cy="50%" outerRadius={60} fill="#8884d8" />
+                <Pie data={data02} dataKey="value" cx="50%" cy="50%" innerRadius={70} outerRadius={90} fill="#82ca9d"/>
+              </PieChart>
+            </ResponsiveContainer> */}
       </div>
     );
   }

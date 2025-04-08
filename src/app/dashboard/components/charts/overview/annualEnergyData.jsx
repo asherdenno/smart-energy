@@ -122,13 +122,13 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      <div className={styles.greyContainer}>
+      <div className={styles.greyContainer+" energyChart"}>
 
-      <ResponsiveContainer width="100%" height={280} style={{padding:"1%"}} className="energyChart">
       <h4>Annual Energy Consumption</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}} >
         <AreaChart
           width={500}
-          maxHeight={200}
+          height={200}
           data={AnnualEnergy}
           syncId="anyId"
           margin={{
@@ -160,13 +160,14 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
       </ResponsiveContainer>
           </div>
 
-<div className={styles.greyContainer}>
+          <div className={styles.greyContainer+" energyChart"}>
+
       
-      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}} className="energyChart">
       <h4>Annual Energy Delivery Percentage</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
-          maxHeight={200}
+          height={200}
           data={AnnualDel}
           syncId="anyId"
           margin={{
@@ -203,12 +204,12 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
         </LineChart>
       </ResponsiveContainer>
           </div>
-          <div className={styles.greyContainer}>
-      <ResponsiveContainer width="100%" height={240} style={{padding:"1%"}} className="energyChart">
-        <h4>Annual Energy Consumption Percentage During Low Tarrif Hours</h4>
+          <div className={styles.greyContainer+" energyChart"}>
+        <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
-          maxHeight={200}
+          height={200}
           data={AnnualLowtarif}
           syncId="anyId"
           margin={{
