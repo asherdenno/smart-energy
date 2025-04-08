@@ -1,18 +1,22 @@
 'use client';
 import styles from "@/app/page.module.css";
 import Navbar from "../components/navbar";
-import { CityProvider } from "../context/CityContext";
+import DownloadButtons from "../components/pageComponents/downloadButton";
+import { useContext } from "react";
+import { useEffect } from "react";
 
 const Reports = () => {
+  // const { account, setAccount } = useContext(CityProvider);
+  
+
   return (
-    <CityProvider>
       <main className={styles.content}>
-        <Navbar title={"Reports"} hasNotify={true} />
+        <Navbar title={"Reports"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
           <p>This is the Reports page.</p>
+          <DownloadButtons/>
         </div>
       </main>
-    </CityProvider>
   );
 }
 export default Reports;

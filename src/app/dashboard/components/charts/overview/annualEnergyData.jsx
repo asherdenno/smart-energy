@@ -1,5 +1,5 @@
-"use client"
-import React,  { useState, PureComponent } from 'react';
+"use client";
+import React, { useState, useEffect, useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -7,12 +7,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   Brush,
   AreaChart,
   Area,
   ResponsiveContainer,
 } from 'recharts';
+import { NavbarContext } from '@/app/dashboard/context/NavbarContext';
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
@@ -27,165 +27,219 @@ const fetchData = async (account_id) => {
     });
     if (!res.ok) throw new Error('Error fetching usage data');
     const data = await res.json();
+    console.log("Fetched graph data:", data);
     return data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching usage data:', error);
     return [];
   }
-}
+};
 
-export default class Example extends PureComponent {
-  static demoUrl = 'https://codesandbox.io/p/sandbox/synchronized-line-charts-37rhmf';
+const EnergyUsageCharts = ({showElectric, showGas}) => {
+  const { annualEnergyData, setAnnualEnergyData } = React.useContext(NavbarContext);
+  const [loading, setLoading] = useState(true);
+  const [AnnualEnergy, setAnnualEnergy] = useState([]);
+  const [AnnualDel, setAnnualDel] = useState([]);
+  const [AnnualLowtarif, setAnnualLowtarif] = useState([]);
 
-//
-constructor(props) {
-    super(props);
-    this.state = {
-      showElectric: true,
-      showGas: true,
+  useEffect(() => {
+    const updateGraph = (data) => {
+      // const { data } = response;
+      setAnnualEnergyData(data);
+      console.log("Filtered data:", data);
+
+      const energyData = [];
+      const delData = [];
+      const lowtarifData = [];
+
+      data.forEach((item) => {
+        let yearData = energyData.find((entry) => entry.name === item.year);
+        let yearDelData = delData.find((entry) => entry.name === item.year);
+        let yearLowTarifData = lowtarifData.find(
+          (entry) => entry.name === item.year
+        );
+
+        if (!yearData) {
+          yearData = { name: item.year, Electric: null, Gas: null };
+          energyData.push(yearData);
+        }
+        if (!yearDelData) {
+          yearDelData = {
+            name: item.year,
+            "Electric Delivery Percentage": null,
+            "Gas Delivery Percentage": null,
+          };
+          delData.push(yearDelData);
+        }
+        if (!yearLowTarifData) {
+          yearLowTarifData = {
+            name: item.year,
+            "Electric Low Tariff Consume": null,
+            "Gas Low Tariff Consume": null,
+          };
+          lowtarifData.push(yearLowTarifData);
+        }
+
+        if (item.electric_or_gas === "Electricity") {
+          yearData.Electric = item.total_annual_consume;
+          yearDelData["Electric Delivery Percentage"] =
+            item.total_delivery_perc;
+          yearLowTarifData["Electric Low Tariff Consume"] =
+            item.total_annual_consume_lowtarif_perc;
+        } else if (item.electric_or_gas === "Gas") {
+          yearData.Gas = item.total_annual_consume;
+          yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
+          yearLowTarifData["Gas Low Tariff Consume"] =
+            item.total_annual_consume_lowtarif_perc;
+        }
+      });
+
+      setAnnualEnergy(energyData);
+      setAnnualDel(delData);
+      setAnnualLowtarif(lowtarifData);
+      setLoading(false);
     };
+
+    if (annualEnergyData) {
+      console.log("Using context data:", annualEnergyData);
+      updateGraph(annualEnergyData);
+      return;
+    }
+    console.log("Fetching data...");
+
+    fetchData("1")
+      .then((response) => updateGraph(response.data))
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-
-componentDidMount() {
-  fetchData("1").then((response) => {
-    const { data } = response;
-
-    const AnnualEnergy = [];
-    const AnnualDel = [];
-    const AnnualLowtarif = [];
-
-    data.forEach((item) => {
-      let yearData = AnnualEnergy.find((entry) => entry.name === item.year);
-      let yearDelData = AnnualDel.find((entry) => entry.name === item.year);
-      let yearLowTarifData = AnnualLowtarif.find((entry) => entry.name === item.year);
-
-      if (!yearData) {
-        yearData = { name: item.year, Electric: null, Gas: null };
-        AnnualEnergy.push(yearData);
-      }
-      if (!yearDelData) {
-        yearDelData = { name: item.year, "Electric Delivery Percentage": null, "Gas Delivery Percentage": null };
-        AnnualDel.push(yearDelData);
-      }
-      if (!yearLowTarifData) {
-        yearLowTarifData = { name: item.year, "Electric Low Tariff Consume": null, "Gas Low Tariff Consume": null };
-        AnnualLowtarif.push(yearLowTarifData);
-      }
-
-      if (item.electric_or_gas === "Electricity") {
-        yearData.Electric = item.total_annual_consume;
-        yearDelData["Electric Delivery Percentage"] = item.total_delivery_perc;
-        yearLowTarifData["Electric Low Tariff Consume"] = item.total_annual_consume_lowtarif_perc;
-      } else if (item.electric_or_gas === "Gas") {
-        yearData.Gas = item.total_annual_consume;
-        yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
-        yearLowTarifData["Gas Low Tariff Consume"] = item.total_annual_consume_lowtarif_perc;
-      }
-    });
-
-      this.setState({ AnnualEnergy, AnnualDel, AnnualLowtarif });
-    })
-  }
-  render() {
-  console.log("Data Energy:", this.state.Energy);
-  console.log("Annual consume",this.state.AnnualEnergy);
-  console.log("Annual del",this.state.AnnualDel);
-  console.log("Annual low tarif",this.state.AnnualLowtarif);
-    const { showElectric, showGas } = this.props;
-      return (
-          <div style={{ width: '100%' }}>
-        <h4>Annual Energy Consumption</h4>
-        <ResponsiveContainer width="100%" height={200}>
-          <AreaChart
-            width={500}
-            height={200}
-            data={this.state.AnnualEnergy}
-            syncId="anyId"
-            margin={{
-                top: 10,
-                right: 30,
-                left: 0,
-                bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip 
+  return (
+    <div style={{ width: '100%' }}>
+      <h4>Annual Energy Consumption</h4>
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
+        <AreaChart
+          width={500}
+          height={200}
+          data={AnnualEnergy}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip
             formatter={(value, name) => {
-                if (name.includes("Electric")) {
-                  return [`${value} kWh`, name];
-                }
-                if (name.includes("Gas")){
-                    return [`${value} m³`, name];
-                }
-
-                }}/>
-            {showElectric && <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />}
-            {showGas && <Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
-            <Brush />
-          </AreaChart>
-        </ResponsiveContainer>
-
-        <h4>Annual Energy Delivery Percentage</h4>
-
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart
-            width={500}
-            height={200}
-            data={this.state.AnnualDel}
-            syncId="anyId"
-            margin={{
-              top: 10,
-              right: 30,
-              left: 0,
-              bottom: 0,
+              if (name.includes("Electric")) {
+                return [`${value} kWh`, name];
+              }
+              if (name.includes("Gas")) {
+                return [`${value} m³`, name];
+              }
             }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis tickFormatter={(value) => `${value}%`}/>
-            <Tooltip 
-            formatter={(value, name) => {
-                    return [`${value} %`, name];
-                }}/>
-            {showElectric&&<Line type="monotone" dataKey="Electric Delivery Percentage" stroke="#8884d8" fill="#8884d8" />}
-            {showGas&&<Line type="monotone" dataKey="Gas Delivery Percentage" stroke="#82ca9d" fill="#82ca9d" />}
-          </LineChart>
-        </ResponsiveContainer>
-        <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
+          />
+          {showElectric && (
+            <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
+          )}
+          {showGas && <Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
+          <Brush />
+        </AreaChart>
+      </ResponsiveContainer>
 
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart
-            width={500}
-            height={200}
-            data={this.state.AnnualLowtarif}
-            syncId="anyId"
-            margin={{
-                top: 10,
-                right: 30,
-                left: 0,
-                bottom: 0,
+      <h4>Annual Energy Delivery Percentage</h4>
+
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
+        <LineChart
+          width={500}
+          height={200}
+          data={AnnualDel}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis tickFormatter={(value) => `${value}%`} />
+          <Tooltip
+            formatter={(value, name) => {
+              return [`${value} %`, name];
             }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis tickFormatter={(value) => `${value}%`}/>
-            <Tooltip 
+          />
+          {showElectric && (
+            <Line
+              type="monotone"
+              dataKey="Electric Delivery Percentage"
+              stroke="#8884d8"
+              fill="#8884d8"
+            />
+          )}
+          {showGas && (
+            <Line
+              type="monotone"
+              dataKey="Gas Delivery Percentage"
+              stroke="#82ca9d"
+              fill="#82ca9d"
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+      <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
+
+      <ResponsiveContainer width="100%" height={200} className="energyChart">
+        <LineChart
+          width={500}
+          height={200}
+          data={AnnualLowtarif}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis tickFormatter={(value) => `${value}%`} />
+          <Tooltip
             formatter={(value, name) => {
-                return [`${value} %`, name];
-            }}/>
-            {showElectric&&<Line type="monotone" dataKey="Electric Low Tariff Consume" stroke="#8884d8" fill="#8884d8" />}
-            {showGas&&<Line type="monotone" dataKey="Gas Low Tariff Consume" stroke="#82ca9d" fill="#82ca9d" />}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-}
+              return [`${value} %`, name];
+            }}
+          />
+          {showElectric && (
+            <Line
+              type="monotone"
+              dataKey="Electric Low Tariff Consume"
+              stroke="#8884d8"
+              fill="#8884d8"
+            />
+          )}
+          {showGas && (
+            <Line
+              type="monotone"
+              dataKey="Gas Low Tariff Consume"
+              stroke="#82ca9d"
+              fill="#82ca9d"
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
 
-
-
-
+export default EnergyUsageCharts;

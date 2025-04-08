@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, useMap, Polygon } from 'react-leaflet';
 import { Button } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-import { CityContext } from '../context/CityContext';
+import { NavbarContext } from '../context/NavbarContext';
 
 const getZipcodeCoordinates = async (zipcodeQuery) => {
     console.log("Fetching zipcode coordinates for", zipcodeQuery);
@@ -25,7 +25,9 @@ const HeatmapLayer = ({ data }) => {
     useEffect(() => {
         if (!map) return;
 
-        const heatLayer = L.heatLayer(data, { radius: 80, blur: 40 }).addTo(map);
+        const heatLayer = L.heatLayer(data, 
+            { radius: 80, blur: 40, gradient: { 0.4: '#458cff', 0.65: '#5bde09', 0.8: '#ffc32b', 1: '#ed3300' } })
+            .addTo(map);
 
         return () => {
             map.removeLayer(heatLayer);
@@ -71,7 +73,7 @@ const LeafletMap = () => {
         }
     };
 
-    const { city } = React.useContext(CityContext);
+    const { city } = React.useContext(NavbarContext);
     const [zipcodeData, setZipcodeData] = useState([]);
     const [dataLoading, setDataLoading] = useState(true);
     const [mapLoading, setMapLoading] = useState(true);
@@ -100,7 +102,7 @@ const LeafletMap = () => {
         if (zipcodeData.length === 0) return; // Avoid running if no data
         setHasFetched(true);
         const processZipcodeData = async () => {
-            const intensityMultiplier = 0.1 / (zipcodeData[0].annual_consume || 1);
+            const intensityMultiplier = 0.2 / (zipcodeData[0].annual_consume || 1);
             console.log("Intensity multiplier:", intensityMultiplier);
             let firstLat = null;
             let firstLon = null;
@@ -161,8 +163,8 @@ const LeafletMap = () => {
     else if (mapLoading) {
         return <div 
         style={{
-            height: '400px',
-            width: '600px',
+            height: '100%',
+            width: '100%',
             backgroundColor: '#f0f0f0',
             display: 'flex',
             justifyContent: 'center',
@@ -176,7 +178,7 @@ const LeafletMap = () => {
         >Map is Loading...</div>
     } {
         return (
-            <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '400px', width: '600px' }}>
+            <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"                    />
