@@ -13,7 +13,7 @@ const Map = () => {
   return (
         <main className={styles.content}>
             <nav>
-                <Navbar title={"Map"} hasNotify={true} hasCitySelect={true} />
+                <Navbar title={"Map"} hasNotify={true} hasCitySelect={true} hasNetworkSelect={false}/>
             </nav>
             <Typography variant="h5" sx={{display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>Total annual consume of electricity</Typography>
             <Box sx={{display: 'flex', alignItems: "start", justifyContent: "center", height: '100vh', width: '100%'}}>

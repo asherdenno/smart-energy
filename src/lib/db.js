@@ -87,18 +87,17 @@ const fetchAllUserFilterIds = async () => {
 
 const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
   try {
-    skipRows = (page - 1) * pageSize;
+    const skipRows = (page - 1) * pageSize;
     await sql.connect(config);
     const query = `
-      SELECT *
-      FROM users
-      ORDER BY user_id
+      SELECT account_id, email, f_name, l_name, username, account_type_id, network_filter_id, city_filter_id
+      FROM dbo.account
+      ORDER BY account_id
       OFFSET @offset ROWS
       FETCH NEXT @pageSize ROWS ONLY;
     `;
-    await sql.connect(config);
     const request = new sql.Request();
-    request.input('offset', sql.Int, offset);
+    request.input('offset', sql.Int, skipRows);
     request.input('pageSize', sql.Int, pageSize);
     console.log(`Fetching page ${page} with page size ${pageSize}`);
     const result = await request.query(query);
@@ -109,7 +108,7 @@ const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch users: " + error.message);
   }
-}
+};
 
 const countTotalUsers = async () => {
   try {
@@ -128,7 +127,7 @@ const countTotalUsers = async () => {
 };
 
 const findUsers = async (userInput) => {
-  try{
+  try {
     await sql.connect(config);
     const query = `
       SELECT (TOP 20) user_id, user_name
@@ -210,7 +209,7 @@ const fetchAnnualFilteredEnergy = async (filterString) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          `+filterString+`
+          `+ filterString + `
         GROUP BY 
           e.year, e.electric_or_gas, d.net_manager
         ORDER BY 
@@ -244,7 +243,7 @@ const fetchFilteredEnergyData = async (filterString) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-        `+filterString+`
+        `+ filterString + `
         ORDER BY 
           e.year, e.electric_or_gas;
       `;
@@ -391,7 +390,7 @@ const fetchDoubleFilteredData = async (net_manager, city) => {
         ON
           (e.data_id = d.data_id)
         WHERE
-          (d.city = '`+city+`' and d.net_manager = '`+net_manager+`')
+          (d.city = '`+ city + `' and d.net_manager = '` + net_manager + `')
         GROUP BY 
           e.year, e.electric_or_gas, d.city
         ORDER BY 
@@ -476,6 +475,8 @@ const fetchElectricityUsagePerZipcode = async (city) => {
   }
 }
 
-export { fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
-  fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode
+export {
+  fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
+  fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
+  fetchAllUsersInPages, countTotalUsers, fetchAllUserFilterIds, findUsers
 };

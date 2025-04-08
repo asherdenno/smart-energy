@@ -11,7 +11,7 @@ const Reports = () => {
 
   return (
       <main className={styles.content}>
-        <Navbar title={"Reports"} hasNotify={true} />
+        <Navbar title={"Reports"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
           <p>This is the Reports page.</p>
           <DownloadButtons/>
