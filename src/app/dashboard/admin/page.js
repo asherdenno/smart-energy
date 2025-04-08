@@ -227,7 +227,7 @@ const Admin = () => {
             gap: "10px",
           }}
         >
-          <h2>Manage users</h2>
+          <h2>Manage Users</h2>
           <div
             className={styles.right_center_flex_row}
             style={{ gap: "10px", width: "50%" }}
@@ -244,7 +244,7 @@ const Admin = () => {
               color="primary"
               onClick={() => setOpenDialog(true)}
             >
-              Create new user <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
+              Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
             <Dialog
               open={openDialog} onClose={() => setOpenDialog(false)}
@@ -270,7 +270,7 @@ const Admin = () => {
                   fontSize: "25px",
                   fontWeight: "600",
                 }}>
-                New user</DialogTitle>
+                New User</DialogTitle>
               <DialogContent
                 id="dialog-description"
                 sx={{
@@ -295,7 +295,7 @@ const Admin = () => {
                         fontWeight: activeRole === "Network manager" ? "600" : "400",
                       }}
                       onClick={() => setActiveRole("Network manager")}
-                    >Network manger
+                    >Network Manager
                     </LargeBtn>
                     <LargeBtn
                       sx={{
@@ -306,7 +306,7 @@ const Admin = () => {
                         fontWeight: activeRole === "City council" ? "600" : "400",
                       }}
                       onClick={() => setActiveRole("City council")}
-                    >City council
+                    >City Council
                     </LargeBtn>
                   </div>
                 </div>
@@ -324,7 +324,7 @@ const Admin = () => {
                   </div>
                   :
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select city</InputLabel>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select City</InputLabel>
                     <AutocompleteField
                       id="city"
                       options={vacantCity}
@@ -335,13 +335,13 @@ const Admin = () => {
                 }
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First name</InputLabel>
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First Name</InputLabel>
                   <LargeInputBox id="firstName" type="text" placeholder="Enter first name" onBlur={() => handleBlur("firstName")} />
                   <span className={styles.warning}>{warnings["firstName"]}</span>
                 </div>
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last name</InputLabel>
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last Name</InputLabel>
                   <LargeInputBox id="lastName" type="text" placeholder="Enter last name" onBlur={() => handleBlur("lastName")} />
                   <span className={styles.warning}>{warnings["lastName"]}</span>
                 </div>
@@ -397,8 +397,8 @@ const Admin = () => {
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Manages</TbHeadCell>
-                <TbHeadCell>Manage user</TbHeadCell>
+                <TbHeadCell>Filters</TbHeadCell> 
+                <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
