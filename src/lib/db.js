@@ -98,18 +98,13 @@ const fetchNotif = async (targetAccountId) => {
   }
 };
 const fetchAllNotif = async () => {
-  let pool;
   try{
-    pool = await sql.connect(config);
-    const result = await pool.request().query(`select * from [dbo].[notification]`);
+    const pool =await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM [dbo].[notification]');
     return result.recordset;
-  }catch (error){
-    console.error("Database Error:", error);
-    throw error
-  }finally {
-    if (pool){
-      pool.close();
-    }
+  }catch (err) {
+    console.error('database query error:', err);
+    return[];
   }
 }
 export { fetchAll, fetchCities, fetchUsageSumPerYear, fetchNotif, fetchAllNotif };
