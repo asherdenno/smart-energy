@@ -30,12 +30,16 @@ const fetchAll = async () => {
 }
 
 
-const fetchCities = async (userInput) => {
+const fetchCities = async (searchString) => {
   try {
     await sql.connect(config);
-    const query = 'SELECT TOP (20) * FROM city_has_id WHERE city LIKE @userInput';
+    const query = `
+      SELECT TOP (20) city_id, city_name
+      FROM city_has_id
+      WHERE city_name LIKE @searchString
+    `;
     const request = new sql.Request();
-    request.input('userInput', sql.VarChar, `%${userInput}%`);
+    request.input('searchString', sql.VarChar, `%${searchString}%`);
     const result = await request.query(query);
     await sql.close();
     return result.recordset;
@@ -449,7 +453,7 @@ const fetchUsageSumPerYear = async (account_id) => {
 
 const fetchElectricityUsagePerZipcode = async (city) => {
   try {
-    await sql.connect(config);
+    await sql.connect(config);  
     const query =
       `SELECT TOP(5000) e.zipcode_from,
       e.annual_consume,

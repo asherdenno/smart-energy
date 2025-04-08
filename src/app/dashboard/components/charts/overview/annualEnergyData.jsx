@@ -197,7 +197,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           )}
         </LineChart>
       </ResponsiveContainer>
-      <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
+      <h4>Annual Energy Consumption Percentage During Low Tarrif Hours</h4>
 
       <ResponsiveContainer width="100%" height={200} className="energyChart">
         <LineChart
