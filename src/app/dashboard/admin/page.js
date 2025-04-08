@@ -17,9 +17,6 @@ import {
   ClassicBtn, InputBox, LargeInputBox
 } from "../components/muiStyledComponents";
 
-const allUserRows = [
-
-];
 
 const vacantNetwork = [
   'Network 1',
@@ -32,6 +29,8 @@ const vacantCity = [
   'Vastra Gotaland',
 ];
 
+let allUserRows = []; 
+
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,9 +38,12 @@ const Admin = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`/api/users?page=1&pageSize=20`);
+        let page = 1;
+        let pageSize = 20;
+        const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
         const data = await response.json();
-        setUsers(data);
+        allUserRows = data; // Update allUserRows with fetched data
+        setUsers(data); // Update the users state
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -53,10 +55,10 @@ const Admin = () => {
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
-      setUsers(allUserRows); // Reset back to the list of all users
+      setUsers(allUserRows);
     } else {
-      const filteredUsers = users.filter((user) =>
-        user.user_name.toLowerCase().includes(query.toLowerCase())
+      const filteredUsers = allUserRows.filter((user) =>
+        user.username.toLowerCase().includes(query.toLowerCase())
       );
       setUsers(filteredUsers);
     }
@@ -324,9 +326,17 @@ const Admin = () => {
                 }}>
                 <LargeBtn
                   onClick={() => {
-                    if (checkUserInputMeetsRequirements()){
-                          document.getElementById("hiddenRow").style.display = "table-row";
-                    }
+                    const userData = {
+                      email: document.getElementById('email').value,
+                      f_name: document.getElementById('firstName').value,
+                      l_name: document.getElementById('lastName').value,
+                      username: document.getElementById('firstName').value + document.getElementById('lastName').value,
+                      password: document.getElementById('password').value,
+                      account_type_id: activeRole === 'Network manager' ? 2 : 3,
+                      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
+                      city_filter_id: activeRole === 'City council' ? document.getElementById('cities').value : null,
+                    };
+                    checkUserInputMeetsRequirements(userData);
                   }}
                 >
                   Create new user
@@ -358,20 +368,29 @@ const Admin = () => {
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell >Manage user</TbHeadCell>
+                <TbHeadCell>Manages</TbHeadCell> 
+                <TbHeadCell>Manage user</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
+                  console.log(user),
                   <TableRow key={index}>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
-                          ? "Network Manager"
-                          : "City Council"}
+                        ? "Network Manager"
+                        : "City Council"}
+                    </TbBodyCell>
+                    <TbBodyCell>
+                      {user.account_type_id === 2
+                        ? user.network_filter_id || "No network assigned"
+                        : user.account_type_id === 3
+                        ? user.city_filter_id || "No city assigned"
+                        : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
                       <Button>Manage user</Button>
@@ -380,22 +399,13 @@ const Admin = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TbBodyCell colSpan={3} style={{ textAlign: "center" }}>
+                  <TbBodyCell colSpan={4} style={{ textAlign: "center" }}>
                     {allUserRows.length > 0 ?
                       "No users found" :
                       "No users available! Create one to get started."}
                   </TbBodyCell>
                 </TableRow>
               )}
-              <TableRow id="hiddenRow" style={{ display: "none" }}>
-              <TbBodyCell>Chris Yu</TbBodyCell>
-                    <TbBodyCell>
-                          Network Manager
-                    </TbBodyCell>
-                    <TbBodyCell>
-                      <Button>Manage user</Button>
-                    </TbBodyCell>
-              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
