@@ -123,7 +123,7 @@ export default function DownloadButtons() {
           wordWrap: "break-word",
           textAlign: "center", 
           padding: "10px"}}>
-          Download Charts <br/>(Downloads charts as pdf with their data)
+          Download Charts <br/>(Downloads charts as PDF with their data)
           </button>
          <button onClick={DownloadData} 
          style={{ 
@@ -133,7 +133,7 @@ export default function DownloadButtons() {
           wordWrap: "break-word",
           textAlign: "center", 
           padding: "10px" }}>
-          Download Data <br/>(Downloads all data related to network and/or city as csv)
+          Download Data <br/>(Downloads all data related to network and/or city as CSV)
           </button>
         </div>
     );

@@ -5,7 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { NavbarContext } from '../context/NavbarContext';
 
 export default function CitySelect() {
-    const { city, setCity } = React.useContext(NavbarContext);
+    const { city, setCity, resetGraphData } = React.useContext(NavbarContext);
 
     const fetchSearchResults = async (searchString) => {
         try {
@@ -40,7 +40,7 @@ export default function CitySelect() {
 
     const handleButtonClick = () => {
         setCity(searchString);
-        console.log("City selected", searchString)
+        resetGraphData();
     }
 
     return (

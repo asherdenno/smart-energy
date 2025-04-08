@@ -177,7 +177,7 @@ componentDidMount() {
             {showGas && <Line type="monotone" dataKey="Gas Delivery Percentage" stroke="#82ca9d" fill="#82ca9d" />}
           </LineChart>
         </ResponsiveContainer>
-        <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
+        <h4>Annual Energy Consumption Percentage During Low Tarrif Hours</h4>
 
         <ResponsiveContainer width="100%" height={200}>
           <LineChart
