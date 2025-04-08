@@ -7,14 +7,14 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6699", "#33CC33", "#FF9900"];
 const RADIAN = Math.PI / 180;
 
-const fetchData = async (account_id) => {
+const fetchData = async (city_id) => {
   try {
     const res = await fetch('/api/usage-sum-per-year', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ account_id }),
+      body: JSON.stringify({ city_id }),
     });
     if (!res.ok) throw new Error('Error fetching usage data');
     const data = await res.json();
@@ -117,15 +117,16 @@ export default class EnergyUsagePercent extends PureComponent {
   };
 
   componentDidMount() {
-    const { energyUsagePercent, setEnergyUsagePercent} = this.context;
+    const { energyUsagePercent, setEnergyUsagePercent, city } = this.context;
+    console.log("City selectadwwded:", city);
 
     if (energyUsagePercent) {
       console.log("Using context data:", energyUsagePercent);
       this.updateGraph(energyUsagePercent);
       return;
     }
-    
-    fetchData("2")
+
+    fetchData(city.city_filter_id)
     .then((response) => {
       const { data } = response;
       setEnergyUsagePercent(data);
@@ -154,7 +155,8 @@ export default class EnergyUsagePercent extends PureComponent {
         alignItems: "center", padding: "20px",
         boxSizing: "border-box" 
         }}>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}} className="energyChart">
+          <h4>Yearly Energy Usage Percentages</h4>
           <PieChart>
             {showElectric && <Pie 
               data={this.state.dataInner} 
