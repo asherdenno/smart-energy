@@ -15,7 +15,7 @@ const Map = () => {
             <nav>
                 <Navbar title={"Map"} hasNotify={true} hasCitySelect={true} hasNetworkSelect={false}/>
             </nav>
-            <Typography variant="h5" sx={{display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>Total annual consume of electricity</Typography>
+            <Typography variant="h5" sx={{display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center"}}>Total Annual Consumption Of Electricity</Typography>
             <Box sx={{display: 'flex', alignItems: "start", justifyContent: "center", height: '100vh', width: '100%'}}>
               <LeafletMap />
               <ReferenceBar sx={{marginLeft: "10px"}} />

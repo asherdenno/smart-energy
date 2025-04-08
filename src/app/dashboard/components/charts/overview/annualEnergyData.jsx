@@ -205,7 +205,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           </div>
           <div className={styles.greyContainer}>
       <ResponsiveContainer width="100%" height={240} style={{padding:"1%"}} className="energyChart">
-        <h4>Annual Energy Consumption Percentage During Low Tarif Hours</h4>
+        <h4>Annual Energy Consumption Percentage During Low Tarrif Hours</h4>
         <LineChart
           width={500}
           maxHeight={200}
