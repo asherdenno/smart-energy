@@ -3,7 +3,7 @@ import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
-import { useSession } from "next-auth/react"
+// import { useSession } from "next-auth/react"
 
 const Overview = () => {
 
@@ -21,6 +21,10 @@ const Overview = () => {
     const randomIndex = Math.floor(Math.random() * ecoTips.length);
     setRandomTip(ecoTips[randomIndex]);
   })
+
+  // const { data: session, status } = useSession();
+  // console.log(session.user.name)
+
   return (
       <main className={styles.content}>
         <Navbar title={"Hi, User!"} hasNotify={true}/>
