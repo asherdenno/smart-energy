@@ -475,8 +475,33 @@ const fetchElectricityUsagePerZipcode = async (city) => {
   }
 }
 
+const fetchNotif = async (targetAccountId) => {
+  try{
+    await sql.connect(config);
+    const query = `SELECT * FROM [dbo].[notification] where target_account_id = @targetAccountId order by time desc;`;
+    const request = new sql.Request();
+    request.input('targetAccountId', sql.Int, targetAccountId);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  }catch(error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch notifications: " + error.message);
+  }
+};
+const fetchAllNotif = async () => {
+  try{
+    const pool =await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM [dbo].[notification]');
+    return result.recordset;
+  }catch (err) {
+    console.error('database query error:', err);
+    return[];
+  }
+}
+
 export {
   fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchAllUsersInPages, countTotalUsers, fetchAllUserFilterIds, findUsers
+  fetchAllUsersInPages, countTotalUsers, fetchAllUserFilterIds, findUsers, fetchNotif, fetchAllNotif
 };
