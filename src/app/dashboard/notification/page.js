@@ -5,7 +5,7 @@ export default function NotificationsPage() {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-        fetch('/api/fetchNotifications')  // not /api/notifications
+        fetch('/api/fetchNotifications')  
           .then(res => res.json())
           .then(data => {
             console.log('revieved in frontend:', data)
