@@ -69,7 +69,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -93,7 +93,7 @@ export const authOptions = {
         const user = await res.json();
 
         if (res.ok && user.length > 0) {
-          console.log("🔐 Authorized User:", user[0]); // Log user info here
+          console.log("Authorized User:", user[0]);
           return user[0];
         }
 
@@ -104,28 +104,26 @@ export const authOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        // Log user info at login
-        console.log("🧠 JWT Callback - User:", user);
-        console.log("🧠 JWT Callback - Before Token:", token);
+        console.log("WT Callback - User:", user);
+        console.log("JWT Callback - Before Token:", token);
 
         token.id = user.account_id;
         token.name = user.f_name;
-        console.log("🧠 JWT Callback - After Token:", token);
+
+        console.log("JWT Callback - After Token:", token);
       }
-      return token; // ❗️Make sure only token is returned
+      return token;
     },
     session: async ({ session, token }) => {
-      // Log session and token
-      console.log("🌀 Session Callback - Token:", token);
-      console.log("🌀 Session Callback - Before Session:", session);
+      console.log("Session Callback - Token:", token);
+      console.log("Session Callback - Before Session:", session);
 
       session.user = {
         account_id: token.id,
         name: token.name,
       };
-      session.accessToken = token.accessToken;
 
-      console.log("🌀 Session Callback - After Session:", session);
+      console.log("Session Callback - After Session:", session);
 
       return session;
     },
