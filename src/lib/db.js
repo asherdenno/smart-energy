@@ -34,9 +34,9 @@ const fetchCities = async (searchString) => {
   try {
     await sql.connect(config);
     const query = `
-      SELECT TOP (20) city_id, city_name
+      SELECT TOP (20) *
       FROM city_has_id
-      WHERE city_name LIKE @searchString
+      WHERE city LIKE @searchString
     `;
     const request = new sql.Request();
     request.input('searchString', sql.VarChar, `%${searchString}%`);
