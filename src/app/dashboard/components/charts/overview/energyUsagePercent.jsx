@@ -167,7 +167,7 @@ export default class EnergyUsagePercent extends PureComponent {
         display:"flex", 
         flexWrap:"wrap"
         }}>
-        <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}} className="energyChart">
+        <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}}>
           <h4>Yearly Energy Usage Percentages</h4>
           <PieChart>
             {showElectric && <Pie 
