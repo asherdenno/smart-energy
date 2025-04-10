@@ -1,4 +1,3 @@
-import { NextWeek } from '@mui/icons-material';
 import sql from 'mssql';
 import { config } from '@/lib/db_config';
 
@@ -188,7 +187,7 @@ const insertNewUser = async (email, f_name, l_name, username, password, account_
 
     await request.query(query);
     await sql.close();
-    return { success: true }; // Return a success confirmation
+    return { success: true }; 
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to insert new user: " + error.message);
