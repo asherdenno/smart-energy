@@ -34,23 +34,32 @@ let allUserRows = [];
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
+
+  const fetchUsers = async (page = 1) => {
+    try {
+      const pageSize = 10; // Set the number of users displayed per page
+      const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
+      const data = await response.json();
+      allUserRows = data.users; // Update allUserRows with fetched data
+      setUsers(data.users); // Update the users state
+      setTotalPages(data.totalPages); // Update the total pages
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        let page = 1;
-        let pageSize = 20;
-        const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
-        const data = await response.json();
-        allUserRows = data;
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+    fetchUsers(currentPage); // Fetch users for the current page
+  }, [currentPage]);
 
-    fetchUsers();
-  }, []);
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchUsers(newPage); // Fetch users for the new page
+    }
+  };
 
   const searchUser = (query) => {
     setSearchQuery(query);
@@ -93,14 +102,14 @@ const Admin = () => {
 
   const validateEmail = (email) => {
     if (email.includes("@") && email.includes(".")) {
-      return true; 
+      return true;
     } else {
-      return false; 
+      return false;
     }
   };
   const validatePassword = (password) => {
     if (password.length < 10) {
-      return false; 
+      return false;
     }
     let hasUppercase = false;
     for (let i = 0; i < password.length; i++) {
@@ -110,7 +119,7 @@ const Admin = () => {
       }
     }
     if (!hasUppercase) {
-      return false; 
+      return false;
     }
     let hasLowercase = false;
     for (let i = 0; i < password.length; i++) {
@@ -120,7 +129,7 @@ const Admin = () => {
       }
     }
     if (!hasLowercase) {
-      return false; 
+      return false;
     }
     const specialCharacters = "!@#$%^&*()_+[]{}|;:',.<>?/";
     let hasSpecialCharacter = false;
@@ -131,9 +140,9 @@ const Admin = () => {
       }
     }
     if (!hasSpecialCharacter) {
-      return false; 
+      return false;
     }
-    return true; 
+    return true;
   };
 
   const checkUserInputMeetsRequirements = () => {
@@ -163,14 +172,14 @@ const Admin = () => {
       }
     });
 
-    setWarnings({ ...newWarnings });
+    setWarnings({ ...newWarnings }); // Update warnings state with new warnings making the react re-render
     return allFieldsFilled;
   };
 
   const handleBlur = (id) => {
     const value = document.getElementById(id)?.value;
     setWarnings((prevWarnings) => ({
-      ...prevWarnings,
+      ...prevWarnings, // done to keep previous warninings while updating the new warning
       [id]: value ? "" : emptyFieldMsg,
     }));
   };
@@ -202,7 +211,7 @@ const Admin = () => {
 
       if (response.ok) {
         alert('User added successfully');
-        setOpenDialog(false); // Close the dialog
+        setOpenDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
         const errorData = await response.json();
@@ -395,9 +404,10 @@ const Admin = () => {
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
+                <TbHeadCell sx={{ maxWidth: "10px" }}>#</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Filters</TbHeadCell> 
+                <TbHeadCell>Filters</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
@@ -406,20 +416,21 @@ const Admin = () => {
                 users.map((user, index) => (
                   console.log(user),
                   <TableRow key={index}>
+                    <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
-                          ? "Network Manager"
-                          : "City Coxuncil"}
+                        ? "Network Manager"
+                        : "City Council"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
                         ? user.network_filter_id || "No network assigned"
                         : user.account_type_id === 3
-                          ? user.city_filter_id || "No city assigned"
-                          : "N/A"}
+                        ? user.city_filter_id || "No city assigned"
+                        : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
                       <Button>Manage user</Button>
@@ -428,16 +439,27 @@ const Admin = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TbBodyCell colSpan={4} style={{ textAlign: "center" }}>
-                    {allUserRows.length > 0 ?
-                      "No users found" :
-                      "No users available! Create one to get started."}
+                  <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
+                    {allUserRows.length > 0
+                      ? "No users found"
+                      : "No users available! Create one to get started."}
                   </TbBodyCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
+        <div className={styles.space_between_center_flex_row}>
+          <Button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+            Next
+          </Button>
+        </div>
       </div>
     </main>
   );
