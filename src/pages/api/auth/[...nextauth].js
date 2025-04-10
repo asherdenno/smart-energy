@@ -1,63 +1,138 @@
+// import NextAuth from "next-auth";
+// import CredentialsProvider from "next-auth/providers/credentials";
+
+// export const authOptions = {
+//   session: {
+//     strategy: "jwt",
+//     maxAge: 30 * 24 * 60 * 60
+//   },
+//   providers: [
+//     CredentialsProvider({
+
+//       name: "Credentials",
+
+//       credentials: {
+//         username: { label: "Username", type: "text", placeholder: "jsmith" },
+//         password: { label: "Password", type: "password" }
+//       },
+//       async authorize(credentials, req) {
+
+//         const res = await fetch('http://localhost:3000/api/fetch-user', {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({ userName: credentials?.username, password: credentials?.password })
+//         });
+
+//         const user = await res.json();
+
+//         return res.ok && user.length > 0 ? user[0] : null
+//       },
+//     }),
+//   ],
+//   callbacks: {
+//     jwt: async ({ token, user }) => {
+//       if (user) {
+//         console.log("1** Token: " + token.id)
+//         console.log("2** User: " + user.f_name)
+//         token.id = user.account_id
+//         token.username = user.f_name;
+//         token.accessToken = token;
+//       }
+
+//       return token, user
+//     },
+//     session: async ({ session, token }) => {
+//       if (token) {
+//         console.log("3** Session: " + session)
+//         console.log("4** Token: " + token)
+//         session.user = token.user
+//         session.user.account_id = token.id
+//         session.user.name = token.username;
+//         session.accessToken = token.accessToken;
+//       }
+//       return session;
+//     },
+//   },
+//   pages: {
+//     signIn: '/auth/signIn'
+//   }
+// };
+
+// export default NextAuth(authOptions)
+
+
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
     CredentialsProvider({
-
       name: "Credentials",
-
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-
-        const res = await fetch('http://localhost:3000/api/fetch-user', {
-          method: 'POST',
+      async authorize(credentials) {
+        const res = await fetch("http://localhost:3000/api/fetch-user", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userName: credentials?.username, password: credentials?.password })
+          body: JSON.stringify({
+            userName: credentials?.username,
+            password: credentials?.password,
+          }),
         });
 
         const user = await res.json();
 
-        return res.ok && user.length > 0 ? user[0] : null
+        if (res.ok && user.length > 0) {
+          console.log("🔐 Authorized User:", user[0]); // Log user info here
+          return user[0];
+        }
+
+        return null;
       },
     }),
   ],
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        console.log("1** Token: " + token.id)
-        console.log("2** User: " + user.f_name)
-        token.id = user.account_id
-        token.username = user.f_name;
-        token.accessToken = token;
-      }
+        // Log user info at login
+        console.log("🧠 JWT Callback - User:", user);
+        console.log("🧠 JWT Callback - Before Token:", token);
 
-      return token, user
+        token.id = user.account_id;
+        token.name = user.f_name;
+        console.log("🧠 JWT Callback - After Token:", token);
+      }
+      return token; // ❗️Make sure only token is returned
     },
     session: async ({ session, token }) => {
-      if (token) {
-        console.log("3** Session: " + session)
-        console.log("4** Token: " + token)
-        session.user = token.user
-        session.user.account_id = token.id
-        session.user.name = token.username;
-        session.accessToken = token.accessToken;
-      }
+      // Log session and token
+      console.log("🌀 Session Callback - Token:", token);
+      console.log("🌀 Session Callback - Before Session:", session);
+
+      session.user = {
+        account_id: token.id,
+        name: token.name,
+      };
+      session.accessToken = token.accessToken;
+
+      console.log("🌀 Session Callback - After Session:", session);
+
       return session;
     },
   },
   pages: {
-    signIn: '/auth/signIn'
-  }
+    signIn: "/auth/signIn",
+  },
 };
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
