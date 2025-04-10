@@ -1,19 +1,6 @@
 import { NextWeek } from '@mui/icons-material';
 import sql from 'mssql';
-
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  server: process.env.DB_HOST,
-  database: process.env.DB_SCHEMA,
-  options: {
-    encrypt: true, // Required for Azure
-    trustServerCertificate: false // Set to true only for local dev with self-signed certs
-  },
-  port: 1433,
-  requestTimeout: 0,
-  connectionTimeout: 30000
-};
+import { config } from '@/lib/db_config';
 
 const fetchAll = async () => {
   try {
@@ -34,7 +21,7 @@ const fetchCities = async (searchString) => {
   try {
     await sql.connect(config);
     const query = `
-      SELECT TOP (20) *
+      SELECT TOP (100) *
       FROM city_has_id
       WHERE city LIKE @searchString
     `;
@@ -51,14 +38,8 @@ const fetchCities = async (searchString) => {
 
 const fetchNetworks = async () => {
   try {
-    // await sql.connect(config);
-    // const query = 'SELECT* FROM network_has_id';
-    // const request = new sql.Request();
     // console.log("Executing query:", query);
-    // const result = await request.query(query);
     // console.log("Query result:", result.recordset);
-    // await sql.close();
-    // return result.recordset;
     await sql.connect(config);
     const query = 'SELECT TOP (20) * FROM network_has_id';
     const result = await sql.query(query);
@@ -100,21 +81,33 @@ const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
       OFFSET @offset ROWS
       FETCH NEXT @pageSize ROWS ONLY;
     `;
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM dbo.account;
+    `;
     const request = new sql.Request();
     request.input('offset', sql.Int, skipRows);
     request.input('pageSize', sql.Int, pageSize);
-    console.log(`Fetching page ${page} with page size ${pageSize}`);
-    const result = await request.query(query);
-    console.log("Query result:", result.recordset);
+
+
+    const [usersResult, countResult] = await Promise.all([
+      request.query(query),
+      sql.query(countQuery),
+    ]);
+
+    const totalUsers = countResult.recordset[0].total;
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
     await sql.close();
-    return result.recordset;
+    return { users: usersResult.recordset, totalPages };
+
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch users: " + error.message);
   }
 };
 
-const countTotalUsers = async () => {
+const totalUsersCount = async () => {
   try {
     await sql.connect(config);
     const query = `
@@ -174,6 +167,33 @@ const findUsername = async () => {
   }
 }
 
+
+const insertNewUser = async (email, f_name, l_name, username, password, account_type_id, network_filter_id, city_filter_id) => {
+  try {
+    await sql.connect(config);
+    const query = `
+      INSERT INTO dbo.account (email, f_name, l_name, username, password, account_type_id, network_filter_id, city_filter_id)
+      VALUES (@Email, @FName, @LName, @Username, @Password, @AccountTypeId, @NetworkFilterId, @CityFilterId);
+    `;
+    const request = new sql.Request();
+    request.input('Email', sql.NVarChar, email);
+    request.input('FName', sql.NVarChar, f_name);
+    request.input('LName', sql.NVarChar, l_name);
+    request.input('Username', sql.NVarChar, username);
+    request.input('Password', sql.NVarChar, password);
+    request.input('AccountTypeId', sql.Int, account_type_id);
+    request.input('NetworkFilterId', sql.Int, network_filter_id || null);
+    request.input('CityFilterId', sql.Int, city_filter_id || null);
+
+    await request.query(query);
+    await sql.close();
+    return { success: true }; // Return a success confirmation
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to insert new user: " + error.message);
+  }
+};
+
 const fetchUserData = async () => {
   if (passwordInput) {
     try {
@@ -192,7 +212,8 @@ const fetchUserData = async () => {
   } else {
     throw new Error("Password not detected");
   }
-}
+};
+
 
 const fetchAnnualFilteredEnergy = async (filterString) => {
   if (filterString) {
@@ -459,7 +480,7 @@ const fetchUsageSumPerYear = async (city_filter_id) => {
 
 const fetchElectricityUsagePerZipcode = async (city) => {
   try {
-    await sql.connect(config);  
+    await sql.connect(config);
     const query =
       `SELECT TOP(5000) e.zipcode_from,
       e.annual_consume,
@@ -499,5 +520,5 @@ const fetchAllNotif = async () => {
 export {
   fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchAllUsersInPages, countTotalUsers, fetchAllUserFilterIds, findUsers, fetchAllNotif
-};
+  fetchAllUsersInPages, totalUsersCount, fetchAllUserFilterIds, findUsers, insertNewUser, fetchAllNotif
+}
