@@ -2,8 +2,8 @@
 import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
-// import { useSession } from "next-auth/react"
+import { Typography, Button } from "@mui/material";
+import { useSession } from "next-auth/react"
 
 const Overview = () => {
 
@@ -22,8 +22,12 @@ const Overview = () => {
     setRandomTip(ecoTips[randomIndex]);
   })
 
-  // const { data: session, status } = useSession();
-  // console.log(session.user.name)
+  const { data: session, status } = useSession();
+  console.log(session)
+
+  if (status === "authenticated") {
+    console.log("success!")
+  }
 
   return (
       <main className={styles.content}>

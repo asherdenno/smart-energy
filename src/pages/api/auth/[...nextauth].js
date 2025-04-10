@@ -36,7 +36,8 @@ export const authOptions = {
       if (user) {
         console.log("1** Token: " + token.id)
         console.log("2** User: " + user.f_name)
-        token.id = user.account_id
+        token.id = user.account_id;
+        token.user = user;
         token.username = user.f_name;
         token.accessToken = token;
       }

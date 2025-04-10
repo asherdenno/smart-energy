@@ -7,7 +7,7 @@ const fetchUser = async (userName, password) => {
 
     try{
         await sql.connect(config);
-        const query = 'SELECT * FROM account WHERE username = @userName AND password = @password';
+        const query = 'SELECT *, f_name AS name FROM account WHERE username = @userName AND password = @password';
         const request = new sql.Request();
         request.input('userName', sql.VarChar, `${userName}`);
         request.input('password', sql.VarChar, `${password}`);
