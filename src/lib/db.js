@@ -21,9 +21,9 @@ const fetchCities = async (searchString) => {
   try {
     await sql.connect(config);
     const query = `
-      SELECT TOP (20) city_id, city_name
+      SELECT TOP (100) *
       FROM city_has_id
-      WHERE city_name LIKE @searchString
+      WHERE city LIKE @searchString
     `;
     const request = new sql.Request();
     request.input('searchString', sql.VarChar, `%${searchString}%`);
@@ -434,8 +434,8 @@ const fetchDoubleFilteredData = async (net_manager, city) => {
   }
 }
 
-const fetchUsageSumPerYear = async (account_id) => {
-  if (!account_id) {
+const fetchUsageSumPerYear = async (city_filter_id) => {
+  if (city_filter_id) {
     try {
       await sql.connect(config);
       const query = `
@@ -445,22 +445,28 @@ const fetchUsageSumPerYear = async (account_id) => {
           ROUND(SUM(e.annual_consume),3) AS total_annual_consume,
           d.city,
           ROUND(AVG(e.delivery_perc),2) AS total_delivery_perc,
-          ROUND(AVG(e.annual_consume_lowtarif_perc),2) AS total_annual_consume_lowtarif_perc
+          ROUND(AVG(e.annual_consume_lowtarif_perc),2) AS total_annual_consume_lowtarif_perc,
+          c.city_filter_id
         FROM
           dbo.energy_data e
         INNER JOIN
           data_filter d
         ON
           (e.data_id = d.data_id)
+        INNER JOIN
+          city_has_id c
+        ON
+          (d.city = c.city)
         WHERE
-          (d.city = 'ENTER')
+          (c.city_filter_id = @city_filter_id)
         GROUP BY 
-          e.year, e.electric_or_gas, d.city
+          e.year, e.electric_or_gas, d.city, c.city_filter_id
         ORDER BY 
           e.year, e.electric_or_gas;
       `;
-
-      const result = await sql.query(query);
+      const request = new sql.Request();
+      request.input('city_filter_id', sql.Int, city_filter_id);
+      const result = await request.query(query);
       await sql.close();
       return result.recordset;
     } catch (error) {
@@ -468,7 +474,7 @@ const fetchUsageSumPerYear = async (account_id) => {
       throw new Error("Failed to fetch usage data: " + error.message);
     }
   } else {
-    throw new Error("Filtering by city is not yet implemented");
+    throw new Error("City filter ID not detected. Please provide a valid ID.");
   }
 }
 

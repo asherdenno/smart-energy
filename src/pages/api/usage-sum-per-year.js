@@ -5,15 +5,16 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
-    const { account_id } = req.body;
+    const { city_id } = req.body;
 
-    if (!account_id) {
-        return res.status(400).json({ message: 'Account ID is required' });
+    if (!city_id) {
+        return res.status(400).json({ message: 'City ID is required' });
     }
 
     try {
-        const data = await fetchUsageSumPerYear();
-        res.status(200).json({ message: 'Filtering by account ID is not yet implemented', data });
+        const data = await fetchUsageSumPerYear(city_id);
+        console.log("This is the city_id from the request body: ", city_id);
+        res.status(200).json({ message: 'Filtering by city ID is not yet implemented.', data });
     } catch (error) {
         console.error("API Error:", error);
         res.status(500).json({ message: 'Internal Server Error' });

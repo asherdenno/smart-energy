@@ -13,17 +13,18 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { NavbarContext } from '@/app/dashboard/context/NavbarContext';
+import styles from "@/app/page.module.css";
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
-const fetchData = async (account_id) => {
+const fetchData = async (city_id) => {
   try {
     const res = await fetch('/api/usage-sum-per-year', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ account_id }),
+      body: JSON.stringify({ city_id }),
     });
     if (!res.ok) throw new Error('Error fetching usage data');
     const data = await res.json();
@@ -74,7 +75,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
         if (!yearLowTarifData) {
           yearLowTarifData = {
             name: item.year,
-            "Electric Low Tariff Consume": null,
+            "Electric Low Tariff Consumption": null,
             "Gas Low Tariff Consume": null,
           };
           lowtarifData.push(yearLowTarifData);
@@ -84,7 +85,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           yearData.Electric = item.total_annual_consume;
           yearDelData["Electric Delivery Percentage"] =
             item.total_delivery_perc;
-          yearLowTarifData["Electric Low Tariff Consume"] =
+          yearLowTarifData["Electric Low Tariff Consumption"] =
             item.total_annual_consume_lowtarif_perc;
         } else if (item.electric_or_gas === "Gas") {
           yearData.Gas = item.total_annual_consume;
@@ -107,7 +108,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
     }
     console.log("Fetching data...");
 
-    fetchData("1")
+    fetchData("36")
       .then((response) => updateGraph(response.data))
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -121,8 +122,10 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
 
   return (
     <div style={{ width: '100%' }}>
+      <div className={styles.greyContainer+" energyChart"}>
+
       <h4>Annual Energy Consumption</h4>
-      <ResponsiveContainer width="100%" height={200} className="energyChart">
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}} >
         <AreaChart
           width={500}
           height={200}
@@ -134,7 +137,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
             left: 0,
             bottom: 0,
           }}
-        >
+          >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
@@ -147,7 +150,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
                 return [`${value} m³`, name];
               }
             }}
-          />
+            />
           {showElectric && (
             <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
           )}
@@ -155,10 +158,13 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           <Brush />
         </AreaChart>
       </ResponsiveContainer>
+          </div>
 
+          <div className={styles.greyContainer+" energyChart"}>
+
+      
       <h4>Annual Energy Delivery Percentage</h4>
-
-      <ResponsiveContainer width="100%" height={200} className="energyChart">
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
           height={200}
@@ -170,7 +176,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
             left: 0,
             bottom: 0,
           }}
-        >
+          >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis tickFormatter={(value) => `${value}%`} />
@@ -178,28 +184,29 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
             formatter={(value, name) => {
               return [`${value} %`, name];
             }}
-          />
+            />
           {showElectric && (
             <Line
-              type="monotone"
-              dataKey="Electric Delivery Percentage"
-              stroke="#8884d8"
-              fill="#8884d8"
+            type="monotone"
+            dataKey="Electric Delivery Percentage"
+            stroke="#8884d8"
+            fill="#8884d8"
             />
           )}
           {showGas && (
             <Line
-              type="monotone"
-              dataKey="Gas Delivery Percentage"
-              stroke="#82ca9d"
-              fill="#82ca9d"
+            type="monotone"
+            dataKey="Gas Delivery Percentage"
+            stroke="#82ca9d"
+            fill="#82ca9d"
             />
           )}
         </LineChart>
       </ResponsiveContainer>
-      <h4>Annual Energy Consumption Percentage During Low Tarrif Hours</h4>
-
-      <ResponsiveContainer width="100%" height={200} className="energyChart">
+          </div>
+          <div className={styles.greyContainer+" energyChart"}>
+        <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
           height={200}
@@ -223,7 +230,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           {showElectric && (
             <Line
               type="monotone"
-              dataKey="Electric Low Tariff Consume"
+              dataKey="Electric Low Tariff Consumption"
               stroke="#8884d8"
               fill="#8884d8"
             />
@@ -238,6 +245,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           )}
         </LineChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 };
