@@ -26,7 +26,7 @@ const vacantNetwork = [
 const vacantCity = [
   'Halland',
   'alvsborg',
-  'Vastra Gotaland',
+  'Vastra Gotaland',  
 ];
 
 let allUserRows = [];
@@ -34,30 +34,30 @@ let allUserRows = [];
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
-  const [totalPages, setTotalPages] = useState(1); // Track the total number of pages
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchUsers = async (page = 1) => {
     try {
       const pageSize = 10; // Set the number of users displayed per page
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
-      allUserRows = data.users; // Update allUserRows with fetched data
-      setUsers(data.users); // Update the users state
-      setTotalPages(data.totalPages); // Update the total pages
+      allUserRows = data.users; 
+      setUsers(data.users);
+      setTotalPages(data.totalPages); 
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
   useEffect(() => {
-    fetchUsers(currentPage); // Fetch users for the current page
+    fetchUsers(currentPage);
   }, [currentPage]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      fetchUsers(newPage); // Fetch users for the new page
+      fetchUsers(newPage);
     }
   };
 
@@ -189,7 +189,6 @@ const Admin = () => {
       return;
     }
 
-    // Prepare user data
     const userData = {
       email: document.getElementById('email').value,
       f_name: document.getElementById('firstName').value,
@@ -197,12 +196,11 @@ const Admin = () => {
       username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
       password: document.getElementById('password').value,
       account_type_id: activeRole === 'Network manager' ? 2 : 3,
-      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
-      city_filter_id: activeRole === 'City council' ? document.getElementById('city').value : null,
+      network_filter_id: activeRole === 'Network manager' ? 1 : null,
+      city_filter_id: activeRole === 'City council' ? 2 : null,
     };
 
     try {
-      // Send user data to the backend
       const response = await fetch('/api/add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -266,7 +264,7 @@ const Admin = () => {
               }}
               sx={{
                 "& .MuiDialog-paper": {
-                  maxWidth: "500px",
+                  maxWidth: "800px",
                   border: "black 2px solid",
                   padding: "20px 23px",
                 },
