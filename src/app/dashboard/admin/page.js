@@ -313,7 +313,7 @@ const Admin = () => {
 
                 {activeRole === "Network manager" ?
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select network </InputLabel>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select Network </InputLabel>
                     <AutocompleteField
                       id="network"
                       options={vacantNetwork}
@@ -412,7 +412,7 @@ const Admin = () => {
                         ? "Admin"
                         : user.account_type_id === 2
                           ? "Network Manager"
-                          : "City Coxuncil"}
+                          : "City Council"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
