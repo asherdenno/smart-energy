@@ -6,10 +6,12 @@ import AnnualEnergyData from "../charts/overview/annualEnergyData";
 import EnergyUsagePercent from "../charts/overview/energyUsagePercent";
 import { ToggleButton } from "@mui/material";
 import DownloadButtons from "./downloadButton";
+import GasElectricKey from "../charts/overview/gasElectricKey";
 
 export default function AnnualEnergyOverview() {
   const [showElectric, setShowElectric] = useState(true);
   const [showGas, setShowGas] = useState(true);
+  // const 
 
   return (
     <div className={styles.greyContainer}>
@@ -29,6 +31,7 @@ export default function AnnualEnergyOverview() {
           </div>
         <div style={{ width:"50%", height:"100%"}}>
         <EnergyUsagePercent showElectric={showElectric} showGas={showGas} />
+        <GasElectricKey/>
         </div>
         <div>
           <DownloadButtons/>

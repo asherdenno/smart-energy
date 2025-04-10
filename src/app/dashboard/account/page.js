@@ -3,12 +3,14 @@ import Navbar from "../components/navbar";
 import styles from "@/app/page.module.css";
 import Link from "next/link";
 import { Button } from "@mui/material";
-import { signOut } from "next-auth/react"
+import { signOut, useSession, getToken } from "next-auth/react"
 import { NavbarContext } from "../context/NavbarContext";
 import { useContext, useEffect } from "react";
 
 const Account = () => {
   const { account, setAccount } = useContext(NavbarContext)
+  const { data: session } = useSession();
+    console.log("Account session: ", session);
     useEffect(() => {
       const accountData = {
         account_id : 1,

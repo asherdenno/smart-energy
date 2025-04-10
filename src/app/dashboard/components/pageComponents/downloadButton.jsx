@@ -32,16 +32,35 @@ const DownloadCharts = async () => {
     pdf.addImage(imgData, 'PNG', padding, yOffset, imgWidth, imgHeight);
     yOffset += imgHeight + padding;
   }
+ 
+  // for (let i = 0; i < energyCharts.length; i++) {
+  //   const element = energyCharts[i];
+  //   const chartTitles = ["Gas Usage", "Electric Usage", "Water Usage"];
+  
+  //   // Insert title
+  //   pdf.setFontSize(14);
+  //   pdf.setFont("helvetica", "bold");
+  //   pdf.text(chartTitles[i] || `Chart ${i + 1}`, padding, yOffset);
+  //   yOffset += 15;
+  
+  //   const canvas = await html2canvas(element);
+  //   const imgData = canvas.toDataURL('image/png');
+  
+  //   const pageWidth = pdf.internal.pageSize.getWidth();
+  //   const imgWidth = pageWidth - 2 * padding;
+  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+  //   if (i !== 0 && yOffset + imgHeight > pdf.internal.pageSize.getHeight()) {
+  //     pdf.addPage();
+  //     yOffset = padding;
+  //   }
+  
+  //   pdf.addImage(imgData, 'PNG', padding, yOffset, imgWidth, imgHeight);
+  //   yOffset += imgHeight + padding;
+  // }
+
   const chartData = dummyAnnualData;
   
-  // const chartData = [
-  //   { name: "2015", Electric: 4800, Gas: 3100, "Electric Delivery Percentage": 21, "Gas Delivery Percentage": 15, "Electric Low Tariff Consume": 38, "Gas Low Tariff Consume": 28 },
-  //   { name: "2016", Electric: 4900, Gas: 3200, "Electric Delivery Percentage": 22, "Gas Delivery Percentage": 16, "Electric Low Tariff Consume": 39, "Gas Low Tariff Consume": 29 },
-  //   { name: "2017", Electric: 5000, Gas: 3300, "Electric Delivery Percentage": 23, "Gas Delivery Percentage": 17, "Electric Low Tariff Consume": 40, "Gas Low Tariff Consume": 30 },
-  //   { name: "2018", Electric: 5100, Gas: 3400, "Electric Delivery Percentage": 24, "Gas Delivery Percentage": 18, "Electric Low Tariff Consume": 41, "Gas Low Tariff Consume": 31 },
-  //   { name: "2019", Electric: 5200, Gas: 3500, "Electric Delivery Percentage": 25, "Gas Delivery Percentage": 19, "Electric Low Tariff Consume": 42, "Gas Low Tariff Consume": 32 },
-  //   { name: "2020", Electric: 5300, Gas: 3600, "Electric Delivery Percentage": 26, "Gas Delivery Percentage": 20, "Electric Low Tariff Consume": 43, "Gas Low Tariff Consume": 33 },
-  // ];
 
 
     if (chartData.length > 0) {
@@ -104,7 +123,7 @@ export default function DownloadButtons() {
           wordWrap: "break-word",
           textAlign: "center", 
           padding: "10px"}}>
-          Download Charts <br/>(Downloads charts as pdf with their data)
+          Download Charts <br/>(Downloads charts as PDF with their data)
           </button>
          <button onClick={DownloadData} 
          style={{ 
@@ -114,7 +133,7 @@ export default function DownloadButtons() {
           wordWrap: "break-word",
           textAlign: "center", 
           padding: "10px" }}>
-          Download Data <br/>(Downloads all data related to network and/or city as csv)
+          Download Data <br/>(Downloads all data related to network and/or city as CSV)
           </button>
         </div>
     );

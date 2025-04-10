@@ -29,7 +29,7 @@ const vacantCity = [
   'Vastra Gotaland',
 ];
 
-let allUserRows = []; 
+let allUserRows = [];
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -42,8 +42,8 @@ const Admin = () => {
         let pageSize = 20;
         const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
         const data = await response.json();
-        allUserRows = data; // Update allUserRows with fetched data
-        setUsers(data); // Update the users state
+        allUserRows = data;
+        setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -91,19 +91,49 @@ const Admin = () => {
 
   let emptyFieldMsg = "Field cannot be empty";
 
-  const checkUserInput = () => {
-    if (!checkUserInputMeetsRequirements()) {
-    }
-  }
-
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    if (email.includes("@") && email.includes(".")) {
+      return true; 
+    } else {
+      return false; 
+    }
   };
-
   const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{10,}$/;
-    return passwordRegex.test(password);
+    if (password.length < 10) {
+      return false; 
+    }
+    let hasUppercase = false;
+    for (let i = 0; i < password.length; i++) {
+      if (password[i] === password[i].toUpperCase() && isNaN(password[i])) {
+        hasUppercase = true;
+        break;
+      }
+    }
+    if (!hasUppercase) {
+      return false; 
+    }
+    let hasLowercase = false;
+    for (let i = 0; i < password.length; i++) {
+      if (password[i] === password[i].toLowerCase() && isNaN(password[i])) {
+        hasLowercase = true;
+        break;
+      }
+    }
+    if (!hasLowercase) {
+      return false; 
+    }
+    const specialCharacters = "!@#$%^&*()_+[]{}|;:',.<>?/";
+    let hasSpecialCharacter = false;
+    for (let i = 0; i < password.length; i++) {
+      if (specialCharacters.includes(password[i])) {
+        hasSpecialCharacter = true;
+        break;
+      }
+    }
+    if (!hasSpecialCharacter) {
+      return false; 
+    }
+    return true; 
   };
 
   const checkUserInputMeetsRequirements = () => {
@@ -145,14 +175,25 @@ const Admin = () => {
     }));
   };
 
-  const handleAddUser = async (userData) => {
-    // Check if user input meets requirements
+  const handleAddUser = async () => {
     if (!checkUserInputMeetsRequirements()) {
-      alert('Please fix the input errors before submitting.');
-      return; // Stop execution if validation fails
+      return;
     }
 
+    // Prepare user data
+    const userData = {
+      email: document.getElementById('email').value,
+      f_name: document.getElementById('firstName').value,
+      l_name: document.getElementById('lastName').value,
+      username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
+      password: document.getElementById('password').value,
+      account_type_id: activeRole === 'Network manager' ? 2 : 3,
+      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
+      city_filter_id: activeRole === 'City council' ? document.getElementById('city').value : null,
+    };
+
     try {
+      // Send user data to the backend
       const response = await fetch('/api/add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -186,7 +227,7 @@ const Admin = () => {
             gap: "10px",
           }}
         >
-          <h2>Manage users</h2>
+          <h2>Manage Users</h2>
           <div
             className={styles.right_center_flex_row}
             style={{ gap: "10px", width: "50%" }}
@@ -203,7 +244,7 @@ const Admin = () => {
               color="primary"
               onClick={() => setOpenDialog(true)}
             >
-              Create new user <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
+              Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
             <Dialog
               open={openDialog} onClose={() => setOpenDialog(false)}
@@ -229,7 +270,7 @@ const Admin = () => {
                   fontSize: "25px",
                   fontWeight: "600",
                 }}>
-                New user</DialogTitle>
+                New User</DialogTitle>
               <DialogContent
                 id="dialog-description"
                 sx={{
@@ -254,7 +295,7 @@ const Admin = () => {
                         fontWeight: activeRole === "Network manager" ? "600" : "400",
                       }}
                       onClick={() => setActiveRole("Network manager")}
-                    >Network manger
+                    >Network Manager
                     </LargeBtn>
                     <LargeBtn
                       sx={{
@@ -265,7 +306,7 @@ const Admin = () => {
                         fontWeight: activeRole === "City council" ? "600" : "400",
                       }}
                       onClick={() => setActiveRole("City council")}
-                    >City council
+                    >City Council
                     </LargeBtn>
                   </div>
                 </div>
@@ -283,7 +324,7 @@ const Admin = () => {
                   </div>
                   :
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select city</InputLabel>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select City</InputLabel>
                     <AutocompleteField
                       id="city"
                       options={vacantCity}
@@ -294,13 +335,13 @@ const Admin = () => {
                 }
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First name</InputLabel>
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First Name</InputLabel>
                   <LargeInputBox id="firstName" type="text" placeholder="Enter first name" onBlur={() => handleBlur("firstName")} />
                   <span className={styles.warning}>{warnings["firstName"]}</span>
                 </div>
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last name</InputLabel>
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last Name</InputLabel>
                   <LargeInputBox id="lastName" type="text" placeholder="Enter last name" onBlur={() => handleBlur("lastName")} />
                   <span className={styles.warning}>{warnings["lastName"]}</span>
                 </div>
@@ -325,19 +366,7 @@ const Admin = () => {
                   gap: "2px",
                 }}>
                 <LargeBtn
-                  onClick={() => {
-                    const userData = {
-                      email: document.getElementById('email').value,
-                      f_name: document.getElementById('firstName').value,
-                      l_name: document.getElementById('lastName').value,
-                      username: document.getElementById('firstName').value + document.getElementById('lastName').value,
-                      password: document.getElementById('password').value,
-                      account_type_id: activeRole === 'Network manager' ? 2 : 3,
-                      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
-                      city_filter_id: activeRole === 'City council' ? document.getElementById('cities').value : null,
-                    };
-                    checkUserInputMeetsRequirements(userData);
-                  }}
+                  onClick={handleAddUser}
                 >
                   Create new user
                 </LargeBtn>
@@ -368,8 +397,8 @@ const Admin = () => {
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Manages</TbHeadCell> 
-                <TbHeadCell>Manage user</TbHeadCell>
+                <TbHeadCell>Filters</TbHeadCell> 
+                <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -382,15 +411,15 @@ const Admin = () => {
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
-                        ? "Network Manager"
-                        : "City Council"}
+                          ? "Network Manager"
+                          : "City Coxuncil"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
                         ? user.network_filter_id || "No network assigned"
                         : user.account_type_id === 3
-                        ? user.city_filter_id || "No city assigned"
-                        : "N/A"}
+                          ? user.city_filter_id || "No city assigned"
+                          : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
                       <Button>Manage user</Button>
