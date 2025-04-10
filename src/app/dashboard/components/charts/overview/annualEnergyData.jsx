@@ -75,7 +75,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
         if (!yearLowTarifData) {
           yearLowTarifData = {
             name: item.year,
-            "Electric Low Tariff Consume": null,
+            "Electric Low Tariff Consumption": null,
             "Gas Low Tariff Consume": null,
           };
           lowtarifData.push(yearLowTarifData);
@@ -85,7 +85,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           yearData.Electric = item.total_annual_consume;
           yearDelData["Electric Delivery Percentage"] =
             item.total_delivery_perc;
-          yearLowTarifData["Electric Low Tariff Consume"] =
+          yearLowTarifData["Electric Low Tariff Consumption"] =
             item.total_annual_consume_lowtarif_perc;
         } else if (item.electric_or_gas === "Gas") {
           yearData.Gas = item.total_annual_consume;
@@ -230,7 +230,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           {showElectric && (
             <Line
               type="monotone"
-              dataKey="Electric Low Tariff Consume"
+              dataKey="Electric Low Tariff Consumption"
               stroke="#8884d8"
               fill="#8884d8"
             />
