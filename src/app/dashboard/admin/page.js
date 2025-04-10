@@ -26,7 +26,7 @@ const vacantNetwork = [
 const vacantCity = [
   'Halland',
   'alvsborg',
-  'Vastra Gotaland',  
+  'Vastra Gotaland',
 ];
 
 let allUserRows = [];
@@ -34,7 +34,7 @@ let allUserRows = [];
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchUsers = async (page = 1) => {
@@ -42,9 +42,9 @@ const Admin = () => {
       const pageSize = 10; // Set the number of users displayed per page
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
-      allUserRows = data.users; 
+      allUserRows = data.users;
       setUsers(data.users);
-      setTotalPages(data.totalPages); 
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -78,7 +78,6 @@ const Admin = () => {
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
-  const [warning, setWarningDisplay] = useState(false);
 
   const [warnings, setWarnings] = useState({
     network: "",
@@ -167,7 +166,6 @@ const Admin = () => {
           newWarnings[id] = "Password must be at least 10 characters, include 1 uppercase, 1 lowercase, and 1 special character";
         } else {
           newWarnings[id] = "";
-          allFieldsFilled = true;
         }
       }
     });
@@ -264,7 +262,8 @@ const Admin = () => {
               }}
               sx={{
                 "& .MuiDialog-paper": {
-                  maxWidth: "800px",
+                  maxWidth: "900px",
+                  width: "100%",
                   border: "black 2px solid",
                   padding: "20px 23px",
                 },
@@ -372,13 +371,11 @@ const Admin = () => {
                   display: "flex",
                   gap: "2px",
                 }}>
-                <LargeBtn
-                  onClick={handleAddUser}
-                >
+                <LargeBtn onClick={handleAddUser} >
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false); setWarningDisplay(false); }}
+                  onClick={() => { setOpenDialog(false);  }}
                 >Cancel</LargeBtn>
               </DialogActions>
             </Dialog>
@@ -427,8 +424,8 @@ const Admin = () => {
                       {user.account_type_id === 2
                         ? user.network_filter_id || "No network assigned"
                         : user.account_type_id === 3
-                        ? user.city_filter_id || "No city assigned"
-                        : "N/A"}
+                          ? user.city_filter_id || "No city assigned"
+                          : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
                       <Button>Manage user</Button>
