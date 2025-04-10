@@ -2,6 +2,7 @@ import { NextWeek } from '@mui/icons-material';
 import sql from 'mssql';
 import { config } from '@/lib/db_config';
 
+
 const fetchAll = async () => {
   try {
     await sql.connect(config);
@@ -509,7 +510,8 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 const fetchAllNotif = async () => {
   try{
     const pool =await sql.connect(config);
-    const result = await pool.request().query('SELECT a.');
+    const result = await pool.request().query(
+      'select n.notif_id, n.target_account_id, a.f_name, n.type, n.from_account_id, n.resource, n.isRead, n.time from notification n inner join account a on a.account_id = n.target_account_id;');
     return result.recordset;
   }catch (err) {
     console.error('database query error:', err);
