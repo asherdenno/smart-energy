@@ -156,6 +156,7 @@ const Admin = () => {
       if (!value) {
         allFieldsFilled = false;
         newWarnings[id] = emptyFieldMsg;
+        console.log("Empty field:", id);
         if (inputElement) inputElement.value = ""; // Clear the value if empty
       } else {
         if (id === "email" && !validateEmail(value)) {
@@ -184,6 +185,7 @@ const Admin = () => {
 
   const handleAddUser = async () => {
     if (!checkUserInputMeetsRequirements()) {
+      alert("Please fill all fields correctly");
       return;
     }
 
@@ -199,7 +201,7 @@ const Admin = () => {
     };
 
     try {
-      const response = await fetch('/api/add-user', {
+      const response = await fetch('/api/fetch-add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -262,7 +264,7 @@ const Admin = () => {
               }}
               sx={{
                 "& .MuiDialog-paper": {
-                  maxWidth: "900px",
+                  maxWidth: "600px",
                   width: "100%",
                   border: "black 2px solid",
                   padding: "20px 23px",
@@ -409,7 +411,7 @@ const Admin = () => {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  console.log(user),
+                  // console.log( user),
                   <TableRow key={index}>
                     <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>

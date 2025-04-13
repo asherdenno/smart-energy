@@ -189,8 +189,7 @@ const insertNewUser = async (email, f_name, l_name, username, password, account_
     return { success: true }; 
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to insert new user: " + error.message);
-  }
+    res.status(500).json({ error: 'Failed to add user', details: error.message });  }
 };
 
 const fetchUserData = async () => {
