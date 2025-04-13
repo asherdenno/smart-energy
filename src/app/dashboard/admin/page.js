@@ -152,8 +152,9 @@ const Admin = () => {
     fields.forEach(({ id }) => {
       const inputElement = document.getElementById(id);
       const value = inputElement?.value;
-
-      if (!value) {
+      if ((id === "city" && activeRole === "Network manager") || (id === "network" && activeRole === "City council")) {
+        return;
+      } else if (!value) {
         allFieldsFilled = false;
         newWarnings[id] = emptyFieldMsg;
         console.log("Empty field:", id);
@@ -377,7 +378,7 @@ const Admin = () => {
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false);  }}
+                  onClick={() => { setOpenDialog(false); }}
                 >Cancel</LargeBtn>
               </DialogActions>
             </Dialog>
