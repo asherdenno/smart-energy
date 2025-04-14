@@ -53,7 +53,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
         if (!yearLowTarifData) {
           yearLowTarifData = {
             name: item.year,
-            "Electric Low Tariff Consume": null,
+            "Electric Low Tariff Consumption": null,
             "Gas Low Tariff Consume": null,
           };
           lowtarifData.push(yearLowTarifData);
@@ -63,7 +63,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
           yearData.Electric = item.total_annual_consume;
           yearDelData["Electric Delivery Percentage"] =
             item.total_delivery_perc;
-          yearLowTarifData["Electric Low Tariff Consume"] =
+          yearLowTarifData["Electric Low Tariff Consumption"] =
             item.total_annual_consume_lowtarif_perc;
         } else if (item.electric_or_gas === "Gas") {
           yearData.Gas = item.total_annual_consume;
@@ -135,13 +135,100 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
                 }
               }}
             />
-            {showElectric && (
-              <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
-            )}
-            {showGas && <Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
-            <Brush />
-          </AreaChart>
-        </ResponsiveContainer>
+          {showElectric && (
+            <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
+          )}
+          {showGas && <Area type="monotone" dataKey="Gas" stroke="#82ca9d" fill="#82ca9d" />}
+          <Brush />
+        </AreaChart>
+      </ResponsiveContainer>
+          </div>
+
+          <div className={styles.greyContainer+" energyChart"}>
+
+      
+      <h4>Annual Energy Delivery Percentage</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
+        <LineChart
+          width={500}
+          height={200}
+          data={AnnualDel}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+          >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis tickFormatter={(value) => `${value}%`} />
+          <Tooltip
+            formatter={(value, name) => {
+              return [`${value} %`, name];
+            }}
+            />
+          {showElectric && (
+            <Line
+            type="monotone"
+            dataKey="Electric Delivery Percentage"
+            stroke="#8884d8"
+            fill="#8884d8"
+            />
+          )}
+          {showGas && (
+            <Line
+            type="monotone"
+            dataKey="Gas Delivery Percentage"
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+          </div>
+          <div className={styles.greyContainer+" energyChart"}>
+        <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
+      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
+        <LineChart
+          width={500}
+          height={200}
+          data={AnnualLowtarif}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis tickFormatter={(value) => `${value}%`} />
+          <Tooltip
+            formatter={(value, name) => {
+              return [`${value} %`, name];
+            }}
+          />
+          {showElectric && (
+            <Line
+              type="monotone"
+              dataKey="Electric Low Tariff Consumption"
+              stroke="#8884d8"
+              fill="#8884d8"
+            />
+          )}
+          {showGas && (
+            <Line
+              type="monotone"
+              dataKey="Gas Low Tariff Consume"
+              stroke="#82ca9d"
+              fill="#82ca9d"
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
       </div>
 
       <div className={styles.greyContainer + " energyChart"} style={{width: width || 200}}>

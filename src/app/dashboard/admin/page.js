@@ -34,23 +34,32 @@ let allUserRows = [];
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchUsers = async (page = 1) => {
+    try {
+      const pageSize = 10; // Set the number of users displayed per page
+      const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
+      const data = await response.json();
+      allUserRows = data.users;
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        let page = 1;
-        let pageSize = 20;
-        const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
-        const data = await response.json();
-        allUserRows = data;
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+    fetchUsers(currentPage);
+  }, [currentPage]);
 
-    fetchUsers();
-  }, []);
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchUsers(newPage);
+    }
+  };
 
   const searchUser = (query) => {
     setSearchQuery(query);
@@ -69,7 +78,6 @@ const Admin = () => {
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
-  const [warning, setWarningDisplay] = useState(false);
 
   const [warnings, setWarnings] = useState({
     network: "",
@@ -93,14 +101,14 @@ const Admin = () => {
 
   const validateEmail = (email) => {
     if (email.includes("@") && email.includes(".")) {
-      return true; 
+      return true;
     } else {
-      return false; 
+      return false;
     }
   };
   const validatePassword = (password) => {
     if (password.length < 10) {
-      return false; 
+      return false;
     }
     let hasUppercase = false;
     for (let i = 0; i < password.length; i++) {
@@ -110,7 +118,7 @@ const Admin = () => {
       }
     }
     if (!hasUppercase) {
-      return false; 
+      return false;
     }
     let hasLowercase = false;
     for (let i = 0; i < password.length; i++) {
@@ -120,7 +128,7 @@ const Admin = () => {
       }
     }
     if (!hasLowercase) {
-      return false; 
+      return false;
     }
     const specialCharacters = "!@#$%^&*()_+[]{}|;:',.<>?/";
     let hasSpecialCharacter = false;
@@ -131,9 +139,9 @@ const Admin = () => {
       }
     }
     if (!hasSpecialCharacter) {
-      return false; 
+      return false;
     }
-    return true; 
+    return true;
   };
 
   const checkUserInputMeetsRequirements = () => {
@@ -144,10 +152,12 @@ const Admin = () => {
     fields.forEach(({ id }) => {
       const inputElement = document.getElementById(id);
       const value = inputElement?.value;
-
-      if (!value) {
+      if ((id === "city" && activeRole === "Network manager") || (id === "network" && activeRole === "City council")) {
+        return;
+      } else if (!value) {
         allFieldsFilled = false;
         newWarnings[id] = emptyFieldMsg;
+        console.log("Empty field:", id);
         if (inputElement) inputElement.value = ""; // Clear the value if empty
       } else {
         if (id === "email" && !validateEmail(value)) {
@@ -158,29 +168,28 @@ const Admin = () => {
           newWarnings[id] = "Password must be at least 10 characters, include 1 uppercase, 1 lowercase, and 1 special character";
         } else {
           newWarnings[id] = "";
-          allFieldsFilled = true;
         }
       }
     });
 
-    setWarnings({ ...newWarnings });
+    setWarnings({ ...newWarnings }); // Update warnings state with new warnings making the react re-render
     return allFieldsFilled;
   };
 
   const handleBlur = (id) => {
     const value = document.getElementById(id)?.value;
     setWarnings((prevWarnings) => ({
-      ...prevWarnings,
+      ...prevWarnings, // done to keep previous warninings while updating the new warning
       [id]: value ? "" : emptyFieldMsg,
     }));
   };
 
   const handleAddUser = async () => {
     if (!checkUserInputMeetsRequirements()) {
+      alert("Please fill all fields correctly");
       return;
     }
 
-    // Prepare user data
     const userData = {
       email: document.getElementById('email').value,
       f_name: document.getElementById('firstName').value,
@@ -188,13 +197,12 @@ const Admin = () => {
       username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
       password: document.getElementById('password').value,
       account_type_id: activeRole === 'Network manager' ? 2 : 3,
-      network_filter_id: activeRole === 'Network manager' ? document.getElementById('network').value : null,
-      city_filter_id: activeRole === 'City council' ? document.getElementById('city').value : null,
+      network_filter_id: activeRole === 'Network manager' ? 1 : null,
+      city_filter_id: activeRole === 'City council' ? 2 : null,
     };
 
     try {
-      // Send user data to the backend
-      const response = await fetch('/api/add-user', {
+      const response = await fetch('/api/fetch-add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -202,7 +210,7 @@ const Admin = () => {
 
       if (response.ok) {
         alert('User added successfully');
-        setOpenDialog(false); // Close the dialog
+        setOpenDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
         const errorData = await response.json();
@@ -257,7 +265,8 @@ const Admin = () => {
               }}
               sx={{
                 "& .MuiDialog-paper": {
-                  maxWidth: "500px",
+                  maxWidth: "600px",
+                  width: "100%",
                   border: "black 2px solid",
                   padding: "20px 23px",
                 },
@@ -313,7 +322,7 @@ const Admin = () => {
 
                 {activeRole === "Network manager" ?
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select network </InputLabel>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select Network </InputLabel>
                     <AutocompleteField
                       id="network"
                       options={vacantNetwork}
@@ -365,13 +374,11 @@ const Admin = () => {
                   display: "flex",
                   gap: "2px",
                 }}>
-                <LargeBtn
-                  onClick={handleAddUser}
-                >
+                <LargeBtn onClick={handleAddUser} >
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false); setWarningDisplay(false); }}
+                  onClick={() => { setOpenDialog(false); }}
                 >Cancel</LargeBtn>
               </DialogActions>
             </Dialog>
@@ -395,24 +402,26 @@ const Admin = () => {
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
+                <TbHeadCell sx={{ maxWidth: "10px" }}>#</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Filters</TbHeadCell> 
+                <TbHeadCell>Filters</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  console.log(user),
+                  // console.log( user),
                   <TableRow key={index}>
+                    <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
                           ? "Network Manager"
-                          : "City Coxuncil"}
+                          : "City Council"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
@@ -428,16 +437,27 @@ const Admin = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TbBodyCell colSpan={4} style={{ textAlign: "center" }}>
-                    {allUserRows.length > 0 ?
-                      "No users found" :
-                      "No users available! Create one to get started."}
+                  <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
+                    {allUserRows.length > 0
+                      ? "No users found"
+                      : "No users available! Create one to get started."}
                   </TbBodyCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
+        <div className={styles.space_between_center_flex_row}>
+          <Button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+            Next
+          </Button>
+        </div>
       </div>
     </main>
   );
