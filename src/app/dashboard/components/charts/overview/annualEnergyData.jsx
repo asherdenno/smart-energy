@@ -18,7 +18,7 @@ import { Skeleton } from '@mui/material';
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
-const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
+const EnergyUsageCharts = ({ showElectric, showGas, minWidth }) => {
   const { annualEnergyData, setAnnualEnergyData } = React.useContext(NavbarContext);
   const [loading, setLoading] = useState(true);
   const [AnnualEnergy, setAnnualEnergy] = useState([]);
@@ -90,16 +90,18 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
   if (loading) {
     return (
       <>
-        <div className={styles.greyContainer + " energyChart"}>
-          <Skeleton animation="wave" variant='text' height={40} width={width || 200} />
-          <Skeleton animation="wave" variant='rectangular' height={100} width={width || 200} sx={{ alignSelf: "flex-end" }} />
-          <Skeleton animation="wave" variant='text' height={70} width={width || 200} sx={{ alignSelf: "flex-end" }} />
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || '100%' }}>
+          <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+          <Skeleton animation="wave" variant='rectangular' height={100} width={"100%"} sx={{ alignSelf: "flex-end" }} />
+          <Skeleton animation="wave" variant='text' height={70} width={"100%"} sx={{ alignSelf: "flex-end" }} />
         </div>
-        <div className={styles.greyContainer + " energyChart"} style={{ width: '100%' }}>
-          <Skeleton variant='rectangular' height={200} width={width || 300} />
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || "100%" }}>
+          <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+          <Skeleton animation="wave" variant='rectangular' height={150} width={"100%"} />
         </div>
-        <div className={styles.greyContainer + " energyChart"} style={{ width: '100%' }}>
-          <Skeleton variant='rectangular' height={200} width={width || 300} />
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || '100%' }}>
+        <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+        <Skeleton animation="wave" variant='rectangular' height={150} width={"100%"} />
         </div>
       </>
     );
@@ -107,7 +109,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
 
   return (
     <>
-      <div className={styles.greyContainer + " energyChart"} style={{width: width || 500}}>
+      <div className={styles.greyContainer + " energyChart"} style={{minWidth: minWidth || '100%'}}>
         <h4>Annual Energy Consumption</h4>
         <ResponsiveContainer width="100%" height={200} style={{ padding: "1%" }} >
           <AreaChart
@@ -144,9 +146,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
       </ResponsiveContainer>
           </div>
 
-          <div className={styles.greyContainer+" energyChart"}>
-
-      
+      <div className={styles.greyContainer+" energyChart"} style={{minWidth: minWidth || '100%'}}>
       <h4>Annual Energy Delivery Percentage</h4>
       <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
@@ -187,10 +187,10 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
           )}
         </LineChart>
       </ResponsiveContainer>
-          </div>
-          <div className={styles.greyContainer+" energyChart"}>
+      </div>
+      <div className={styles.greyContainer+" energyChart"} style={{minWidth: minWidth || '100%'}}>
         <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
-      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
+        <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
           height={200}

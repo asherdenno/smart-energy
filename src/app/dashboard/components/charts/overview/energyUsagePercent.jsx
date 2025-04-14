@@ -1,5 +1,6 @@
 "use client";
 import React, { PureComponent, useEffect } from "react";
+import Skeleton from "@mui/material/Skeleton";
 import { useState,  useContext } from "react";
 import { NavbarContext } from "@/app/dashboard/context/NavbarContext";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
@@ -109,15 +110,30 @@ export default class EnergyUsagePercent extends PureComponent {
 
   render() {
     const { dataOuter, dataInner, loading } = this.state;
-    const { showElectric, showGas, width } = this.props;
+    const { showElectric, showGas, minWidth } = this.props;
 
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className={styles.greyContainer+" energyChart"} style={{
+          minWidth: minWidth || "100%",
+          maxWidth: "400px",
+          minHeight: "400px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center", padding: "20px",
+          boxSizing: "border-box"
+        }}>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+          <Skeleton animation="wave" variant="rectangular" height="200px" width="100%"/>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+        </div>
+      )
     }
     return (
-      <div className={styles.greyContainer+" energyChart"}>
-      <div style={{ 
-        width: width || "100%",
+      <div className={styles.greyContainer+" energyChart"} style={{ 
+        minWidth: minWidth || "100%",
+        maxWidth: "400px",
         minHeight: "400px",
         display: "flex",
         justifyContent: "center",
@@ -175,7 +191,6 @@ export default class EnergyUsagePercent extends PureComponent {
         Inner circle: Electric <br></br>
         Outer circle: Gas
              </div>
-      </div>
     );
   }
 }

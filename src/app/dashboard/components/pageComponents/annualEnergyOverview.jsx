@@ -58,8 +58,8 @@ export default function AnnualEnergyOverview() {
             setShowGas={setShowGas}
           />
           <div style={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: "10px", }}>
-            <AnnualEnergyData showElectric={showElectric} showGas={showGas} width={"1000px"} />
-            <EnergyUsagePercent showElectric={showElectric} showGas={showGas} width={"800px"} />
+            <AnnualEnergyData showElectric={showElectric} showGas={showGas} minWidth={"400px"}/>
+            <EnergyUsagePercent showElectric={showElectric} showGas={showGas} minWidth={"400px"} />
           </div> 
           <DownloadButtons />
       </div>
