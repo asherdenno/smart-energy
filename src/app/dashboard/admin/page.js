@@ -29,22 +29,24 @@ const vacantCity = [
   'Vastra Gotaland',
 ];
 
-let allUserRows = [];
+let userRecords = [];
+let unfilterdPagesCount = 1; // to keep track of the total pages for the filtered users
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Set the number of users displayed per page
 
   const fetchUsers = async (page = 1) => {
     try {
-      const pageSize = 10; // Set the number of users displayed per page
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
-      allUserRows = data.users;
+      userRecords = data.users;
       setUsers(data.users);
       setTotalPages(data.totalPages);
+      unfilterdPagesCount = data.totalPages;
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -64,11 +66,22 @@ const Admin = () => {
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
-      setUsers(allUserRows);
+      setUsers(userRecords);
+      setTotalPages(unfilterdPagesCount);
+      setCurrentPage(1);
     } else {
-      const filteredUsers = allUserRows.filter((user) =>
+      const filteredUsers = userRecords.filter((user) =>
         user.username.toLowerCase().includes(query.toLowerCase())
       );
+      const filteredUsersLength = filteredUsers.length
+      if (filteredUsersLength > pageSize) {
+        setTotalPages(Math.ceil(filteredUsersLength / pageSize));
+        setCurrentPage(1);
+      }
+      else {
+        setTotalPages(1);
+        setCurrentPage(1);
+      }
       setUsers(filteredUsers);
     }
   };
@@ -438,7 +451,7 @@ const Admin = () => {
               ) : (
                 <TableRow>
                   <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
-                    {allUserRows.length > 0
+                    {userRecords.length > 0
                       ? "No users found"
                       : "No users available! Create one to get started."}
                   </TbBodyCell>
