@@ -231,7 +231,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
       </ResponsiveContainer>
       </div>
 
-      <div className={styles.greyContainer + " energyChart"} style={{width: width || 200}}>
+      {/* <div className={styles.greyContainer + " energyChart"} style={{width: width || 200}}>
 
 
         <h4>Annual Energy Delivery Percentage</h4>
@@ -316,7 +316,7 @@ const EnergyUsageCharts = ({ showElectric, showGas, width }) => {
             )}
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
     </>
   );
 };
