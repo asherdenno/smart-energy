@@ -1,5 +1,6 @@
 "use client";
 import React, { PureComponent, useEffect } from "react";
+import Skeleton from "@mui/material/Skeleton";
 import { useState,  useContext } from "react";
 import { NavbarContext } from "@/app/dashboard/context/NavbarContext";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
@@ -7,25 +8,6 @@ import styles from "@/app/page.module.css";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF", "#FF6699", "#33CC33", "#FF9900"];
 const RADIAN = Math.PI / 180;
-
-const fetchData = async (city_id) => {
-  try {
-    const res = await fetch('/api/usage-sum-per-year', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ city_id }),
-    });
-    if (!res.ok) throw new Error('Error fetching usage data');
-    const data = await res.json();
-    return data;
-  }
-  catch (error) {
-    console.error('Error fetching usage data:', error);
-    return [];
-  }
-}
 
 const renderInnerLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
 
@@ -68,31 +50,6 @@ const renderOuterLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
     </text>
   );
 };
-const data01 = [
-  { name: 'Gas', value: 400 },
-
-];
-const data02 = [
-  { name: 'Electric', value: 100 },
-  
-];
-// const dataOuter = [
-//   { name: "2015", value: 400 },
-//   { name: "2016", value: 300 },
-//   { name: "2017", value: 300 },
-//   { name: "2018", value: 200 },
-//   { name: "2019", value: 400 },
-//   { name: "2020", value: 400 },
-// ];
-
-// var dataInner = [
-//   { name: "2015", value: 100 },
-//   { name: "2016", value: 300 },
-//   { name: "2017", value: 100 },
-//   { name: "2018", value: 80 },
-//   { name: "2019", value: 40 },
-//   { name: "2020", value: 40 },
-// ];
 
 export default class EnergyUsagePercent extends PureComponent {
   static contextType = NavbarContext;
@@ -102,6 +59,7 @@ export default class EnergyUsagePercent extends PureComponent {
       dataOuter: [],
       dataInner: [],
       loading: true,
+      prevAnnualEnergyData: null,
     };
   }
 
@@ -121,44 +79,61 @@ export default class EnergyUsagePercent extends PureComponent {
         console.error("Invalid electric_or_gas value:", item.electric_or_gas);
       }
     })
-    this.setState({ dataInner: newDataInner, dataOuter: newDataOuter, loading: false });
+    this.setState({ dataInner: newDataInner, dataOuter: newDataOuter });
   };
 
   componentDidMount() {
-    const { energyUsagePercent, setEnergyUsagePercent, city } = this.context;
-    console.log("City selectadwwded:", city);
+    const { annualEnergyData } = this.context;
 
-    if (energyUsagePercent) {
-      console.log("Using context data:", energyUsagePercent);
-      this.updateGraph(energyUsagePercent);
-      return;
-    }
-
-    fetchData(city.city_filter_id)
-    .then((response) => {
-      const { data } = response;
-      setEnergyUsagePercent(data);
-      this.resetGraph();
-      this.updateGraph(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:")
+    if (annualEnergyData && Array.isArray(annualEnergyData.data)) {
+      this.updateGraph(annualEnergyData.data);
+      this.setState({ loading: false, prevAnnualEnergyData: annualEnergyData });
+    } else {
+      console.log("Invalid data format:", annualEnergyData);
       this.setState({ loading: false });
-    });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { annualEnergyData } = this.context;
+    if (!annualEnergyData) {
+      this.setState({ loading: true });
+    }
+    if (annualEnergyData !== this.state.prevAnnualEnergyData && Array.isArray(annualEnergyData)) {
+      this.resetGraph(); // Clear the graph data
+      this.updateGraph(annualEnergyData); // Update the graph with new data
+      this.setState({ prevAnnualEnergyData: annualEnergyData }, () => {
+        this.setState({ loading: false});
+      })
+    }
   }
 
   render() {
     const { dataOuter, dataInner, loading } = this.state;
-    const { showElectric, showGas } = this.props;
+    const { showElectric, showGas, minWidth } = this.props;
 
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className={styles.greyContainer+" energyChart"} style={{
+          minWidth: minWidth || "100%",
+          maxWidth: "400px",
+          minHeight: "400px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center", padding: "20px",
+          boxSizing: "border-box"
+        }}>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+          <Skeleton animation="wave" variant="rectangular" height="200px" width="100%"/>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+          <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
+        </div>
+      )
     }
     return (
-      <div className={styles.greyContainer+" energyChart"}>
-
-      <div style={{ 
-        width: "100%",
+      <div className={styles.greyContainer+" energyChart"} style={{ 
+        minWidth: minWidth || "100%",
+        maxWidth: "400px",
         minHeight: "400px",
         display: "flex",
         justifyContent: "center",
@@ -216,13 +191,6 @@ export default class EnergyUsagePercent extends PureComponent {
         Inner circle: Electric <br></br>
         Outer circle: Gas
              </div>
-      {/* <ResponsiveContainer width="100%" height="100%">
-              <PieChart width={400} height={400}>
-                <Pie data={data01} dataKey="value" cx="50%" cy="50%" outerRadius={60} fill="#8884d8" />
-                <Pie data={data02} dataKey="value" cx="50%" cy="50%" innerRadius={70} outerRadius={90} fill="#82ca9d"/>
-              </PieChart>
-            </ResponsiveContainer> */}
-      </div>
     );
   }
 }
