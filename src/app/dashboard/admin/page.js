@@ -280,8 +280,9 @@ const Admin = () => {
                 "& .MuiDialog-paper": {
                   maxWidth: "600px",
                   width: "100%",
-                  border: "black 2px solid",
+                  border: "black 1px solid",
                   padding: "20px 23px",
+                  borderRadius: "12px",
                 },
 
               }}>
