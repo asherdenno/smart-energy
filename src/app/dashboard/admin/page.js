@@ -102,6 +102,17 @@ const Admin = () => {
     password: "",
   });
 
+  const resetWarnings = () => {
+    setWarnings({
+      network: "",
+      city: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+  };
+
   const fields = [
     { id: "network" },
     { id: "city" },
@@ -270,7 +281,10 @@ const Admin = () => {
             <ClassicBtn
               variant="outlined"
               color="primary"
-              onClick={() => setOpenNewUserDialog(true)}
+              onClick={() => {
+                setOpenNewUserDialog(true);
+                resetWarnings();
+              }}
             >
               Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
@@ -319,7 +333,7 @@ const Admin = () => {
                     <LargeBtn
                       sx={{
                         width: "100%",
-                        backgroundColor: activeRole === "Network manager" ? "#919191" : "white",
+                        backgroundColor: activeRole === "Network manager" ? "#919191" : "whit</footer>e",
                         border: activeRole === "Network manager" ? "1px solid black" : "1px solid grey",
                         color: activeRole === "Network manager" ? "white" : "black",
                         fontWeight: activeRole === "Network manager" ? "600" : "400",
@@ -483,7 +497,7 @@ const Admin = () => {
 
               </DialogContent>
               <DialogActions>
-                <LargeBtn onClick={() => setOpenNewUserDialog(false)} color="primary">
+                <LargeBtn onClick={() => setOpenExistingUserDialog(false)} color="primary">
                   Close
                 </LargeBtn>
                 <LargeBtn onClick={() => handleDeleteUser()} color="primary">
@@ -540,7 +554,10 @@ const Admin = () => {
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
-                      <Button onClick={() => setOpenExistingUserDialog(true)}>Manage user</Button>
+                      <Button onClick={() => {
+                        setOpenExistingUserDialog(true);
+                        resetWarnings();
+                      }}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
