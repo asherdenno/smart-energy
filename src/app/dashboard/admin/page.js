@@ -92,6 +92,13 @@ const Admin = () => {
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleManageUser = (user) => {
+    setSelectedUser(user);
+    setOpenExistingUserDialog(true);
+    resetWarnings();
+  };
 
   const [warnings, setWarnings] = useState({
     network: "",
@@ -459,39 +466,77 @@ const Admin = () => {
 
 
                 {/* HERE WILL GET USER DATA AND ASSIGN THE DATA AND LET THE ADMIN EDIT */}
-                {activeRole === "Network manager" ?
+                {activeRole === "Network manager" ? (
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Manged network</InputLabel>
-                    <LargeInputBox value="" disabled />
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed network
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.network_filter_id || ""}
+                      disabled
+                    />
                   </div>
-                  :
+                ) : (
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Manged city</InputLabel>
-                    <LargeInputBox value="" disabled />
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed city
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.city_filter_id || ""}
+                      disabled
+                    />
                   </div>
-                }
-
+                )}
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First Name</InputLabel>
-                  <LargeInputBox id="firstName" type="text" placeholder="Enter first name" onBlur={() => handleBlur("firstName")} />
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    First Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="firstName"
+                    type="text"
+                    placeholder="Enter first name"
+                    value={selectedUser?.f_name || ""}
+                    onBlur={() => handleBlur("firstName")}
+                  />
                   <span className={styles.warning}>{warnings["firstName"]}</span>
                 </div>
-
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last Name</InputLabel>
-                  <LargeInputBox id="lastName" type="text" placeholder="Enter last name" onBlur={() => handleBlur("lastName")} />
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Last Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter last name"
+                    value={selectedUser?.l_name || ""}
+                    onBlur={() => handleBlur("lastName")}
+                  />
                   <span className={styles.warning}>{warnings["lastName"]}</span>
                 </div>
-
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>Email</InputLabel>
-                  <LargeInputBox id="email" type="text" placeholder="Enter email" onBlur={() => handleBlur("email")} />
+                  <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Email
+                  </InputLabel>
+                  <LargeInputBox
+                    id="email"
+                    type="text"
+                    placeholder="Enter email"
+                    value={selectedUser?.email || ""}
+                    onBlur={() => handleBlur("email")}
+                  />
                   <span className={styles.warning}>{warnings["email"]}</span>
                 </div>
-
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                  <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>Password</InputLabel>
-                  <LargeInputBox id="password" type="text" placeholder="Enter password" onBlur={() => handleBlur("password")} />
+                  <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Password
+                  </InputLabel>
+                  <LargeInputBox
+                    id="password"
+                    type="text"
+                    placeholder="Enter password"
+                    value={selectedUser?.password || ""}
+                    onBlur={() => handleBlur("password")}
+                  />
                   <span className={styles.warning}>{warnings["password"]}</span>
                 </div>
 
@@ -519,13 +564,13 @@ const Admin = () => {
           <Table
             sx={{
               width: "100%",
-              tableLayout: "fixed",
+              tableLayout: "auto",
             }}
             aria-label="user management table"
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
-                <TbHeadCell sx={{ maxWidth: "10px" }}>#</TbHeadCell>
+                <TbHeadCell sx={{ minWidth: "30px" }}>id</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
                 <TbHeadCell>Filters</TbHeadCell>
@@ -535,9 +580,9 @@ const Admin = () => {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  // console.log( user),
+                  console.log(user),
                   <TableRow key={index}>
-                    <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
+                    <TbBodyCell>{user.account_id}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
@@ -554,10 +599,7 @@ const Admin = () => {
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
-                      <Button onClick={() => {
-                        setOpenExistingUserDialog(true);
-                        resetWarnings();
-                      }}>Manage user</Button>
+                      <Button onClick={() => handleManageUser(user)}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
