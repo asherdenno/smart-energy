@@ -87,7 +87,8 @@ const Admin = () => {
   };
 
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
+  const [openExistingUserDialog, setOpenExistingUserDialog] = useState(false);
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
@@ -223,7 +224,7 @@ const Admin = () => {
 
       if (response.ok) {
         alert('User added successfully');
-        setOpenDialog(false);
+        setOpenNewUserDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
         const errorData = await response.json();
@@ -234,6 +235,12 @@ const Admin = () => {
       alert('Failed to add user');
     }
   };
+
+  const handleDeleteUser = async () => {
+    alert("Work in progress");
+    return
+  }
+
 
   return (
     <main className={styles.content}>
@@ -263,12 +270,12 @@ const Admin = () => {
             <ClassicBtn
               variant="outlined"
               color="primary"
-              onClick={() => setOpenDialog(true)}
+              onClick={() => setOpenNewUserDialog(true)}
             >
               Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
             <Dialog
-              open={openDialog} onClose={() => setOpenDialog(false)}
+              open={openNewUserDialog} onClose={() => setOpenNewUserDialog(false)}
               aria-labelledby="dialog-title"
               aria-describedby="dialog-description"
               slotProps={{
@@ -392,8 +399,96 @@ const Admin = () => {
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false); }}
+                  onClick={() => { setOpenNewUserDialog(false); }}
                 >Cancel</LargeBtn>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openExistingUserDialog} onClose={() => setOpenExistingUserDialog(false)}
+              aria-labelledby="dialog-title"
+              aria-describedby="dialog-description"
+              slotProps={{
+                backdrop: {
+                  invisible: true,
+                },
+              }}
+              sx={{
+                "& .MuiDialog-paper": {
+                  maxWidth: "600px",
+                  width: "100%",
+                  border: "black 1px solid",
+                  padding: "20px 23px",
+                  borderRadius: "12px",
+                },
+
+              }}>
+              <DialogTitle
+                id="dialog-title"
+                sx={{
+                  padding: "0",
+                  fontSize: "25px",
+                  fontWeight: "600",
+                }}>
+                Mange (selected UserName)</DialogTitle>
+              <DialogContent
+                id="dialog-description"
+                sx={{
+                  padding: "0",
+                  gap: "10px",
+                  display: "flex",
+                  flexDirection: "column"
+                }}>
+                <DialogContentText sx={{ textColor: "black" }}>
+                  Here you can mange the selected user. You can edit their information or delete them.
+                </DialogContentText>
+
+
+                {/* HERE WILL GET USER DATA AND ASSIGN THE DATA AND LET THE ADMIN EDIT */}
+                {activeRole === "Network manager" ?
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Manged network</InputLabel>
+                    <LargeInputBox value="" disabled />
+                  </div>
+                  :
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Manged city</InputLabel>
+                    <LargeInputBox value="" disabled />
+                  </div>
+                }
+
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First Name</InputLabel>
+                  <LargeInputBox id="firstName" type="text" placeholder="Enter first name" onBlur={() => handleBlur("firstName")} />
+                  <span className={styles.warning}>{warnings["firstName"]}</span>
+                </div>
+
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>Last Name</InputLabel>
+                  <LargeInputBox id="lastName" type="text" placeholder="Enter last name" onBlur={() => handleBlur("lastName")} />
+                  <span className={styles.warning}>{warnings["lastName"]}</span>
+                </div>
+
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>Email</InputLabel>
+                  <LargeInputBox id="email" type="text" placeholder="Enter email" onBlur={() => handleBlur("email")} />
+                  <span className={styles.warning}>{warnings["email"]}</span>
+                </div>
+
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>Password</InputLabel>
+                  <LargeInputBox id="password" type="text" placeholder="Enter password" onBlur={() => handleBlur("password")} />
+                  <span className={styles.warning}>{warnings["password"]}</span>
+                </div>
+
+              </DialogContent>
+              <DialogActions>
+                <LargeBtn onClick={() => setOpenNewUserDialog(false)} color="primary">
+                  Close
+                </LargeBtn>
+                <LargeBtn onClick={() => handleDeleteUser()} color="primary">
+                  Delete User
+                </LargeBtn>
               </DialogActions>
             </Dialog>
           </div>
@@ -445,7 +540,7 @@ const Admin = () => {
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
-                      <Button>Manage user</Button>
+                      <Button onClick={() => setOpenExistingUserDialog(true)}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
