@@ -6,7 +6,6 @@ import AnnualEnergyData from "../charts/overview/annualEnergyData";
 import EnergyUsagePercent from "../charts/overview/energyUsagePercent";
 import { ToggleButton } from "@mui/material";
 import DownloadButtons from "./downloadButton";
-import GasElectricKey from "../charts/overview/gasElectricKey";
 import { NavbarContext } from "../../context/NavbarContext";
 
 export default function AnnualEnergyOverview() {
@@ -61,6 +60,7 @@ export default function AnnualEnergyOverview() {
             <AnnualEnergyData showElectric={showElectric} showGas={showGas} minWidth={"400px"}/>
             <EnergyUsagePercent showElectric={showElectric} showGas={showGas} minWidth={"400px"} />
           </div> 
+          <h2>Generate a report:</h2>
           <DownloadButtons />
       </div>
     </div>

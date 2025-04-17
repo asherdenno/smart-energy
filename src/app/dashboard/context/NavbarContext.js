@@ -16,7 +16,6 @@ export const CityProvider = ({ children }) => {
     const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
 
     useEffect(() => {
-        // Load data from localStorage after the component has mounted
         if (typeof window !== "undefined") {
             const storedAnnualEnergyData = localStorage.getItem('annualEnergyData');
             const storedAccount = localStorage.getItem('account');
@@ -28,7 +27,7 @@ export const CityProvider = ({ children }) => {
             setCity(storedCity ? JSON.parse(storedCity) : null);
             setNetwork(storedNetwork ? JSON.parse(storedNetwork) : null);
 
-            setIsLocalStorageLoaded(true); // Indicate that localStorage has been loaded
+            setIsLocalStorageLoaded(true);
         }
     }, []);
 
