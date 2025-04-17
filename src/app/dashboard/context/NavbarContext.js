@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 export const NavbarContext = createContext();
 
+export const FilterString = " d.city = 'ENTER'";
 export const CityProvider = ({ children }) => {
     // const [filterString, setFilterString] = useState(() => {
     // })
@@ -66,7 +67,7 @@ export const CityProvider = ({ children }) => {
             city,
             setCity,
             network, 
-            setNetwork
+            setNetwork,
      }}>
             {children}
         </NavbarContext.Provider>
