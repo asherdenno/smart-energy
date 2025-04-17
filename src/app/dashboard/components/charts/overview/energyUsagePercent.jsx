@@ -145,32 +145,32 @@ export default class EnergyUsagePercent extends PureComponent {
         <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}}>
           <h4>Yearly Energy Usage Percentages</h4>
           <PieChart>
-            {showElectric && <Pie 
-              data={this.state.dataInner} 
-              dataKey="value" 
-              cx="50%" 
-              cy="50%" 
-              innerRadius={90} 
-              outerRadius={110} 
-              label={renderInnerLabel} 
-              labelLine
-              >
-              {this.state.dataInner.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-            </Pie>}
-
             {showGas && <Pie 
               data={this.state.dataOuter} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
-              outerRadius={80} 
+              innerRadius={90} 
+              outerRadius={110} 
               label={renderOuterLabel} 
+              labelLine
+              >
+              {this.state.dataOuter.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+            </Pie>}
+
+            {showElectric && <Pie 
+              data={this.state.dataInner} 
+              dataKey="value" 
+              cx="50%" 
+              cy="50%" 
+              outerRadius={80} 
+              label={renderInnerLabel} 
               labelLine={false} 
             //   nameKey={"yearKeys"}
             >
-              {this.state.dataOuter.map((entry, index) => (
+              {this.state.dataInner.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
