@@ -100,8 +100,8 @@ export default class EnergyUsagePercent extends PureComponent {
       this.setState({ loading: true });
     }
     if (annualEnergyData !== this.state.prevAnnualEnergyData && Array.isArray(annualEnergyData)) {
-      this.resetGraph(); // Clear the graph data
-      this.updateGraph(annualEnergyData); // Update the graph with new data
+      this.resetGraph(); 
+      this.updateGraph(annualEnergyData); 
       this.setState({ prevAnnualEnergyData: annualEnergyData }, () => {
         this.setState({ loading: false});
       })
@@ -109,7 +109,7 @@ export default class EnergyUsagePercent extends PureComponent {
   }
 
   render() {
-    const { dataOuter, dataInner, loading } = this.state;
+    const { dataInner, dataOuter,  loading } = this.state;
     const { showElectric, showGas, minWidth } = this.props;
 
     if (loading) {
@@ -152,7 +152,7 @@ export default class EnergyUsagePercent extends PureComponent {
               cy="50%" 
               innerRadius={90} 
               outerRadius={110} 
-              label={renderOuterLabel} 
+              label={renderInnerLabel} 
               labelLine
               >
               {this.state.dataInner.map((entry, index) => (
@@ -166,7 +166,7 @@ export default class EnergyUsagePercent extends PureComponent {
               cx="50%" 
               cy="50%" 
               outerRadius={80} 
-              label={renderInnerLabel} 
+              label={renderOuterLabel} 
               labelLine={false} 
             //   nameKey={"yearKeys"}
             >
