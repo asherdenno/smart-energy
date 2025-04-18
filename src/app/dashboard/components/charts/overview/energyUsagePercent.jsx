@@ -100,8 +100,8 @@ export default class EnergyUsagePercent extends PureComponent {
       this.setState({ loading: true });
     }
     if (annualEnergyData !== this.state.prevAnnualEnergyData && Array.isArray(annualEnergyData)) {
-      this.resetGraph(); // Clear the graph data
-      this.updateGraph(annualEnergyData); // Update the graph with new data
+      this.resetGraph(); 
+      this.updateGraph(annualEnergyData); 
       this.setState({ prevAnnualEnergyData: annualEnergyData }, () => {
         this.setState({ loading: false});
       })
@@ -109,7 +109,7 @@ export default class EnergyUsagePercent extends PureComponent {
   }
 
   render() {
-    const { dataOuter, dataInner, loading } = this.state;
+    const { dataInner, dataOuter,  loading } = this.state;
     const { showElectric, showGas, minWidth } = this.props;
 
     if (loading) {
@@ -145,8 +145,8 @@ export default class EnergyUsagePercent extends PureComponent {
         <ResponsiveContainer width="100%" height={400} style={{padding:"1%"}}>
           <h4>Yearly Energy Usage Percentages</h4>
           <PieChart>
-            {showElectric && <Pie 
-              data={this.state.dataInner} 
+            {showGas && <Pie 
+              data={this.state.dataOuter} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -155,13 +155,13 @@ export default class EnergyUsagePercent extends PureComponent {
               label={renderOuterLabel} 
               labelLine
               >
-              {this.state.dataInner.map((entry, index) => (
+              {this.state.dataOuter.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
 
-            {showGas && <Pie 
-              data={this.state.dataOuter} 
+            {showElectric && <Pie 
+              data={this.state.dataInner} 
               dataKey="value" 
               cx="50%" 
               cy="50%" 
@@ -170,7 +170,7 @@ export default class EnergyUsagePercent extends PureComponent {
               labelLine={false} 
             //   nameKey={"yearKeys"}
             >
-              {this.state.dataOuter.map((entry, index) => (
+              {this.state.dataInner.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
             </Pie>}
