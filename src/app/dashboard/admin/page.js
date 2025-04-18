@@ -29,22 +29,24 @@ const vacantCity = [
   'Vastra Gotaland',
 ];
 
-let allUserRows = [];
+let userRecords = [];
+let unfilterdPagesCount = 1; // to keep track of the total pages for the filtered users
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Set the number of users displayed per page
 
   const fetchUsers = async (page = 1) => {
     try {
-      const pageSize = 10; // Set the number of users displayed per page
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
-      allUserRows = data.users;
+      userRecords = data.users;
       setUsers(data.users);
       setTotalPages(data.totalPages);
+      unfilterdPagesCount = data.totalPages;
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -64,20 +66,39 @@ const Admin = () => {
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
-      setUsers(allUserRows);
+      setUsers(userRecords);
+      setTotalPages(unfilterdPagesCount);
+      setCurrentPage(1);
     } else {
-      const filteredUsers = allUserRows.filter((user) =>
+      const filteredUsers = userRecords.filter((user) =>
         user.username.toLowerCase().includes(query.toLowerCase())
       );
+      const filteredUsersLength = filteredUsers.length
+      if (filteredUsersLength > pageSize) {
+        setTotalPages(Math.ceil(filteredUsersLength / pageSize));
+        setCurrentPage(1);
+      }
+      else {
+        setTotalPages(1);
+        setCurrentPage(1);
+      }
       setUsers(filteredUsers);
     }
   };
 
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
+  const [openExistingUserDialog, setOpenExistingUserDialog] = useState(false);
 
   const [activeRole, setActiveRole] = useState("Network manager");
 
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleManageUser = (user) => {
+    setSelectedUser(user);
+    setOpenExistingUserDialog(true);
+    resetWarnings();
+  };
 
   const [warnings, setWarnings] = useState({
     network: "",
@@ -87,6 +108,17 @@ const Admin = () => {
     email: "",
     password: "",
   });
+
+  const resetWarnings = () => {
+    setWarnings({
+      network: "",
+      city: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+  };
 
   const fields = [
     { id: "network" },
@@ -210,7 +242,7 @@ const Admin = () => {
 
       if (response.ok) {
         alert('User added successfully');
-        setOpenDialog(false);
+        setOpenNewUserDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
         const errorData = await response.json();
@@ -221,6 +253,12 @@ const Admin = () => {
       alert('Failed to add user');
     }
   };
+
+  const handleDeleteUser = async () => {
+    alert("Work in progress");
+    return
+  }
+
 
   return (
     <main className={styles.content}>
@@ -250,12 +288,15 @@ const Admin = () => {
             <ClassicBtn
               variant="outlined"
               color="primary"
-              onClick={() => setOpenDialog(true)}
+              onClick={() => {
+                setOpenNewUserDialog(true);
+                resetWarnings();
+              }}
             >
               Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
             <Dialog
-              open={openDialog} onClose={() => setOpenDialog(false)}
+              open={openNewUserDialog} onClose={() => setOpenNewUserDialog(false)}
               aria-labelledby="dialog-title"
               aria-describedby="dialog-description"
               slotProps={{
@@ -267,8 +308,9 @@ const Admin = () => {
                 "& .MuiDialog-paper": {
                   maxWidth: "600px",
                   width: "100%",
-                  border: "black 2px solid",
+                  border: "black 1px solid",
                   padding: "20px 23px",
+                  borderRadius: "12px",
                 },
 
               }}>
@@ -298,7 +340,7 @@ const Admin = () => {
                     <LargeBtn
                       sx={{
                         width: "100%",
-                        backgroundColor: activeRole === "Network manager" ? "#919191" : "white",
+                        backgroundColor: activeRole === "Network manager" ? "#919191" : "whit</footer>e",
                         border: activeRole === "Network manager" ? "1px solid black" : "1px solid grey",
                         color: activeRole === "Network manager" ? "white" : "black",
                         fontWeight: activeRole === "Network manager" ? "600" : "400",
@@ -378,8 +420,134 @@ const Admin = () => {
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false); }}
+                  onClick={() => { setOpenNewUserDialog(false); }}
                 >Cancel</LargeBtn>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openExistingUserDialog} onClose={() => setOpenExistingUserDialog(false)}
+              aria-labelledby="dialog-title"
+              aria-describedby="dialog-description"
+              slotProps={{
+                backdrop: {
+                  invisible: true,
+                },
+              }}
+              sx={{
+                "& .MuiDialog-paper": {
+                  maxWidth: "600px",
+                  width: "100%",
+                  border: "black 1px solid",
+                  padding: "20px 23px",
+                  borderRadius: "12px",
+                },
+
+              }}>
+              <DialogTitle
+                id="dialog-title"
+                sx={{
+                  padding: "0",
+                  fontSize: "25px",
+                  fontWeight: "600",
+                }}>
+                Mange (selected UserName)</DialogTitle>
+              <DialogContent
+                id="dialog-description"
+                sx={{
+                  padding: "0",
+                  gap: "10px",
+                  display: "flex",
+                  flexDirection: "column"
+                }}>
+                <DialogContentText sx={{ textColor: "black" }}>
+                  Here you can mange the selected user. You can edit their information or delete them.
+                </DialogContentText>
+
+
+                {/* HERE WILL GET USER DATA AND ASSIGN THE DATA AND LET THE ADMIN EDIT */}
+                {activeRole === "Network manager" ? (
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed network
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.network_filter_id || ""}
+                      disabled
+                    />
+                  </div>
+                ) : (
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed city
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.city_filter_id || ""}
+                      disabled
+                    />
+                  </div>
+                )}
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    First Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="firstName"
+                    type="text"
+                    placeholder="Enter first name"
+                    value={selectedUser?.f_name || ""}
+                    onBlur={() => handleBlur("firstName")}
+                  />
+                  <span className={styles.warning}>{warnings["firstName"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Last Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter last name"
+                    value={selectedUser?.l_name || ""}
+                    onBlur={() => handleBlur("lastName")}
+                  />
+                  <span className={styles.warning}>{warnings["lastName"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Email
+                  </InputLabel>
+                  <LargeInputBox
+                    id="email"
+                    type="text"
+                    placeholder="Enter email"
+                    value={selectedUser?.email || ""}
+                    onBlur={() => handleBlur("email")}
+                  />
+                  <span className={styles.warning}>{warnings["email"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Password
+                  </InputLabel>
+                  <LargeInputBox
+                    id="password"
+                    type="text"
+                    placeholder="Enter password"
+                    value={selectedUser?.password || ""}
+                    onBlur={() => handleBlur("password")}
+                  />
+                  <span className={styles.warning}>{warnings["password"]}</span>
+                </div>
+
+              </DialogContent>
+              <DialogActions>
+                <LargeBtn onClick={() => setOpenExistingUserDialog(false)} color="primary">
+                  Close
+                </LargeBtn>
+                <LargeBtn onClick={() => handleDeleteUser()} color="primary">
+                  Delete User
+                </LargeBtn>
               </DialogActions>
             </Dialog>
           </div>
@@ -396,13 +564,13 @@ const Admin = () => {
           <Table
             sx={{
               width: "100%",
-              tableLayout: "fixed",
+              tableLayout: "auto",
             }}
             aria-label="user management table"
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
-                <TbHeadCell sx={{ maxWidth: "10px" }}>#</TbHeadCell>
+                <TbHeadCell sx={{ minWidth: "30px" }}>id</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
                 <TbHeadCell>Filters</TbHeadCell>
@@ -412,9 +580,9 @@ const Admin = () => {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  // console.log( user),
+                  console.log(user),
                   <TableRow key={index}>
-                    <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
+                    <TbBodyCell>{user.account_id}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
@@ -431,14 +599,14 @@ const Admin = () => {
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
-                      <Button>Manage user</Button>
+                      <Button onClick={() => handleManageUser(user)}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
-                    {allUserRows.length > 0
+                    {userRecords.length > 0
                       ? "No users found"
                       : "No users available! Create one to get started."}
                   </TbBodyCell>

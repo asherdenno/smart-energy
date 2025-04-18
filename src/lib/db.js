@@ -74,12 +74,14 @@ const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
     const skipRows = (page - 1) * pageSize;
     await sql.connect(config);
     const query = `
-      SELECT account_id, email, f_name, l_name, username, account_type_id, network_filter_id, city_filter_id
+      SELECT *
       FROM dbo.account
       ORDER BY account_id
-      OFFSET @offset ROWS
+      OFFSET @offset ROWS 
       FETCH NEXT @pageSize ROWS ONLY;
     `;
+    // Offset is used to skip the first n accounts/rows
+    // -- Alowing pagination
     const countQuery = `
       SELECT COUNT(*) AS total
       FROM dbo.account;
@@ -87,7 +89,6 @@ const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
     const request = new sql.Request();
     request.input('offset', sql.Int, skipRows);
     request.input('pageSize', sql.Int, pageSize);
-
 
     const [usersResult, countResult] = await Promise.all([
       request.query(query),
@@ -103,22 +104,6 @@ const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch users: " + error.message);
-  }
-};
-
-const totalUsersCount = async () => {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT COUNT(*) AS total
-      FROM users;
-    `;
-    const result = await sql.query(query);
-    await sql.close();
-    return result.recordset[0].total; // Return the total count of users
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to count total users: " + error.message);
   }
 };
 
@@ -186,10 +171,11 @@ const insertNewUser = async (email, f_name, l_name, username, password, account_
 
     await request.query(query);
     await sql.close();
-    return { success: true }; 
+    return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
-    res.status(500).json({ error: 'Failed to add user', details: error.message });  }
+    res.status(500).json({ error: 'Failed to add user', details: error.message });
+  }
 };
 
 const fetchUserData = async () => {
@@ -507,5 +493,5 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 export {
   fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchAllUsersInPages, totalUsersCount, fetchAllUserFilterIds, findUsers, insertNewUser
+  fetchAllUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser
 }
