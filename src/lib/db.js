@@ -178,6 +178,26 @@ const insertNewUser = async (email, f_name, l_name, username, password, account_
   }
 };
 
+const deleteUser = async (userId) => {
+  try {
+    await sql.connect(config);
+    const query = `
+      DELETE FROM dbo.account
+      WHERE account_id = @UserId;
+    `;
+    const request = new sql.Request();
+    request.input('UserId', sql.Int, userId);
+
+    await request.query(query);
+    await sql.close();
+    return { success: true };
+  }
+  catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete user: " + error.message);
+  }
+}
+
 const fetchUserData = async () => {
   if (passwordInput) {
     try {
@@ -493,5 +513,5 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 export {
   fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchAllUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser
+  fetchAllUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, deleteUser
 }

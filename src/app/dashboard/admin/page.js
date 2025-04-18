@@ -33,8 +33,18 @@ let userRecords = [];
 let unfilterdPagesCount = 1; // to keep track of the total pages for the filtered users
 
 const Admin = () => {
+  // Dialog states
+  const [openExistingUserDialog, setOpenExistingUserDialog] = useState(false);
+  const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
+
+  // User management states
   const [users, setUsers] = useState([]);
+  const [activeRole, setActiveRole] = useState("Network manager");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUserDataModified, setIsUserDataModified] = useState(false);
+
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10; // Set the number of users displayed per page
@@ -85,14 +95,6 @@ const Admin = () => {
       setUsers(filteredUsers);
     }
   };
-
-
-  const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
-  const [openExistingUserDialog, setOpenExistingUserDialog] = useState(false);
-
-  const [activeRole, setActiveRole] = useState("Network manager");
-
-  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleManageUser = (user) => {
     setSelectedUser(user);
@@ -228,9 +230,9 @@ const Admin = () => {
       l_name: document.getElementById('lastName').value,
       username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
       password: document.getElementById('password').value,
-      account_type_id: activeRole === 'Network manager' ? 2 : 3,
-      network_filter_id: activeRole === 'Network manager' ? 1 : null,
-      city_filter_id: activeRole === 'City council' ? 2 : null,
+      account_type_id: activeRole === 'City council' ? 2 : 3,
+      city_filter_id: activeRole === 'City council' ? 1 : null,
+      network_filter_id: activeRole === 'Network manager' ? 2 : null,
     };
 
     try {
@@ -255,8 +257,25 @@ const Admin = () => {
   };
 
   const handleDeleteUser = async () => {
-    alert("Work in progress");
-    return
+    try {
+      const response = await fetch('/api/fetch-delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account_id: selectedUser.account_id }),
+      });
+      if (response.ok) {
+        alert('User deleted successfully');
+        setOpenExistingUserDialog(false);
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      } 
+    }
+    catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Failed to delete user');
+    }
   }
 
 
@@ -451,7 +470,7 @@ const Admin = () => {
                   fontSize: "25px",
                   fontWeight: "600",
                 }}>
-                Mange (selected UserName)</DialogTitle>
+                Mange {selectedUser?.f_name}</DialogTitle>
               <DialogContent
                 id="dialog-description"
                 sx={{
@@ -495,7 +514,8 @@ const Admin = () => {
                     id="firstName"
                     type="text"
                     placeholder="Enter first name"
-                    value={selectedUser?.f_name || ""}
+                    defaultValue={selectedUser?.f_name || ""}
+                    onChange={() => setIsUserDataModified(true)}
                     onBlur={() => handleBlur("firstName")}
                   />
                   <span className={styles.warning}>{warnings["firstName"]}</span>
@@ -508,7 +528,8 @@ const Admin = () => {
                     id="lastName"
                     type="text"
                     placeholder="Enter last name"
-                    value={selectedUser?.l_name || ""}
+                    defaultValue={selectedUser?.l_name || ""}
+                    onChange={() => setIsUserDataModified(true)}
                     onBlur={() => handleBlur("lastName")}
                   />
                   <span className={styles.warning}>{warnings["lastName"]}</span>
@@ -521,7 +542,8 @@ const Admin = () => {
                     id="email"
                     type="text"
                     placeholder="Enter email"
-                    value={selectedUser?.email || ""}
+                    defaultValue={selectedUser?.email || ""}
+                    onChange={() => setIsUserDataModified(true)}
                     onBlur={() => handleBlur("email")}
                   />
                   <span className={styles.warning}>{warnings["email"]}</span>
@@ -534,20 +556,39 @@ const Admin = () => {
                     id="password"
                     type="text"
                     placeholder="Enter password"
-                    value={selectedUser?.password || ""}
+                    defaultValue={selectedUser?.password || ""}
+                    onChange={() => setIsUserDataModified(true)}
                     onBlur={() => handleBlur("password")}
                   />
                   <span className={styles.warning}>{warnings["password"]}</span>
                 </div>
 
               </DialogContent>
-              <DialogActions>
-                <LargeBtn onClick={() => setOpenExistingUserDialog(false)} color="primary">
-                  Close
+              <DialogActions
+                sx={{
+                  display: "flex",
+                  direction: "row",
+                  padding: "10px 0 0 0",
+                  gap: "10px",
+                  justifyContent: "space-between",
+                  alignItems: "right",
+                }}>
+                <LargeBtn style=
+                  {{
+                    display: isUserDataModified ? "block" : "none",
+                    transition: "all 1s ease",
+                  }}
+                  color="primary">
+                  Save
                 </LargeBtn>
-                <LargeBtn onClick={() => handleDeleteUser()} color="primary">
-                  Delete User
-                </LargeBtn>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <LargeBtn onClick={() => setOpenExistingUserDialog(false)} color="primary">
+                    Close
+                  </LargeBtn>
+                  <LargeBtn onClick={() => handleDeleteUser()} color="primary">
+                    Delete User
+                  </LargeBtn>
+                </div>
               </DialogActions>
             </Dialog>
           </div>
@@ -570,10 +611,10 @@ const Admin = () => {
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
-                <TbHeadCell sx={{ minWidth: "30px" }}>id</TbHeadCell>
+                <TbHeadCell sx={{ minWidth: "40px" }}>ID</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Filters</TbHeadCell>
+                <TbHeadCell>Role ID</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
@@ -593,9 +634,9 @@ const Admin = () => {
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
-                        ? user.network_filter_id || "No network assigned"
+                        ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
                         : user.account_type_id === 3
-                          ? user.city_filter_id || "No city assigned"
+                          ? user.network_filter_id || "No network assigned" // Fallback for null or undefined
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
