@@ -69,7 +69,7 @@ const fetchAllUserFilterIds = async () => {
   }
 }
 
-const fetchAllUsersInPages = async (page = 1, pageSize = 20) => {
+const fetchUsersInPages = async (page = 1, pageSize = 20) => {
   try {
     const skipRows = (page - 1) * pageSize;
     await sql.connect(config);
@@ -152,31 +152,82 @@ const findUsername = async () => {
 }
 
 
-const insertNewUser = async (email, f_name, l_name, username, password, account_type_id, network_filter_id, city_filter_id) => {
+const insertNewUser = async (email, f_name, l_name, password, account_type_id, network_filter_id, city_filter_id) => {
   try {
     await sql.connect(config);
     const query = `
+
       INSERT INTO dbo.account (email, f_name, l_name, username, password, account_type_id, network_filter_id, city_filter_id)
       VALUES (@Email, @FName, @LName, @Username, @Password, @AccountTypeId, @NetworkFilterId, @CityFilterId);
+      SELECT SCOPE_IDENTITY() AS account_id;
     `;
+    // SCOPE_IDENTITY() is used to get the last inserted identity value (account_id)
+    // this is needed to create the username as account_id is needed
     const request = new sql.Request();
+
+    // Generate a temporary username (will be updated after retrieving account_id)
+    const tempUsername = `${f_name}${l_name}TEMP`;
+
     request.input('Email', sql.NVarChar, email);
     request.input('FName', sql.NVarChar, f_name);
     request.input('LName', sql.NVarChar, l_name);
-    request.input('Username', sql.NVarChar, username);
+    request.input('Username', sql.NVarChar, tempUsername);
     request.input('Password', sql.NVarChar, password);
     request.input('AccountTypeId', sql.Int, account_type_id);
     request.input('NetworkFilterId', sql.Int, network_filter_id || null);
     request.input('CityFilterId', sql.Int, city_filter_id || null);
 
+    const result = await request.query(query);
+    const newAccountId = result.recordset[0].account_id;
+
+    // Generate the final username using the retrieved account_id
+    const finalUsername = `${f_name}${l_name}${newAccountId}`;
+
+    // Update the username in the database
+    const updateQuery = `
+      UPDATE dbo.account
+      SET username = @FinalUsername
+      WHERE account_id = @AccountId;
+    `;
+    const updateRequest = new sql.Request();
+    updateRequest.input('FinalUsername', sql.NVarChar, finalUsername);
+    updateRequest.input('AccountId', sql.Int, newAccountId);
+    await updateRequest.query(updateQuery);
+
+    await sql.close();
+    return { success: true };
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to add user: " + error.message);
+  }
+};
+
+const modifyUser = async (account_id, email, f_name, l_name, password) => {
+  try {
+    await sql.connect(config);
+    const query = `
+      UPDATE dbo.account
+      SET email = @Email,
+          f_name = @FName,
+          l_name = @LName,
+          password = @Password
+      WHERE account_id = @AccountId;
+    `;
+    const request = new sql.Request();
+    request.input('AccountId', sql.Int, account_id);
+    request.input('Email', sql.NVarChar, email);
+    request.input('FName', sql.NVarChar, f_name);
+    request.input('LName', sql.NVarChar, l_name);
+    request.input('Password', sql.NVarChar, password);
     await request.query(query);
     await sql.close();
     return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
-    res.status(500).json({ error: 'Failed to add user', details: error.message });
+    throw new Error("Failed to modify user: " + error.message);
   }
 };
+
 
 const deleteUser = async (userId) => {
   try {
@@ -513,5 +564,5 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 export {
   fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchAllUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, deleteUser
+  fetchUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, modifyUser, deleteUser
 }

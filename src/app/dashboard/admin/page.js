@@ -34,8 +34,8 @@ let unfilterdPagesCount = 1; // to keep track of the total pages for the filtere
 
 const Admin = () => {
   // Dialog states
-  const [openExistingUserDialog, setOpenExistingUserDialog] = useState(false);
   const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
+  const [openModifyUserDialog, setOpenModifyUserDialog] = useState(false);
 
   // User management states
   const [users, setUsers] = useState([]);
@@ -43,6 +43,7 @@ const Admin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUserDataModified, setIsUserDataModified] = useState(false);
+  const [fetchingUsers, setFetchingUsers] = useState(true);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,11 +61,19 @@ const Admin = () => {
     } catch (error) {
       console.error("Error fetching users:", error);
     }
+    setFetchingUsers(false);
   };
 
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
+
+
+  useEffect(() => {
+    if (!openModifyUserDialog) {
+      setIsUserDataModified(false); // Reset isUserDataModified when dialog is closed
+    }
+  }, [openModifyUserDialog]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -98,7 +107,7 @@ const Admin = () => {
 
   const handleManageUser = (user) => {
     setSelectedUser(user);
-    setOpenExistingUserDialog(true);
+    setOpenModifyUserDialog(true);
     resetWarnings();
   };
 
@@ -219,21 +228,21 @@ const Admin = () => {
   };
 
   const handleAddUser = async () => {
-    if (!checkUserInputMeetsRequirements()) {
-      alert("Please fill all fields correctly");
-      return;
-    }
+    // if (!checkUserInputMeetsRequirements()) {
+    //   alert("Please fill all fields correctly");
+    //   return;
+    // }
 
     const userData = {
       email: document.getElementById('email').value,
       f_name: document.getElementById('firstName').value,
       l_name: document.getElementById('lastName').value,
-      username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
       password: document.getElementById('password').value,
       account_type_id: activeRole === 'City council' ? 2 : 3,
       city_filter_id: activeRole === 'City council' ? 1 : null,
       network_filter_id: activeRole === 'Network manager' ? 2 : null,
     };
+
 
     try {
       const response = await fetch('/api/fetch-add-user', {
@@ -247,6 +256,7 @@ const Admin = () => {
         setOpenNewUserDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
+        console.log("Here"); // Debugging the payload
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
       }
@@ -255,6 +265,62 @@ const Admin = () => {
       alert('Failed to add user');
     }
   };
+
+  const checkDataModified = () => {
+    let isModified = false;
+
+    const userData = {
+      email: document.getElementById('email').value,
+      f_name: document.getElementById('firstName').value,
+      l_name: document.getElementById('lastName').value,
+      password: document.getElementById('password').value,
+    };
+
+    for (const key in userData) {
+      if (userData[key] !== selectedUser[key]) {
+        isModified = true;
+        console.log("Data modified:", key);
+        break;
+      }
+    }
+    setIsUserDataModified(isModified);
+    return isModified;
+  }
+
+  const handleModifyUser = async () => {
+    // if (!checkUserInputMeetsRequirements()) {
+    //   alert("Please fill all fields correctly");
+    //   return;
+    // }
+
+    const userData = {
+      account_id: selectedUser.account_id,
+      email: document.getElementById('email').value,
+      f_name: document.getElementById('firstName').value,
+      l_name: document.getElementById('lastName').value,
+      password: document.getElementById('password').value,
+    };
+
+    try {
+      const response = await fetch('/api/fetch-modify-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        alert('User modified successfully');
+        setOpenModifyUserDialog(false);
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error modifying user:', error);
+      alert('Failed to modify user');
+    }
+  }
 
   const handleDeleteUser = async () => {
     try {
@@ -265,12 +331,12 @@ const Admin = () => {
       });
       if (response.ok) {
         alert('User deleted successfully');
-        setOpenExistingUserDialog(false);
+        setOpenModifyUserDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
-      } 
+      }
     }
     catch (error) {
       console.error('Error deleting user:', error);
@@ -445,7 +511,7 @@ const Admin = () => {
             </Dialog>
 
             <Dialog
-              open={openExistingUserDialog} onClose={() => setOpenExistingUserDialog(false)}
+              open={openModifyUserDialog} onClose={() => setOpenModifyUserDialog(false)}
               aria-labelledby="dialog-title"
               aria-describedby="dialog-description"
               slotProps={{
@@ -470,7 +536,7 @@ const Admin = () => {
                   fontSize: "25px",
                   fontWeight: "600",
                 }}>
-                Mange {selectedUser?.f_name}</DialogTitle>
+                Manage {selectedUser?.username}</DialogTitle>
               <DialogContent
                 id="dialog-description"
                 sx={{
@@ -480,22 +546,12 @@ const Admin = () => {
                   flexDirection: "column"
                 }}>
                 <DialogContentText sx={{ textColor: "black" }}>
-                  Here you can mange the selected user. You can edit their information or delete them.
+                  Here you can manage the selected user. You can edit their information or delete them.
                 </DialogContentText>
 
 
                 {/* HERE WILL GET USER DATA AND ASSIGN THE DATA AND LET THE ADMIN EDIT */}
-                {activeRole === "Network manager" ? (
-                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
-                      Managed network
-                    </InputLabel>
-                    <LargeInputBox
-                      value={selectedUser?.network_filter_id || ""}
-                      disabled
-                    />
-                  </div>
-                ) : (
+                {selectedUser?.account_type_id === 2 ? (
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                     <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>
                       Managed city
@@ -505,7 +561,19 @@ const Admin = () => {
                       disabled
                     />
                   </div>
-                )}
+
+                ) : selectedUser?.account_type_id === 3 ? (
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed network
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.network_filter_id || ""}
+                      disabled
+                    />
+                  </div>
+                ) : (<> </>)
+                }
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }}>
                     First Name
@@ -516,7 +584,7 @@ const Admin = () => {
                     placeholder="Enter first name"
                     defaultValue={selectedUser?.f_name || ""}
                     onChange={() => setIsUserDataModified(true)}
-                    onBlur={() => handleBlur("firstName")}
+                    onBlur={() => { handleBlur("firstName"); checkDataModified(); }}
                   />
                   <span className={styles.warning}>{warnings["firstName"]}</span>
                 </div>
@@ -530,7 +598,7 @@ const Admin = () => {
                     placeholder="Enter last name"
                     defaultValue={selectedUser?.l_name || ""}
                     onChange={() => setIsUserDataModified(true)}
-                    onBlur={() => handleBlur("lastName")}
+                    onBlur={() => { handleBlur("lastName"); checkDataModified(); }}
                   />
                   <span className={styles.warning}>{warnings["lastName"]}</span>
                 </div>
@@ -544,7 +612,7 @@ const Admin = () => {
                     placeholder="Enter email"
                     defaultValue={selectedUser?.email || ""}
                     onChange={() => setIsUserDataModified(true)}
-                    onBlur={() => handleBlur("email")}
+                    onBlur={() => { handleBlur("email"); checkDataModified(); }}
                   />
                   <span className={styles.warning}>{warnings["email"]}</span>
                 </div>
@@ -558,7 +626,7 @@ const Admin = () => {
                     placeholder="Enter password"
                     defaultValue={selectedUser?.password || ""}
                     onChange={() => setIsUserDataModified(true)}
-                    onBlur={() => handleBlur("password")}
+                    onBlur={() => { handleBlur("password"); checkDataModified(); }}
                   />
                   <span className={styles.warning}>{warnings["password"]}</span>
                 </div>
@@ -573,16 +641,20 @@ const Admin = () => {
                   justifyContent: "space-between",
                   alignItems: "right",
                 }}>
-                <LargeBtn style=
-                  {{
-                    display: isUserDataModified ? "block" : "none",
-                    transition: "all 1s ease",
-                  }}
-                  color="primary">
-                  Save
-                </LargeBtn>
+                <div>
+                  <LargeBtn
+                    style=
+                    {{
+                      display: isUserDataModified ? "block" : "none",
+                      transition: "all 2s ease",
+                    }}
+                    color="primary"
+                    onClick={() => handleModifyUser()}>
+                    Save
+                  </LargeBtn>
+                </div>
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <LargeBtn onClick={() => setOpenExistingUserDialog(false)} color="primary">
+                  <LargeBtn onClick={() => setOpenModifyUserDialog(false)} color="primary">
                     Close
                   </LargeBtn>
                   <LargeBtn onClick={() => handleDeleteUser()} color="primary">
@@ -613,6 +685,7 @@ const Admin = () => {
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
                 <TbHeadCell sx={{ minWidth: "40px" }}>ID</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
+                <TbHeadCell>User Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
                 <TbHeadCell>Role ID</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
@@ -621,16 +694,17 @@ const Admin = () => {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  console.log(user),
+                  // console.log(user),
                   <TableRow key={index}>
                     <TbBodyCell>{user.account_id}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
+                    <TbBodyCell>{`${user.username}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
-                          ? "Network Manager"
-                          : "City Council"}
+                          ? "City Council"
+                          : "Network Manager"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
@@ -644,14 +718,21 @@ const Admin = () => {
                     </TbBodyCell>
                   </TableRow>
                 ))
-              ) : (
+              ) : fetchingUsers ? (
                 <TableRow>
                   <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
-                    {userRecords.length > 0
-                      ? "No users found"
-                      : "No users available! Create one to get started."}
+                    Loading...
                   </TbBodyCell>
                 </TableRow>
+              )
+              :(
+              <TableRow>
+                <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
+                  {userRecords.length > 0
+                    ? "No users found"
+                    : "No users available! Create one to get started."}
+                </TbBodyCell>
+              </TableRow>
               )}
             </TableBody>
           </Table>
