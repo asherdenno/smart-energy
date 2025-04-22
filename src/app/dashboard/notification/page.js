@@ -34,7 +34,7 @@ export default function NotificationsPage() {
         <div>
             <h1>Notification History</h1>
             {filterNotif.length === 0 ? (
-                <p>No notifications found for {session?.user?.name}, account id: {session?.user?.account_id}</p>
+                <li>No notifications found for {session?.user?.name}, account id: {session?.user?.account_id}</li>
             ) : (
                 <ul>
                     {filterNotif.length === 0? (
@@ -45,7 +45,6 @@ export default function NotificationsPage() {
                                 <li key={idx}>
                                     <p>From: {note.from_account_id}</p>
                                     <p>Type: {note.type}</p>
-                                    <p>Resource: <Link href="{note.resource}">{note.resource}</Link></p>
                                 </li>
                             ))}
                         </ul>

@@ -5,7 +5,8 @@ import React from "react";
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRef } from "react";
-
+import { Modal, Typography, Button} from '@mui/material';
+import Link from "next/link";
 
 
 export default function NotificationBell() {
@@ -18,14 +19,42 @@ export default function NotificationBell() {
     const handleClick = (event) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
     };
-    // const notifButton = useRef(null);
+    const [openModal, SetOpenModal] =useState(false);
+    const [selectedNotif, setSelectedNotif] = useState(null);
+    const handleNotifClick = (notif) => {
+        setSelectedNotif(notif);
+        SetOpenModal(true);
+        markAsRead(notif.notif_id);
+    }
 
-    // const handleClickNotif = () => {
-    //     if (notifButton.current) {
-    //         notifButton.current.style.color = '#f4eebb';
-    //     }
-    // }
-
+    
+    const markAsRead = async (notif_id) => {
+        try {
+            await fetch('api/markAsRead', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json' },
+                body: JSON.stringify({ notif_id }),
+            });
+            setNotifications((prev) => 
+                prev.map((notif) => (notif.notif_id === notif_id ? { ...notif, isRead: true } : notif))
+            );
+        }catch (err) {
+            console.error('Failed to mark as read:', err);
+        }
+    };
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+        const year = String(date.getFullYear()).slice(2); // get last 2 digits
+        return `${month}/${year}`;
+    };
+    const externalLink = (link) => {
+        if (!link.startsWith('http://') && !link.startsWith('https://')){
+            return 'https://'+ link;
+        }
+        return link;
+    };
+    
     useEffect(() => {
         fetch('/api/fetchNotifications')
             .then(res => res.json())
@@ -55,13 +84,19 @@ export default function NotificationBell() {
             <Popper id={id} open={open} anchorEl={anchorEl}>
             <Box sx={{ border: 1, p: 0, bgcolor: 'background.paper' }}>
                 {filteredNotif.length === 0 ? (
-                    <ListItemText>No New Notifications</ListItemText>
+                    <p>No New Notifications</p>
                 ) : (
                     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                         {filteredNotif.map((notif, index) => (
                             <ListItem key={index} disablePadding>
-                                <ListItemButton >
-                                    <ListItemText>{notif.type}</ListItemText>
+                                <ListItemButton onClick={() => handleNotifClick(notif)}>
+                                    <List>
+                                        <ListItem
+                                            style={{
+                                                fontWeight: notif.isRead ? 'normal' : 'bolder',
+                                            }}
+                                        >{notif.type} {formatDate(notif.time)}</ListItem>
+                                    </List>
                                 </ListItemButton>
                             </ListItem>
                         ))}
@@ -69,6 +104,33 @@ export default function NotificationBell() {
                 )}
             </Box>
             </Popper>
+            <Modal open={openModal} onClose={() => SetOpenModal(false)}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left:'50%',
+                    transform: 'translate(-50%, -50%)',
+                    width:400,
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow:24,
+                    p: 4,
+                    borderRadius: 2,
+                }}>
+                    {selectedNotif && (
+                        <>
+                            <h2>Notification</h2>
+                            <List sx={{gap: '20px'}}>
+                                <Typography><strong>From: </strong>{selectedNotif.f_name[1]}</Typography>
+                                <Typography><strong>Type: </strong>{selectedNotif.type}</Typography>
+                                <Typography><strong>Message: </strong>{selectedNotif.detail}</Typography>
+                                <Typography><strong>resource: </strong><a href={externalLink(selectedNotif.resource)} target="_blank" rel="noopener noreferrer">{selectedNotif.resource}</a></Typography>
+                            </List>
+                        </>
+                        
+                    )} 
+                </Box>
+            </Modal>
         </>
     )
 }
