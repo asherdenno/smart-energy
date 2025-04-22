@@ -69,18 +69,15 @@ const Account = () => {
         
         {/* <h1>Account Information</h1>
         <p>Account type: Admin</p>
-        <p>Account ID: {account.account_id}</p>
-        <p>Email: {account.email}</p>
-        <p>First Name: {account.f_name}</p>
-        <p>Last Name: {account.l_name}</p>
-        <p>Username: {account.username}</p>
-        <p>Password: {account.password}</p>
-        <p>Account Type ID: {account.account_type_id}</p>
-        <p>Network Filter ID: {account.network_filter_id}</p> */}
-        <Button variant="outlined" color="primary" onClick={setAccountAdmin}>Make admin</Button>
-        <Button variant="outlined" color="primary" onClick={setAccountCity}>Make city manager</Button>
-        <Button variant="outlined" color="primary" onClick={setAccountNetwork}>Make network manager</Button>
-        <Button variant="contained" color="primary" onClick={handleLogout}>Log out</Button>
+        <p>Account ID: {account?.account_id}</p>
+        <p>Email: {account?.email}</p>
+        <p>First Name: {account?.f_name}</p>
+        <p>Last Name: {account?.l_name}</p>
+        <p>Username: {account?.username}</p>
+        <p>Password: {account?.password}</p>
+        <p>Account Type ID: {account?.account_type_id}</p>
+        <p>Network Filter ID: {account?.network_filter_id}</p>*/}
+        <Button variant="outlined" color="primary" onClick={() => signOut({ callbackUrl: "/" })}>Log out</Button>
       </div>
     </main>
   );

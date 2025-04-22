@@ -19,17 +19,18 @@ const Overview = () => {
 
   const [randomTip, setRandomTip] = useState("");
   const { account } = useContext(NavbarContext);
-  // get first name from account
-  const firstName = account?.f_name || "User";
-  console.log("Account:", account);
+  const {data:session, status} = useSession();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * ecoTips.length);
     setRandomTip(ecoTips[randomIndex]);
   }, []);
+
+  const f_name = session?.user?.name || 'User';
+
   return (
       <main className={styles.content}>
-        <Navbar title={`Hi, ${firstName}!`} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
+        <Navbar title={`Hi, ${f_name}!`} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
           <Typography variant="h6">Eco tip: {randomTip}</Typography>
           <Typography>This page is not complete as we don't have the data to construct it.</Typography>
