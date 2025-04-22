@@ -35,12 +35,34 @@ const fetchCities = async (searchString) => {
   }
 }
 
+const fetchCity = async (cityFilterId) => {
+  if (!cityFilterId) {
+    throw new Error("City filter ID is required");
+  }
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT city, city_filter_id
+      FROM city_has_id
+      WHERE city_filter_id = @cityFilterId`;
+    const request = new sql.Request();
+    request.input('cityFilterId', sql.Int, cityFilterId);
+    console.log("Fetching city with ID:", cityFilterId);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch city: " + error.message);
+  }
+}
+
 const fetchNetworks = async () => {
   try {
     // console.log("Executing query:", query);
     // console.log("Query result:", result.recordset);
     await sql.connect(config);
-    const query = 'SELECT TOP (20) * FROM network_has_id';
+    const query = 'SELECT TOP (1000) * FROM network_has_id';
     const result = await sql.query(query);
     await sql.close();
     return result.recordset;
@@ -418,7 +440,7 @@ const fetchDoubleFilteredData = async (net_manager, city) => {
   }
 }
 
-const fetchUsageSumPerYear = async (city_filter_id) => {
+const fetchUsageSumPerYear = async (city_filter_id, network_filter_id) => {
   if (city_filter_id) {
     try {
       await sql.connect(config);
@@ -457,7 +479,47 @@ const fetchUsageSumPerYear = async (city_filter_id) => {
       console.error("Database Error:", error);
       throw new Error("Failed to fetch usage data: " + error.message);
     }
-  } else {
+  } else if (network_filter_id) {
+    try {
+      await sql.connect(config);
+      const query = `
+        SELECT
+          e.year,
+          e.electric_or_gas,
+          ROUND(SUM(e.annual_consume),3) AS total_annual_consume,
+          d.city,
+          ROUND(AVG(e.delivery_perc),2) AS total_delivery_perc,
+          ROUND(AVG(e.annual_consume_lowtarif_perc),2) AS total_annual_consume_lowtarif_perc,
+          c.network_filter_id
+        FROM
+          dbo.energy_data e
+        INNER JOIN
+          data_filter d
+        ON
+          (e.data_id = d.data_id)
+        INNER JOIN
+          network_has_id c
+        ON
+          (d.net_manager = c.net_manager)
+        WHERE
+          (c.network_filter_id = @network_filter_id)
+        GROUP BY 
+          e.year, e.electric_or_gas, d.city, c.network_filter_id
+        ORDER BY 
+          e.year, e.electric_or_gas;
+      `;
+      const request = new sql.Request();
+      request.input('network_filter_id', sql.Int, network_filter_id);
+      const result = await request.query(query);
+      await sql.close();
+      return result.recordset;
+    } catch (error) {
+      console.error("Database Error:", error);
+      throw new Error("Failed to fetch usage data: " + error.message);
+    }
+  }
+  
+  else {
     throw new Error("City filter ID not detected. Please provide a valid ID.");
   }
 }
@@ -491,7 +553,7 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 }
 
 export {
-  fetchAll, fetchCities, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
+  fetchAll, fetchCities, fetchCity, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
   fetchAllUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser
 }
