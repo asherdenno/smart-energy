@@ -56,7 +56,7 @@ const Sidebar = () => {
     <Drawer
       sx={{
         '& .MuiDrawer-paper': {
-          backgroundColor: "#B7B7B7",
+          backgroundColor: "#A7A7A7",
           width: "250px",
           position: "fixed",
           height: "100vh"
@@ -73,8 +73,8 @@ const Sidebar = () => {
             <ListItem key={text} >
               <ListItemButton onClick={() => handleClick(index, item.to)} className={navIndex === index ? "active-button" : ""} sx={{
                 backgroundColor: "white",
-                borderRadius: "37px",
-                border: "2px solid black",
+                borderRadius: "20px",
+                border: "1px solid #000000",
               }}>
                 <ListItemText primary={text} className={navIndex === index ? "active-text" : ""} />
               </ListItemButton>
@@ -83,12 +83,12 @@ const Sidebar = () => {
         })}
       </List>
 
-      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
+      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A7A7A7" }}>
         <ListItem key={"Account"}>
           <ListItemButton onClick={() => handleClick(5, "../dashboard/account")} sx={{
             backgroundColor: "white",
-            borderRadius: "37px",
-            border: "2px solid black"
+            borderRadius: "20px",
+            border: "1px solid #000000",
           }} className={navIndex === 4 ? "active-button" : ""}>
             <ListItemText primary={"Account"} className={navIndex === 4 ? "active-text" : ""} />
           </ListItemButton>

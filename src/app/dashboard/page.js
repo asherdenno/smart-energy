@@ -5,6 +5,8 @@ import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
 import { Typography, Button } from "@mui/material";
 import { useSession } from "next-auth/react"
+import { NavbarContext } from "./context/NavbarContext";
+import { useContext } from "react";
 
 const Overview = () => {
 
@@ -17,18 +19,19 @@ const Overview = () => {
   ];
 
   const [randomTip, setRandomTip] = useState("");
+  const { account } = useContext(NavbarContext);
+  const {data:session, status} = useSession();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * ecoTips.length);
     setRandomTip(ecoTips[randomIndex]);
-  })
+  }, []);
 
-  const { data: session } = useSession();
-  console.log(session)
+  const f_name = session?.user?.name || 'User';
 
   return (
       <main className={styles.content}>
-        <Navbar title={"Hi, " + session?.user.name + "!"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
+        <Navbar title={`Hi, ${f_name}!`} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
           <Typography variant="h6">Eco tip: {randomTip}</Typography>
           <Typography>This page is not complete as we don't have the data to construct it.</Typography>
