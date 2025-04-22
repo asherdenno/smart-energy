@@ -656,6 +656,8 @@ const markAsRead = async (notif_id) => {
 export {
   fetchAll, fetchCities, fetchCity, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
-  fetchUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, modifyUser, deleteUser
-  fetchAllUsersInPages, totalUsersCount, fetchAllUserFilterIds, findUsers, insertNewUser, fetchAllNotif, markAsRead, modifyUser, deleteUser
+  fetchUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, modifyUser, deleteUser,
+  fetchAllNotif, markAsRead
 }
+
+// fetchAllUsersInPages, totalUsersCount,
