@@ -1,8 +1,6 @@
 import { deleteUser } from '@/lib/db';
 
 export default async function handler(req, res) {
-
-    console.log("running fetch add user")
     try {
         if (req.method === 'POST') {
             const { account_id } = req.body;
@@ -14,7 +12,7 @@ export default async function handler(req, res) {
             res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
-        console.error('Database Error:', error);
+        console.error('API  Error:', error);
         res.status(500).json({ error: 'Failed to add user' });
     }
 }

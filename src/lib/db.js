@@ -107,23 +107,43 @@ const fetchUsersInPages = async (page = 1, pageSize = 20) => {
   }
 };
 
-const findUsers = async (userInput) => {
+const findUsers = async (userInput, page = 1, pageSize = 20) => {
   try {
+    const skipRows = (page - 1) * pageSize;
     await sql.connect(config);
-    const query = `
-      SELECT (TOP 20) user_id, user_name
-      FROM users
-      WHERE user_name LIKE @userInput;
-    `;
+
     const request = new sql.Request();
     request.input('userInput', sql.VarChar, `%${userInput}%`);
-    console.log("Executing query:", query);
-    const result = await request.query(query);
-    console.log("Query result:", result.recordset);
+    request.input('offset', sql.Int, skipRows);
+    request.input('pageSize', sql.Int, pageSize);
+
+    const query = `
+      SELECT *
+      FROM dbo.account
+      WHERE username LIKE @userInput
+      ORDER BY account_id
+      OFFSET @offset ROWS 
+      FETCH NEXT @pageSize ROWS ONLY;
+    `;
+
+    const countRequest = new sql.Request();
+    countRequest.input('userInput', sql.VarChar, `%${userInput}%`);
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM dbo.account
+      WHERE username LIKE @userInput;
+    `;
+
+    const usersResult = await request.query(query);
+    const countResult = await countRequest.query(countQuery);
+
+    const totalUsers = countResult.recordset[0].total;
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
     await sql.close();
-    return result.recordset;
-  }
-  catch (error) {
+    return { users: usersResult.recordset, totalPages };
+  } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch users: " + error.message);
   }
