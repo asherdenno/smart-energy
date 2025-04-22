@@ -14,7 +14,7 @@ import AnnualEnergyOverview from "../components/pageComponents/annualEnergyOverv
 export default function Graphs() {
   return (
       <main className={styles.content}>
-        <Navbar title={"Graphs"} hasNotify={true} hasNetworkSelect={false} hasCitySelect={true}/>
+        <Navbar title={"Graphs"} hasNotify={true} hasNetworkSelect={true} hasCitySelect={true}/>
         <div>
         <h1>Annual Energy Consumption Overview</h1>
         <AnnualEnergyOverview/>

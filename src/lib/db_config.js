@@ -8,8 +8,8 @@ const config = {
     trustServerCertificate: false // Set to true only for local dev with self-signed certs
   },
   port: 1433,
-  connectionTimeout: 30000,
-  requestTimeout: 30000
+  connectionTimeout: 90000,
+  requestTimeout: 90000
 };
 
 export { config };

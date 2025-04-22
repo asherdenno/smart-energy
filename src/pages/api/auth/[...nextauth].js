@@ -34,23 +34,22 @@ export const authOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        console.log("1** Token: " + token.id)
+        console.log("1** Token: " + user.account_id)
         console.log("2** User: " + user.f_name)
         token.id = user.account_id
         token.username = user.f_name;
-        token.accessToken = token;
       }
 
-      return token, user
+      return token
     },
     session: async ({ session, token }) => {
       if (token) {
         console.log("3** Session: " + session)
         console.log("4** Token: " + token)
-        session.user = token.user
-        session.user.account_id = token.id
-        session.user.name = token.username;
-        session.accessToken = token.accessToken;
+        session.user = {
+          account_id: token.id,
+          name: token.username,
+        }
       }
       return session;
     },

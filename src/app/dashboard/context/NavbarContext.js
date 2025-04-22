@@ -10,6 +10,19 @@ export const CityProvider = ({ children }) => {
         setAnnualEnergyData(null);
     }
 
+    const resetDetails = () => {
+        console.log("Resetting details");
+        setAnnualEnergyData(null);
+        setAccount(null);
+        setCity(null);
+        setNetwork(null);
+        localStorage.removeItem('annualEnergyData');
+        localStorage.removeItem('account');
+        localStorage.removeItem('city');
+        localStorage.removeItem('network');
+    }
+
+    const [reloadFlag, setReloadFlag] = useState(false);
     const [annualEnergyData, setAnnualEnergyData] = useState(null);
     const [account, setAccount] = useState(null);
     const [city, setCity] = useState(null);
@@ -59,7 +72,10 @@ export const CityProvider = ({ children }) => {
 
     return (
         <NavbarContext.Provider value={{
+            reloadFlag,
+            setReloadFlag,
             resetGraphData,
+            resetDetails,
             annualEnergyData,
             setAnnualEnergyData,
             account,

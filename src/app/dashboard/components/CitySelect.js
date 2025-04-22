@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Skeleton } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { NavbarContext } from '../context/NavbarContext';
 
 export default function CitySelect() {
-    const { city, setCity, resetGraphData } = React.useContext(NavbarContext);
+    const { city, setCity, resetGraphData, account } = React.useContext(NavbarContext);
+    const cityFilterId = account ? account.city_filter_id : null;
+    const accountTypeId = account ? account.account_type_id : null;
 
-    const fetchSearchResults = async (searchString) => {
+    const fetchSearchResults = async (searchString, cityFilterId) => {
         try {
             setLoading(true);
             const res = await fetch('/api/fetch-cities', {
@@ -15,7 +17,7 @@ export default function CitySelect() {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ searchString }),
+            body: JSON.stringify({ searchString, accountTypeId, cityFilterId: cityFilterId || null, networkFilterId: null }),
           });
           if (!res.ok) throw new Error('Error fetching cities');
           const data = await res.json();
@@ -24,25 +26,75 @@ export default function CitySelect() {
         }
         catch (error) {
           console.error('Error fetching cities:', error);
+          setLoading(false);
           return [];
         }
-      };
+    };
+
+    const fetchCity = async (cityFilterId) => {
+        try {
+            const res = await fetch('/api/fetch-cities', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ searchString: "", accountTypeId: 2, cityFilterId: cityFilterId || null, networkFilterId: null }),
+            });
+            if (!res.ok) throw new Error('Error fetching city');
+            const data = await res.json();
+            setCity(data[0]);
+            return data;
+        }
+        catch (error) {
+            console.error('Error fetching city:', error);
+            return [];
+        }
+    }
 
     const [searchString, setSearchString] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [results, setResults] = React.useState([]);
     const [query, setQuery] = React.useState("");
 
+
     React.useEffect(() => {
-        fetchSearchResults("");
-        setSearchString(city || "");
-    }, []);
+        const fetchInitialData = async () => {
+            if (account.account_type_id === 2) {
+                const data = await fetchCity(account.city_filter_id);
+                console.log("thisdwa is the data: ", data);
+                console.log("for city id: ", account.city_filter_id);            }
+        }
+        if (account) {
+            fetchInitialData();
+        } else {
+            setCity(null);
+        }
+    }, [account]);
+        
+
+    React.useEffect(() => {
+        if (!city) {
+            setSearchString("");
+        }
+        else if (city.city) {
+            setSearchString(city);
+        }
+    }, [city]);
 
     const handleButtonClick = () => {
         setCity(searchString);
         resetGraphData();
     }
 
+    if (!account) {
+        return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: "0px" }}>
+                <Skeleton variant="rounded" width={300} height={55} />
+            </Box>
+        )
+    } else if (account.account_type_id === 3) {
+        return null;
+    }
     return (
         <Box sx={{ display: "flex", alignItems: "center", gap: "0px" }}>
             <Autocomplete
@@ -52,7 +104,7 @@ export default function CitySelect() {
                     setSearchString(newValue);
                 }}
                 onInputChange={(event, newQuery) => {
-                    fetchSearchResults(newQuery);
+                    fetchSearchResults(newQuery, cityFilterId);
                 }}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter') {

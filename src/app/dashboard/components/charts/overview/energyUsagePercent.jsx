@@ -59,6 +59,7 @@ export default class EnergyUsagePercent extends PureComponent {
       dataOuter: [],
       dataInner: [],
       loading: true,
+      error: false,
       prevAnnualEnergyData: null,
     };
   }
@@ -66,6 +67,36 @@ export default class EnergyUsagePercent extends PureComponent {
   resetGraph = () => {
     this.setState({ dataOuter: [], dataInner: [] });
   }
+
+  groupDataByYear = (items) => {
+    const groupedData = {};
+    items.forEach((item) => {
+      const year = item.year;
+      if (!groupedData[year]) {
+        groupedData[year] = {
+          electric: 0,
+          gas: 0,
+        };
+      }
+      if (item.electric_or_gas === "Electricity") {
+        groupedData[year].electric += item.total_annual_consume;
+      } else if (item.electric_or_gas === "Gas") {
+        groupedData[year].gas += item.total_annual_consume;
+      } else {
+        console.error("Invalid electric_or_gas value:", item.electric_or_gas);
+      }
+    });
+    const result = [];
+    for (const year in groupedData) {
+      result.push({
+        year: year,
+        electric: groupedData[year].electric,
+        gas: groupedData[year].gas,
+        total: groupedData[year].electric + groupedData[year].gas,
+      });
+    }
+    return result;
+  };
 
   updateGraph = (items) => {
     const newDataInner = [];
@@ -80,6 +111,33 @@ export default class EnergyUsagePercent extends PureComponent {
       }
     })
     this.setState({ dataInner: newDataInner, dataOuter: newDataOuter });
+  };
+
+  updateGraphWithGroupedData = (items) => {
+    const groupedData = this.groupDataByYear(items);
+    const newDataInner = [];
+    const newDataOuter = [];
+    groupedData.forEach((item) => {
+      newDataInner.push({
+          name: item.year,
+          value: item.electric, 
+      });
+
+      // For gas (outer circle)
+      newDataOuter.push({
+          name: item.year,
+          value: item.gas,
+        });
+      });
+      this.setState({
+          dataInner: newDataInner,
+          dataOuter: newDataOuter,
+      });
+      if (newDataInner.length === 0 && newDataOuter.length === 0) {
+        this.setState({ error: true });
+      } else {
+        this.setState({ error: false });
+      }
   };
 
   componentDidMount() {
@@ -101,7 +159,8 @@ export default class EnergyUsagePercent extends PureComponent {
     }
     if (annualEnergyData !== this.state.prevAnnualEnergyData && Array.isArray(annualEnergyData)) {
       this.resetGraph(); 
-      this.updateGraph(annualEnergyData); 
+      // this.updateGraph(annualEnergyData);
+      this.updateGraphWithGroupedData(annualEnergyData); 
       this.setState({ prevAnnualEnergyData: annualEnergyData }, () => {
         this.setState({ loading: false});
       })
@@ -129,6 +188,8 @@ export default class EnergyUsagePercent extends PureComponent {
           <Skeleton animation="wave" variant="text" height="40px" width="100%"/>
         </div>
       )
+    } else if (this.state.error === true) {
+      return null;
     }
     return (
       <div className={styles.greyContainer+" energyChart"} style={{ 
@@ -177,14 +238,14 @@ export default class EnergyUsagePercent extends PureComponent {
 
                 {/* <Legend verticalAlign="bottom" height={36} /> */}
                 <Legend 
-  verticalAlign="bottom" 
-  height={36} 
-  payload={this.state.dataOuter.map((entry, index) => ({
-    value: `${entry.name}`, 
-    type: "circle", 
-    color: COLORS[index % COLORS.length], 
-  }))}
-/>
+                  verticalAlign="bottom" 
+                  height={36} 
+                  payload={this.state.dataOuter.map((entry, index) => ({
+                    value: `${entry.name}`, 
+                    type: "circle", 
+                    color: COLORS[index % COLORS.length], 
+                  }))}
+                />
           </PieChart>
         </ResponsiveContainer>
         <br></br>

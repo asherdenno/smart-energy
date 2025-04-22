@@ -9,14 +9,14 @@ import DownloadButtons from "./downloadButton";
 import { NavbarContext } from "../../context/NavbarContext";
 
 export default function AnnualEnergyOverview() {
-  const fetchData = async (city_id) => {
+  const fetchDataFromCity = async (city_id) => {
     try {
       const res = await fetch('/api/usage-sum-per-year', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ city_id }),
+        body: JSON.stringify({ city_id, network_id: null }),
       });
       if (!res.ok) throw new Error('Error fetching usage data');
       const data = await res.json();
@@ -28,10 +28,29 @@ export default function AnnualEnergyOverview() {
     }
   };
 
-  const { annualEnergyData, setAnnualEnergyData, city } = useContext(NavbarContext);
+  const fetchDataFromNetwork = async (network_filter_id) => {
+    try {
+      const res = await fetch('/api/usage-sum-per-year', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ city_id: null, network_id: network_filter_id }),
+      });
+      if (!res.ok) throw new Error('Error fetching usage data');
+      const data = await res.json();
+      console.log("Fetched graph data:", data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching usage data:', error);
+      return [];
+    }
+  };
+
+  const { annualEnergyData, setAnnualEnergyData, city, network, account, reloadFlag, setReloadFlag } = useContext(NavbarContext);
 
   const fetchAndSetData = async (filter_id) => {
-    const data = await fetchData(filter_id);
+    const data = await fetchDataFromCity(filter_id);
     setAnnualEnergyData(data);
     console.log("Fetched data for graphs from city filter id :", filter_id);
   };
@@ -39,11 +58,46 @@ export default function AnnualEnergyOverview() {
   const [showElectric, setShowElectric] = useState(true);
   const [showGas, setShowGas] = useState(true);
 
-  useEffect(() => {
-    if (city && city.city_filter_id) {
-      fetchAndSetData(city.city_filter_id);
+  const handleCityChange = async () => {
+    if (!account) return;
+    if (city && city.city_filter_id && (account.account_type_id === 2 || account.account_type_id === 1)) {
+        setAnnualEnergyData(null);
+        const data = await fetchDataFromCity(city.city_filter_id);
+        setAnnualEnergyData(data);
+        console.log("Fetched data for graphs from city filter id:", city.city_filter_id);
     }
+  };
+
+  const handleNetworkChange = async () => {
+    if (!account) return;
+    if (network && network.network_filter_id) {
+        setAnnualEnergyData(null);
+        const data = await fetchDataFromNetwork(network.network_filter_id);
+        setAnnualEnergyData(data);
+        console.log("Fetched data for graphs from network filter id:", network.network_filter_id);
+    }
+  };
+
+  useEffect(() => {
+    handleCityChange();
   }, [city]);
+
+  useEffect(() => {
+    handleNetworkChange();
+  }
+  , [network]);
+
+  useEffect(() => {
+    if (reloadFlag === false) return;
+    if (!account) return;
+    if (account.account_type_id === 2 || account.account_type_id === 1) {
+      handleCityChange();
+    }
+    if (account.account_type_id === 3) {
+      handleNetworkChange();
+    }
+    setReloadFlag(false);
+  }, [reloadFlag]);
 
   return (
     <div>

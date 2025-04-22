@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Skeleton } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { border } from '@mui/system';
 import { NavbarContext } from '../context/NavbarContext';
 
 export default function NetworkSelect() {
-    const { network, setNetwork } = React.useContext(NavbarContext);
+    const { network, setNetwork, account } = React.useContext(NavbarContext);
 
     const fetchSearchResults = async (searchString) => {
         try {
@@ -43,6 +43,13 @@ export default function NetworkSelect() {
         console.log("Network selected", searchString)
     }
 
+
+    if (!account) {
+        return null;
+            
+    } else if (account.account_type_id === 2 || account.account_type_id === 1) {
+        return null;
+    }
     return (
         <Box sx={{ display: "flex", alignItems: "center", gap: "0px" }}>
             <Autocomplete

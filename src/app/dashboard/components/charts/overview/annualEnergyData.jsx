@@ -14,77 +14,87 @@ import {
 } from 'recharts';
 import { NavbarContext } from '@/app/dashboard/context/NavbarContext';
 import styles from "@/app/page.module.css";
-import { Skeleton } from '@mui/material';
+import { Skeleton, IconButton } from '@mui/material';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
+
 const EnergyUsageCharts = ({ showElectric, showGas, minWidth }) => {
-  const { annualEnergyData, setAnnualEnergyData } = React.useContext(NavbarContext);
+  const { annualEnergyData, setAnnualEnergyData, city, setCity, setReloadFlag } = React.useContext(NavbarContext);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [AnnualEnergy, setAnnualEnergy] = useState([]);
   const [AnnualDel, setAnnualDel] = useState([]);
   const [AnnualLowtarif, setAnnualLowtarif] = useState([]);
 
+  const updateGraph = (data) => {
+    const energyData = [];
+    const delData = [];
+    const lowtarifData = [];
+
+    data.forEach((item) => {
+      let yearData = energyData.find((entry) => entry.name === item.year);
+      let yearDelData = delData.find((entry) => entry.name === item.year);
+      let yearLowTarifData = lowtarifData.find(
+        (entry) => entry.name === item.year
+      );
+
+      if (!yearData) {
+        yearData = { name: item.year, Electric: null, Gas: null };
+        energyData.push(yearData);
+      }
+      if (!yearDelData) {
+        yearDelData = {
+          name: item.year,
+          "Electric Delivery Percentage": null,
+          "Gas Delivery Percentage": null,
+        };
+        delData.push(yearDelData);
+      }
+      if (!yearLowTarifData) {
+        yearLowTarifData = {
+          name: item.year,
+          "Electric Low Tariff Consumption": null,
+          "Gas Low Tariff Consume": null,
+        };
+        lowtarifData.push(yearLowTarifData);
+      }
+
+      if (item.electric_or_gas === "Electricity") {
+        yearData.Electric = item.total_annual_consume;
+        yearDelData["Electric Delivery Percentage"] =
+          item.total_delivery_perc;
+        yearLowTarifData["Electric Low Tariff Consumption"] =
+          item.total_annual_consume_lowtarif_perc;
+      } else if (item.electric_or_gas === "Gas") {
+        yearData.Gas = item.total_annual_consume;
+        yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
+        yearLowTarifData["Gas Low Tariff Consume"] =
+          item.total_annual_consume_lowtarif_perc;
+      }
+    });
+
+    setAnnualEnergy(energyData);
+    setAnnualDel(delData);
+    setAnnualLowtarif(lowtarifData);
+    setLoading(false);
+    setError(false);
+    if (energyData.length === 0) {
+      setError(true);
+    }
+  };
+
+  const reloadGraphs = () => {
+    setReloadFlag(true);
+  }
+
   useEffect(() => {
-    const updateGraph = (data) => {
-      const energyData = [];
-      const delData = [];
-      const lowtarifData = [];
-
-      data.forEach((item) => {
-        let yearData = energyData.find((entry) => entry.name === item.year);
-        let yearDelData = delData.find((entry) => entry.name === item.year);
-        let yearLowTarifData = lowtarifData.find(
-          (entry) => entry.name === item.year
-        );
-
-        if (!yearData) {
-          yearData = { name: item.year, Electric: null, Gas: null };
-          energyData.push(yearData);
-        }
-        if (!yearDelData) {
-          yearDelData = {
-            name: item.year,
-            "Electric Delivery Percentage": null,
-            "Gas Delivery Percentage": null,
-          };
-          delData.push(yearDelData);
-        }
-        if (!yearLowTarifData) {
-          yearLowTarifData = {
-            name: item.year,
-            "Electric Low Tariff Consumption": null,
-            "Gas Low Tariff Consume": null,
-          };
-          lowtarifData.push(yearLowTarifData);
-        }
-
-        if (item.electric_or_gas === "Electricity") {
-          yearData.Electric = item.total_annual_consume;
-          yearDelData["Electric Delivery Percentage"] =
-            item.total_delivery_perc;
-          yearLowTarifData["Electric Low Tariff Consumption"] =
-            item.total_annual_consume_lowtarif_perc;
-        } else if (item.electric_or_gas === "Gas") {
-          yearData.Gas = item.total_annual_consume;
-          yearDelData["Gas Delivery Percentage"] = item.total_delivery_perc;
-          yearLowTarifData["Gas Low Tariff Consume"] =
-            item.total_annual_consume_lowtarif_perc;
-        }
-      });
-
-      setAnnualEnergy(energyData);
-      setAnnualDel(delData);
-      setAnnualLowtarif(lowtarifData);
-      setLoading(false);
-    };
     if (annualEnergyData) {
-      console.log("Using context data:", annualEnergyData);
       updateGraph(annualEnergyData);
       return;
     }
     setLoading(true);
-    console.log("No data");
   }, [annualEnergyData]);
 
   if (loading) {
@@ -105,8 +115,18 @@ const EnergyUsageCharts = ({ showElectric, showGas, minWidth }) => {
         </div>
       </>
     );
+  } else if (error) {
+    return (
+      <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || '100%' }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
+        <h4>Error loading data, or no data.</h4>
+          <IconButton onClick={reloadGraphs}>
+            <ReplayIcon />
+          </IconButton>
+        </div>
+      </div>
+    );
   }
-
   return (
     <>
       <div className={styles.greyContainer + " energyChart"} style={{minWidth: minWidth || '100%'}}>
