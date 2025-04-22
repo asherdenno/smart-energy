@@ -1,4 +1,4 @@
-import { fetchAllUsersInPages } from '@/lib/db';
+import { fetchUsersInPages} from '@/lib/db';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const { page = 1, pageSize = 20 } = req.query;
 
   try {
-    const { users, totalPages } = await fetchAllUsersInPages(Number(page), Number(pageSize));
+    const { users, totalPages } = await fetchUsersInPages(Number(page), Number(pageSize));
     res.status(200).json({ users, totalPages });
   } catch (error) {
     console.error("API Error:", error);

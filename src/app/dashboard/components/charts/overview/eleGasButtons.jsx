@@ -54,6 +54,8 @@ export default function EleGasButtons({ showElectric, setShowElectric, showGas, 
         backgroundColor: "#f0f0f0",
         borderRadius: "10px",
         padding: "5px",
+        height: "80px",
+        width: "210px"
       }}
     >
       <ToggleButton value="all">All</ToggleButton>

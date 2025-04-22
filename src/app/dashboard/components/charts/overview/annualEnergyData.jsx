@@ -14,29 +14,11 @@ import {
 } from 'recharts';
 import { NavbarContext } from '@/app/dashboard/context/NavbarContext';
 import styles from "@/app/page.module.css";
+import { Skeleton } from '@mui/material';
 
 const GAS_TO_KWH_MULTIPLIER = 11.164;
 
-const fetchData = async (city_id) => {
-  try {
-    const res = await fetch('/api/usage-sum-per-year', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ city_id }),
-    });
-    if (!res.ok) throw new Error('Error fetching usage data');
-    const data = await res.json();
-    console.log("Fetched graph data:", data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching usage data:', error);
-    return [];
-  }
-};
-
-const EnergyUsageCharts = ({showElectric, showGas}) => {
+const EnergyUsageCharts = ({ showElectric, showGas, minWidth }) => {
   const { annualEnergyData, setAnnualEnergyData } = React.useContext(NavbarContext);
   const [loading, setLoading] = useState(true);
   const [AnnualEnergy, setAnnualEnergy] = useState([]);
@@ -45,10 +27,6 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
 
   useEffect(() => {
     const updateGraph = (data) => {
-      // const { data } = response;
-      setAnnualEnergyData(data);
-      console.log("Filtered data:", data);
-
       const energyData = [];
       const delData = [];
       const lowtarifData = [];
@@ -100,56 +78,64 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
       setAnnualLowtarif(lowtarifData);
       setLoading(false);
     };
-
     if (annualEnergyData) {
       console.log("Using context data:", annualEnergyData);
       updateGraph(annualEnergyData);
       return;
     }
-    console.log("Fetching data...");
-
-    fetchData("36")
-      .then((response) => updateGraph(response.data))
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
-  }, []);
+    setLoading(true);
+    console.log("No data");
+  }, [annualEnergyData]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || '100%' }}>
+          <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+          <Skeleton animation="wave" variant='rectangular' height={100} width={"100%"} sx={{ alignSelf: "flex-end" }} />
+          <Skeleton animation="wave" variant='text' height={70} width={"100%"} sx={{ alignSelf: "flex-end" }} />
+        </div>
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || "100%" }}>
+          <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+          <Skeleton animation="wave" variant='rectangular' height={150} width={"100%"} />
+        </div>
+        <div className={styles.greyContainer + " energyChart"} style={{ minWidth: minWidth || '100%' }}>
+        <Skeleton animation="wave" variant='text' height={40} width={"100%"} />
+        <Skeleton animation="wave" variant='rectangular' height={150} width={"100%"} />
+        </div>
+      </>
+    );
   }
 
   return (
-    <div style={{ width: '100%' }}>
-      <div className={styles.greyContainer+" energyChart"}>
-
-      <h4>Annual Energy Consumption</h4>
-      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}} >
-        <AreaChart
-          width={500}
-          height={200}
-          data={AnnualEnergy}
-          syncId="anyId"
-          margin={{
-            top: 10,
-            right: 30,
-            left: 0,
-            bottom: 0,
-          }}
-          >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip
-            formatter={(value, name) => {
-              if (name.includes("Electric")) {
-                return [`${value} kWh`, name];
-              }
-              if (name.includes("Gas")) {
-                return [`${value} m³`, name];
-              }
+    <>
+      <div className={styles.greyContainer + " energyChart"} style={{minWidth: minWidth || '100%'}}>
+        <h4>Annual Energy Consumption</h4>
+        <ResponsiveContainer width="100%" height={200} style={{ padding: "1%" }} >
+          <AreaChart
+            width={500}
+            height={200}
+            data={AnnualEnergy}
+            syncId="anyId"
+            margin={{
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
             }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip
+              formatter={(value, name) => {
+                if (name.includes("Electric")) {
+                  return [`${value} kWh`, name];
+                }
+                if (name.includes("Gas")) {
+                  return [`${value} m³`, name];
+                }
+              }}
             />
           {showElectric && (
             <Area type="monotone" dataKey="Electric" stroke="#8884d8" fill="#8884d8" />
@@ -160,9 +146,7 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
       </ResponsiveContainer>
           </div>
 
-          <div className={styles.greyContainer+" energyChart"}>
-
-      
+      <div className={styles.greyContainer+" energyChart"} style={{minWidth: minWidth || '100%'}}>
       <h4>Annual Energy Delivery Percentage</h4>
       <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
@@ -203,10 +187,10 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
           )}
         </LineChart>
       </ResponsiveContainer>
-          </div>
-          <div className={styles.greyContainer+" energyChart"}>
+      </div>
+      <div className={styles.greyContainer+" energyChart"} style={{minWidth: minWidth || '100%'}}>
         <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
-      <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
+        <ResponsiveContainer width="100%" height={200} style={{padding:"1%"}}>
         <LineChart
           width={500}
           height={200}
@@ -246,7 +230,94 @@ const EnergyUsageCharts = ({showElectric, showGas}) => {
         </LineChart>
       </ResponsiveContainer>
       </div>
-    </div>
+
+      {/* <div className={styles.greyContainer + " energyChart"} style={{width: width || 200}}>
+
+
+        <h4>Annual Energy Delivery Percentage</h4>
+        <ResponsiveContainer width="100%" height={200} style={{ padding: "1%" }}>
+          <LineChart
+            width={500}
+            height={200}
+            data={AnnualDel}
+            syncId="anyId"
+            margin={{
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis tickFormatter={(value) => `${value}%`} />
+            <Tooltip
+              formatter={(value, name) => {
+                return [`${value} %`, name];
+              }}
+            />
+            {showElectric && (
+              <Line
+                type="monotone"
+                dataKey="Electric Delivery Percentage"
+                stroke="#8884d8"
+                fill="#8884d8"
+              />
+            )}
+            {showGas && (
+              <Line
+                type="monotone"
+                dataKey="Gas Delivery Percentage"
+                stroke="#82ca9d"
+                fill="#82ca9d"
+              />
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className={styles.greyContainer + " energyChart"} style={{width: width || 200}}>
+        <h4>Annual Energy Consumption Percentage During Low Tariff Hours</h4>
+        <ResponsiveContainer width="100%" height={200} style={{ padding: "1%" }}>
+          <LineChart
+            width={500}
+            height={200}
+            data={AnnualLowtarif}
+            syncId="anyId"
+            margin={{
+              top: 10,
+              right: 30,
+              left: 0,
+              bottom: 0,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis tickFormatter={(value) => `${value}%`} />
+            <Tooltip
+              formatter={(value, name) => {
+                return [`${value} %`, name];
+              }}
+            />
+            {showElectric && (
+              <Line
+                type="monotone"
+                dataKey="Electric Low Tariff Consume"
+                stroke="#8884d8"
+                fill="#8884d8"
+              />
+            )}
+            {showGas && (
+              <Line
+                type="monotone"
+                dataKey="Gas Low Tariff Consume"
+                stroke="#82ca9d"
+                fill="#82ca9d"
+              />
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div> */}
+    </>
   );
 };
 

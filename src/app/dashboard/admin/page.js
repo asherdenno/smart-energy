@@ -29,30 +29,51 @@ const vacantCity = [
   'Vastra Gotaland',
 ];
 
-let allUserRows = [];
+let userRecords = [];
+let unfilterdPagesCount = 1; // to keep track of the total pages for the filtered users
 
 const Admin = () => {
+  // Dialog states
+  const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
+  const [openModifyUserDialog, setOpenModifyUserDialog] = useState(false);
+
+  // User management states
   const [users, setUsers] = useState([]);
+  const [activeRole, setActiveRole] = useState("Network manager");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUserDataModified, setIsUserDataModified] = useState(false);
+  const [fetchingUsers, setFetchingUsers] = useState(true);
+
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Set the number of users displayed per page
 
   const fetchUsers = async (page = 1) => {
     try {
-      const pageSize = 10; // Set the number of users displayed per page
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
-      allUserRows = data.users;
+      userRecords = data.users;
       setUsers(data.users);
       setTotalPages(data.totalPages);
+      unfilterdPagesCount = data.totalPages;
     } catch (error) {
       console.error("Error fetching users:", error);
     }
+    setFetchingUsers(false);
   };
 
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
+
+
+  useEffect(() => {
+    if (!openModifyUserDialog) {
+      setIsUserDataModified(false); // Reset isUserDataModified when dialog is closed
+    }
+  }, [openModifyUserDialog]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -64,20 +85,31 @@ const Admin = () => {
   const searchUser = (query) => {
     setSearchQuery(query);
     if (query === "") {
-      setUsers(allUserRows);
+      setUsers(userRecords);
+      setTotalPages(unfilterdPagesCount);
+      setCurrentPage(1);
     } else {
-      const filteredUsers = allUserRows.filter((user) =>
+      const filteredUsers = userRecords.filter((user) =>
         user.username.toLowerCase().includes(query.toLowerCase())
       );
+      const filteredUsersLength = filteredUsers.length
+      if (filteredUsersLength > pageSize) {
+        setTotalPages(Math.ceil(filteredUsersLength / pageSize));
+        setCurrentPage(1);
+      }
+      else {
+        setTotalPages(1);
+        setCurrentPage(1);
+      }
       setUsers(filteredUsers);
     }
   };
 
-
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const [activeRole, setActiveRole] = useState("Network manager");
-
+  const handleManageUser = (user) => {
+    setSelectedUser(user);
+    setOpenModifyUserDialog(true);
+    resetWarnings();
+  };
 
   const [warnings, setWarnings] = useState({
     network: "",
@@ -87,6 +119,17 @@ const Admin = () => {
     email: "",
     password: "",
   });
+
+  const resetWarnings = () => {
+    setWarnings({
+      network: "",
+      city: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+  };
 
   const fields = [
     { id: "network" },
@@ -152,10 +195,12 @@ const Admin = () => {
     fields.forEach(({ id }) => {
       const inputElement = document.getElementById(id);
       const value = inputElement?.value;
-
-      if (!value) {
+      if ((id === "city" && activeRole === "Network manager") || (id === "network" && activeRole === "City council")) {
+        return;
+      } else if (!value) {
         allFieldsFilled = false;
         newWarnings[id] = emptyFieldMsg;
+        console.log("Empty field:", id);
         if (inputElement) inputElement.value = ""; // Clear the value if empty
       } else {
         if (id === "email" && !validateEmail(value)) {
@@ -183,23 +228,24 @@ const Admin = () => {
   };
 
   const handleAddUser = async () => {
-    if (!checkUserInputMeetsRequirements()) {
-      return;
-    }
+    // if (!checkUserInputMeetsRequirements()) {
+    //   alert("Please fill all fields correctly");
+    //   return;
+    // }
 
     const userData = {
       email: document.getElementById('email').value,
       f_name: document.getElementById('firstName').value,
       l_name: document.getElementById('lastName').value,
-      username: `${document.getElementById('firstName').value}${document.getElementById('lastName').value}`,
       password: document.getElementById('password').value,
-      account_type_id: activeRole === 'Network manager' ? 2 : 3,
-      network_filter_id: activeRole === 'Network manager' ? 1 : null,
-      city_filter_id: activeRole === 'City council' ? 2 : null,
+      account_type_id: activeRole === 'City council' ? 2 : 3,
+      city_filter_id: activeRole === 'City council' ? 1 : null,
+      network_filter_id: activeRole === 'Network manager' ? 2 : null,
     };
 
+
     try {
-      const response = await fetch('/api/add-user', {
+      const response = await fetch('/api/fetch-add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -207,9 +253,10 @@ const Admin = () => {
 
       if (response.ok) {
         alert('User added successfully');
-        setOpenDialog(false);
+        setOpenNewUserDialog(false);
         fetchUsers(); // Refresh the user list
       } else {
+        console.log("Here"); // Debugging the payload
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
       }
@@ -218,6 +265,85 @@ const Admin = () => {
       alert('Failed to add user');
     }
   };
+
+  const checkDataModified = () => {
+    let isModified = false;
+
+    const userData = {
+      email: document.getElementById('email').value,
+      f_name: document.getElementById('firstName').value,
+      l_name: document.getElementById('lastName').value,
+      password: document.getElementById('password').value,
+    };
+
+    for (const key in userData) {
+      if (userData[key] !== selectedUser[key]) {
+        isModified = true;
+        console.log("Data modified:", key);
+        break;
+      }
+    }
+    setIsUserDataModified(isModified);
+    return isModified;
+  }
+
+  const handleModifyUser = async () => {
+    // if (!checkUserInputMeetsRequirements()) {
+    //   alert("Please fill all fields correctly");
+    //   return;
+    // }
+
+    const userData = {
+      account_id: selectedUser.account_id,
+      email: document.getElementById('email').value,
+      f_name: document.getElementById('firstName').value,
+      l_name: document.getElementById('lastName').value,
+      password: document.getElementById('password').value,
+    };
+
+    try {
+      const response = await fetch('/api/fetch-modify-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        alert('User modified successfully');
+        setOpenModifyUserDialog(false);
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error modifying user:', error);
+      alert('Failed to modify user');
+    }
+  }
+
+  const handleDeleteUser = async () => {
+    try {
+      const response = await fetch('/api/fetch-delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account_id: selectedUser.account_id }),
+      });
+      if (response.ok) {
+        alert('User deleted successfully');
+        setOpenModifyUserDialog(false);
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    }
+    catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Failed to delete user');
+    }
+  }
+
 
   return (
     <main className={styles.content}>
@@ -247,12 +373,15 @@ const Admin = () => {
             <ClassicBtn
               variant="outlined"
               color="primary"
-              onClick={() => setOpenDialog(true)}
+              onClick={() => {
+                setOpenNewUserDialog(true);
+                resetWarnings();
+              }}
             >
               Create New User <Add sx={{ fontSize: "23px", paddingLeft: "5px" }} />
             </ClassicBtn>
             <Dialog
-              open={openDialog} onClose={() => setOpenDialog(false)}
+              open={openNewUserDialog} onClose={() => setOpenNewUserDialog(false)}
               aria-labelledby="dialog-title"
               aria-describedby="dialog-description"
               slotProps={{
@@ -262,10 +391,11 @@ const Admin = () => {
               }}
               sx={{
                 "& .MuiDialog-paper": {
-                  maxWidth: "900px",
+                  maxWidth: "600px",
                   width: "100%",
-                  border: "black 2px solid",
+                  border: "black 1px solid",
                   padding: "20px 23px",
+                  borderRadius: "12px",
                 },
 
               }}>
@@ -295,7 +425,7 @@ const Admin = () => {
                     <LargeBtn
                       sx={{
                         width: "100%",
-                        backgroundColor: activeRole === "Network manager" ? "#919191" : "white",
+                        backgroundColor: activeRole === "Network manager" ? "#919191" : "whit</footer>e",
                         border: activeRole === "Network manager" ? "1px solid black" : "1px solid grey",
                         color: activeRole === "Network manager" ? "white" : "black",
                         fontWeight: activeRole === "Network manager" ? "600" : "400",
@@ -375,8 +505,162 @@ const Admin = () => {
                   Create new user
                 </LargeBtn>
                 <LargeBtn
-                  onClick={() => { setOpenDialog(false);  }}
+                  onClick={() => { setOpenNewUserDialog(false); }}
                 >Cancel</LargeBtn>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openModifyUserDialog} onClose={() => setOpenModifyUserDialog(false)}
+              aria-labelledby="dialog-title"
+              aria-describedby="dialog-description"
+              slotProps={{
+                backdrop: {
+                  invisible: true,
+                },
+              }}
+              sx={{
+                "& .MuiDialog-paper": {
+                  maxWidth: "600px",
+                  width: "100%",
+                  border: "black 1px solid",
+                  padding: "20px 23px",
+                  borderRadius: "12px",
+                },
+
+              }}>
+              <DialogTitle
+                id="dialog-title"
+                sx={{
+                  padding: "0",
+                  fontSize: "25px",
+                  fontWeight: "600",
+                }}>
+                Manage {selectedUser?.username}</DialogTitle>
+              <DialogContent
+                id="dialog-description"
+                sx={{
+                  padding: "0",
+                  gap: "10px",
+                  display: "flex",
+                  flexDirection: "column"
+                }}>
+                <DialogContentText sx={{ textColor: "black" }}>
+                  Here you can manage the selected user. You can edit their information or delete them.
+                </DialogContentText>
+
+
+                {/* HERE WILL GET USER DATA AND ASSIGN THE DATA AND LET THE ADMIN EDIT */}
+                {selectedUser?.account_type_id === 2 ? (
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed city
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.city_filter_id || ""}
+                      disabled
+                    />
+                  </div>
+
+                ) : selectedUser?.account_type_id === 3 ? (
+                  <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Managed network
+                    </InputLabel>
+                    <LargeInputBox
+                      value={selectedUser?.network_filter_id || ""}
+                      disabled
+                    />
+                  </div>
+                ) : (<> </>)
+                }
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    First Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="firstName"
+                    type="text"
+                    placeholder="Enter first name"
+                    defaultValue={selectedUser?.f_name || ""}
+                    onChange={() => setIsUserDataModified(true)}
+                    onBlur={() => { handleBlur("firstName"); checkDataModified(); }}
+                  />
+                  <span className={styles.warning}>{warnings["firstName"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="lastName" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Last Name
+                  </InputLabel>
+                  <LargeInputBox
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter last name"
+                    defaultValue={selectedUser?.l_name || ""}
+                    onChange={() => setIsUserDataModified(true)}
+                    onBlur={() => { handleBlur("lastName"); checkDataModified(); }}
+                  />
+                  <span className={styles.warning}>{warnings["lastName"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="email" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Email
+                  </InputLabel>
+                  <LargeInputBox
+                    id="email"
+                    type="text"
+                    placeholder="Enter email"
+                    defaultValue={selectedUser?.email || ""}
+                    onChange={() => setIsUserDataModified(true)}
+                    onBlur={() => { handleBlur("email"); checkDataModified(); }}
+                  />
+                  <span className={styles.warning}>{warnings["email"]}</span>
+                </div>
+                <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
+                  <InputLabel htmlFor="password" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                    Password
+                  </InputLabel>
+                  <LargeInputBox
+                    id="password"
+                    type="text"
+                    placeholder="Enter password"
+                    defaultValue={selectedUser?.password || ""}
+                    onChange={() => setIsUserDataModified(true)}
+                    onBlur={() => { handleBlur("password"); checkDataModified(); }}
+                  />
+                  <span className={styles.warning}>{warnings["password"]}</span>
+                </div>
+
+              </DialogContent>
+              <DialogActions
+                sx={{
+                  display: "flex",
+                  direction: "row",
+                  padding: "10px 0 0 0",
+                  gap: "10px",
+                  justifyContent: "space-between",
+                  alignItems: "right",
+                }}>
+                <div>
+                  <LargeBtn
+                    style=
+                    {{
+                      display: isUserDataModified ? "block" : "none",
+                      transition: "all 2s ease",
+                    }}
+                    color="primary"
+                    onClick={() => handleModifyUser()}>
+                    Save
+                  </LargeBtn>
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <LargeBtn onClick={() => setOpenModifyUserDialog(false)} color="primary">
+                    Close
+                  </LargeBtn>
+                  <LargeBtn onClick={() => handleDeleteUser()} color="primary">
+                    Delete User
+                  </LargeBtn>
+                </div>
               </DialogActions>
             </Dialog>
           </div>
@@ -393,53 +677,62 @@ const Admin = () => {
           <Table
             sx={{
               width: "100%",
-              tableLayout: "fixed",
+              tableLayout: "auto",
             }}
             aria-label="user management table"
           >
             <TableHead>
               <TableRow sx={{ borderBottom: "1px grey solid" }}>
-                <TbHeadCell sx={{ maxWidth: "10px" }}>#</TbHeadCell>
+                <TbHeadCell sx={{ minWidth: "40px" }}>ID</TbHeadCell>
                 <TbHeadCell>Name</TbHeadCell>
+                <TbHeadCell>User Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
-                <TbHeadCell>Filters</TbHeadCell>
+                <TbHeadCell>Role ID</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  console.log(user),
+                  // console.log(user),
                   <TableRow key={index}>
-                    <TbBodyCell>{(currentPage - 1) * 10 + index + 1}</TbBodyCell>
+                    <TbBodyCell>{user.account_id}</TbBodyCell>
                     <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
+                    <TbBodyCell>{`${user.username}`}</TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 1
                         ? "Admin"
                         : user.account_type_id === 2
-                          ? "Network Manager"
-                          : "City Council"}
+                          ? "City Council"
+                          : "Network Manager"}
                     </TbBodyCell>
                     <TbBodyCell>
                       {user.account_type_id === 2
-                        ? user.network_filter_id || "No network assigned"
+                        ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
                         : user.account_type_id === 3
-                          ? user.city_filter_id || "No city assigned"
+                          ? user.network_filter_id || "No network assigned" // Fallback for null or undefined
                           : "N/A"}
                     </TbBodyCell>
                     <TbBodyCell>
-                      <Button>Manage user</Button>
+                      <Button onClick={() => handleManageUser(user)}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
                 ))
-              ) : (
+              ) : fetchingUsers ? (
                 <TableRow>
                   <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
-                    {allUserRows.length > 0
-                      ? "No users found"
-                      : "No users available! Create one to get started."}
+                    Loading...
                   </TbBodyCell>
                 </TableRow>
+              )
+              :(
+              <TableRow>
+                <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
+                  {userRecords.length > 0
+                    ? "No users found"
+                    : "No users available! Create one to get started."}
+                </TbBodyCell>
+              </TableRow>
               )}
             </TableBody>
           </Table>

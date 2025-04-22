@@ -56,7 +56,7 @@ const Sidebar = () => {
     <Drawer
       sx={{
         '& .MuiDrawer-paper': {
-          backgroundColor: "#B7B7B7",
+          backgroundColor: "#A7A7A7",
           width: "250px",
           position: "fixed",
           height: "100vh"
@@ -83,7 +83,7 @@ const Sidebar = () => {
         })}
       </List>
 
-      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A5A5A5" }}>
+      <List style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "auto", backgroundColor: "#A7A7A7" }}>
         <ListItem key={"Account"}>
           <ListItemButton onClick={() => handleClick(5, "../dashboard/account")} sx={{
             backgroundColor: "white",
