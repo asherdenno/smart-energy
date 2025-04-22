@@ -1,4 +1,5 @@
 'use client';
+
 import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
@@ -22,16 +23,12 @@ const Overview = () => {
     setRandomTip(ecoTips[randomIndex]);
   })
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   console.log(session)
-
-  if (status === "authenticated") {
-    console.log("success!")
-  }
 
   return (
       <main className={styles.content}>
-        <Navbar title={"Hi, Carlos!"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
+        <Navbar title={"Hi, " + session?.user.name + "!"} hasNotify={true} hasCitySelect={false} hasNetworkSelect={false}/>
         <div className={styles.greyContainer}>
           <Typography variant="h6">Eco tip: {randomTip}</Typography>
           <Typography>This page is not complete as we don't have the data to construct it.</Typography>
