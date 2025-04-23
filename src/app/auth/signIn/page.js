@@ -1,21 +1,31 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FormControl, TextField, Button, Typography, Container, Box, Paper, Stack } from "@mui/material";
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
-  const userName = useRef("")
-  const pass = useRef("")
+  const session = useSession();
+  const router = useRouter();
+  const [data, setData] = useState({
+    username: "",
+    password: "",
+  });
 
-  const onSubmit = async () => {
-    const result = await signIn("credentials", {
-      username: userName.current,
-      password: pass.current,
-      redirect: true,
-      callbackUrl: "/dashboard"
-    })
-  }
+  useEffect(() => {
+    if (session?.status === "authenticated"){
+      router.push("/dashboard");
+    }
+  });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    signIn("credentials", {
+      ...data,
+      redirect: false,
+    });
+  };
 
   return (
     <Container sx={{backgroundImage: "url('/wind-turbines-background.jpg')", backgroundSize: "cover", backgroundRepeat: "no-repeat", height: "100%", padding: 0}}>
@@ -25,12 +35,18 @@ const LoginPage = () => {
           <Box sx={{ justifySelf: "center" }}>
             <Stack spacing={2}>
               <TextField id="login-page-username-textfield" 
-              label="Username" 
-              onChange={e => (userName.current = e.target.value)} />
+              label="Username"
+              value={data.username} 
+              onChange={(e) => {
+                setData({ ...data, username: e.target.value});
+                }} />
               <TextField id="login-page-password-textfield" 
               label="Password" 
-              type={"password"} 
-              onChange={e => (pass.current = e.target.value)} />
+              type={"password"}
+              value={data.password}
+              onChange={(e) => {
+                setData({ ...data, password: e.target.value});
+                }} />
               <Button
                 onClick={onSubmit}
               >Log in</Button>
