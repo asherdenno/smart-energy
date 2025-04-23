@@ -41,7 +41,6 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [activeRole, setActiveRole] = useState("Network manager");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isUserDataModified, setIsUserDataModified] = useState(false);
   const [fetchingUsers, setFetchingUsers] = useState(true);
 
@@ -55,19 +54,19 @@ const Admin = () => {
       const response = await fetch(`/api/fetch-users?page=${page}&pageSize=${pageSize}`);
       const data = await response.json();
       userRecords = data.users;
-      setUsers(data.users);
+      setUsers(userRecords);
       setTotalPages(data.totalPages);
       unfilterdPagesCount = data.totalPages;
     } catch (error) {
       console.error("Error fetching users:", error);
     }
     setFetchingUsers(false);
+    setCurrentPage(page);
   };
 
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
-
 
   useEffect(() => {
     if (!openModifyUserDialog) {
@@ -82,27 +81,28 @@ const Admin = () => {
     }
   };
 
-  const searchUser = (query) => {
-    setSearchQuery(query);
+  const searchUser = async (query, page = 1) => {
+    setFetchingUsers(true);
     if (query === "") {
+      console.log("Fetching all users");
       setUsers(userRecords);
+      console.log("Unfiltered pages count:", userRecords);
       setTotalPages(unfilterdPagesCount);
       setCurrentPage(1);
-    } else {
-      const filteredUsers = userRecords.filter((user) =>
-        user.username.toLowerCase().includes(query.toLowerCase())
-      );
-      const filteredUsersLength = filteredUsers.length
-      if (filteredUsersLength > pageSize) {
-        setTotalPages(Math.ceil(filteredUsersLength / pageSize));
-        setCurrentPage(1);
-      }
-      else {
-        setTotalPages(1);
-        setCurrentPage(1);
-      }
-      setUsers(filteredUsers);
     }
+    else {
+      try {
+        console.log("Searching for users with query:", query, page, pageSize);
+        const response = await fetch(`/api/fetch-find-users?searchTerm=${query}&page=${page}&pageSize=${pageSize}`);
+        const data = await response.json();
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+      }
+      catch (error) {
+        console.error("Error searching users:", error);
+      }
+    }
+    setFetchingUsers(false);
   };
 
   const handleManageUser = (user) => {
@@ -365,7 +365,6 @@ const Admin = () => {
           >
             <InputBox
               onChange={(e) => searchUser(e.target.value)}
-              value={searchQuery}
               type="search"
               placeholder="Search users"
               style={{ maxWidth: "500px", width: "100%" }}
@@ -692,48 +691,47 @@ const Admin = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.length > 0 ? (
-                users.map((user, index) => (
-                  // console.log(user),
-                  <TableRow key={index}>
-                    <TbBodyCell>{user.account_id}</TbBodyCell>
-                    <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
-                    <TbBodyCell>{`${user.username}`}</TbBodyCell>
-                    <TbBodyCell>
-                      {user.account_type_id === 1
-                        ? "Admin"
-                        : user.account_type_id === 2
-                          ? "City Council"
-                          : "Network Manager"}
-                    </TbBodyCell>
-                    <TbBodyCell>
-                      {user.account_type_id === 2
-                        ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
-                        : user.account_type_id === 3
-                          ? user.network_filter_id || "No network assigned" // Fallback for null or undefined
-                          : "N/A"}
-                    </TbBodyCell>
-                    <TbBodyCell>
-                      <Button onClick={() => handleManageUser(user)}>Manage user</Button>
-                    </TbBodyCell>
-                  </TableRow>
-                ))
-              ) : fetchingUsers ? (
+              {fetchingUsers ? (
                 <TableRow>
-                  <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
+                  <TbBodyCell colSpan={6} style={{ textAlign: "center" }}>
                     Loading...
                   </TbBodyCell>
                 </TableRow>
-              )
-              :(
-              <TableRow>
-                <TbBodyCell colSpan={5} style={{ textAlign: "center" }}>
-                  {userRecords.length > 0
-                    ? "No users found"
-                    : "No users available! Create one to get started."}
-                </TbBodyCell>
-              </TableRow>
-              )}
+              ) : users?.length > 0 ? (
+                  users.map((user, index) => (
+                    // console.log(user),
+                    <TableRow key={index}>
+                      <TbBodyCell>{user.account_id}</TbBodyCell>
+                      <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
+                      <TbBodyCell>{`${user.username}`}</TbBodyCell>
+                      <TbBodyCell>
+                        {user.account_type_id === 1
+                          ? "Admin"
+                          : user.account_type_id === 2
+                            ? "City Council"
+                            : "Network Manager"}
+                      </TbBodyCell>
+                      <TbBodyCell>
+                        {user.account_type_id === 2
+                          ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
+                          : user.account_type_id === 3
+                            ? user.network_filter_id || "No network assigned" // Fallback for null or undefined
+                            : "N/A"}
+                      </TbBodyCell>
+                      <TbBodyCell>
+                        <Button onClick={() => handleManageUser(user)}>Manage user</Button>
+                      </TbBodyCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TbBodyCell colSpan={6} style={{ textAlign: "center" }}>
+                      {userRecords?.length > 0
+                        ? "No users found"
+                        : "No users available! Create one to get started."}
+                    </TbBodyCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </TableContainer>
