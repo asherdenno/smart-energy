@@ -15,7 +15,6 @@ export default function NetworkSelect() {
 
     const fetchSearchResults = async (searchString, accountTypeId, networkFilterId) => {
         try {
-            setLoading(true);
             const res = await fetch('/api/fetch-networks', {
             method: 'POST',
             headers: {
@@ -26,7 +25,6 @@ export default function NetworkSelect() {
           if (!res.ok) throw new Error('Error fetching networks');
           const data = await res.json();
           setResults(data);
-          setLoading(false);
         }
         catch (error) {
           console.error('Error fetching networks:', error);
@@ -48,6 +46,7 @@ export default function NetworkSelect() {
             const data = await res.json();
             console.log("Fetched network data 1234:", data);
             setResults(data);
+            setLoading(false);
             return data;
         }
         catch (error) {
@@ -71,12 +70,11 @@ export default function NetworkSelect() {
 
     React.useEffect(() => {
         if (account?.account_type_id === 3) {
-            console.log("adwohdwahoadwhoui  ")
             fetchNetwork(account.network_filter_id).then((data) => {
                 const networkData = data[0];
-                console.log("Net manager: ", networkData.net_manager);
                 setSearchString(networkData);
                 setNetwork(networkData);
+                setLoading(false);
             });
         } else if (account?.account_type_id === 1) {
             fetchSearchResults("");
