@@ -40,15 +40,26 @@ export const authOptions = {
         // token.id = user.account_id;
         // token.user = user;
         // token.username = user.f_name;
+        // return {
+        //   ...token,
+        //   id: user.account_id,
+        //   lastname: user.l_name,
+        //   account_type: user.account_type_id,
+        //   username: user.username,
+        //   network: user.network_filter_id,
+        //   city: user.city_filter_id,
+        // };
         return {
           ...token,
-          id: user.account_id,
-          lastname: user.l_name,
-          account_type: user.account_type_id,
-          username: user.username,
-          network: user.network_filter_id,
-          city: user.city_filter_id,
-        };
+          account_id: user.account_id,
+          account_type_id: user.account_type_id,
+          city_filter_id: user.city_filter_id,
+          email: user.email,
+          f_name: user.f_name,
+          l_name: user.l_name,
+          network_filter_id: user.network_filter_id,
+          username: user.username
+        }
       }
 
       return token;
@@ -62,16 +73,30 @@ export const authOptions = {
       //   session.user.account_id = token.id
       //   session.user.name = token.username;
       // }
+      // return {
+      //   ...session,
+      //   user: {
+      //     ...session.user,
+      //     id: token.id,
+      //     lastname: token.lastname,
+      //     account_type: token.account_type,
+      //     username: token.username,
+      //     network: token.network,
+      //     city: token.city,
+      //   }
+      // };
       return {
         ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          lastname: token.lastname,
-          account_type: token.account_type,
-          username: token.username,
-          network: token.network,
-          city: token.city,
+          user: {
+            ...session.user,
+            account_id: token.account_id,
+            account_type_id: token.account_type_id,
+            city_filter_id: token.city_filter_id,
+            email: token.email,
+            f_name: token.f_name,
+            l_name: token.l_name,
+            network_filter_id: token.network_filter_id,
+            username: token.username
         }
       };
 

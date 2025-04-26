@@ -4,11 +4,16 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { border } from '@mui/system';
 import { NavbarContext } from '../context/NavbarContext';
+import { useSession } from "next-auth/react";
 
 export default function NetworkSelect() {
-    const { network, setNetwork, account } = React.useContext(NavbarContext);
+    const { network, setNetwork } = React.useContext(NavbarContext);
+    // session
+    const { data: session } = useSession();
+    const account = session?.user;
 
-    const fetchSearchResults = async (searchString) => {
+
+    const fetchSearchResults = async (searchString, accountTypeId, networkFilterId) => {
         try {
             setLoading(true);
             const res = await fetch('/api/fetch-networks', {
@@ -16,6 +21,7 @@ export default function NetworkSelect() {
             headers: {
               'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ searchString, accountTypeId, networkFilterId: networkFilterId || null }),
           });
           if (!res.ok) throw new Error('Error fetching networks');
           const data = await res.json();
@@ -27,6 +33,36 @@ export default function NetworkSelect() {
           return [];
         }
       };
+
+      const fetchNetwork = async (networkFilterId) => {
+        console.log("fetchNetwork called with networkFilterId:", networkFilterId);
+        try {
+            const res = await fetch('/api/fetch-networks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ searchString: "", accountTypeId: 3, networkFilterId: networkFilterId || null }),
+            });
+            if (!res.ok) throw new Error('Error fetching network');
+            const data = await res.json();
+            console.log("Fetched network data 1234:", data);
+            setResults(data);
+            return data;
+        }
+        catch (error) {
+            console.error('Error fetching network:', error);
+            return [];
+        }
+    }
+
+    const handleSearch = async (searchString) => {
+        console.log("searchString", searchString)
+        if (account) {
+            console.log("account.account_type_id", account.account_type_id)
+            await fetchSearchResults(searchString, account.account_type_id, account.network_filter_id);
+        }
+    }
     
     const [searchString, setSearchString] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
@@ -34,9 +70,19 @@ export default function NetworkSelect() {
     const [query, setQuery] = React.useState("");
 
     React.useEffect(() => {
-        fetchSearchResults("");
-        setSearchString(network || "");
-    }, []);
+        if (account?.account_type_id === 3) {
+            console.log("adwohdwahoadwhoui  ")
+            fetchNetwork(account.network_filter_id).then((data) => {
+                const networkData = data[0];
+                console.log("Net manager: ", networkData.net_manager);
+                setSearchString(networkData);
+                setNetwork(networkData);
+            });
+        } else if (account?.account_type_id === 1) {
+            fetchSearchResults("");
+            setSearchString(network || "");
+        }
+    }, [account]);
 
     const handleButtonClick = () => {
         setNetwork(searchString);
@@ -59,7 +105,7 @@ export default function NetworkSelect() {
                     setSearchString(newValue);
                 }}
                 onInputChange={(event, newQuery) => {
-                    fetchSearchResults(newQuery);
+                    handleSearch(newQuery);
                 }}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter') {

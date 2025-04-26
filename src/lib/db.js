@@ -73,6 +73,28 @@ const fetchNetworks = async () => {
   }
 }
 
+const fetchNetwork = async (networkFilterId) => {
+  if (!networkFilterId) {
+    throw new Error("Network filter ID is required");
+  }
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT net_manager, network_filter_id
+      FROM network_has_id
+      WHERE network_filter_id = @networkFilterId`;
+    const request = new sql.Request();
+    request.input('networkFilterId', sql.Int, networkFilterId);
+    console.log("Fetching network with ID:", networkFilterId);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch network: " + error.message);
+  }
+}
+
 const fetchAllUserFilterIds = async () => {
   try {
     await sql.connect(config);
@@ -675,7 +697,7 @@ const markAsRead = async (notif_id) => {
 
 export {
   fetchAll, fetchCities, fetchCity, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
-  fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
+  fetchNetwork, fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
   fetchUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, modifyUser, deleteUser,
   fetchAllNotif, markAsRead
 }

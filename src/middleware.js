@@ -5,7 +5,7 @@ export default withAuth(
     function middleware(req) {
         console.log(req.nextauth);
         const url = req.nextUrl.clone()
-        if (url.pathname === "/dashboard/admin" && req.nextauth.token?.account_type !== 1){
+        if (url.pathname === "/dashboard/admin" && req.nextauth.token?.account_type_id !== 1){
             url.pathname = '/dashboard/invalid-access'
             return NextResponse.redirect(url)
         }

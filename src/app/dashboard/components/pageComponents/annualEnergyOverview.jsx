@@ -7,6 +7,7 @@ import EnergyUsagePercent from "../charts/overview/energyUsagePercent";
 import { ToggleButton } from "@mui/material";
 import DownloadButtons from "./downloadButton";
 import { NavbarContext } from "../../context/NavbarContext";
+import { useSession } from "next-auth/react";
 
 export default function AnnualEnergyOverview() {
   const fetchDataFromCity = async (city_id) => {
@@ -47,7 +48,9 @@ export default function AnnualEnergyOverview() {
     }
   };
 
-  const { annualEnergyData, setAnnualEnergyData, city, network, account, reloadFlag, setReloadFlag } = useContext(NavbarContext);
+  const { annualEnergyData, setAnnualEnergyData, city, network, reloadFlag, setReloadFlag } = useContext(NavbarContext);
+  const { data: session } = useSession();
+  const account = session?.user;
 
   const fetchAndSetData = async (filter_id) => {
     const data = await fetchDataFromCity(filter_id);
