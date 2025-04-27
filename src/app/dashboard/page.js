@@ -1,4 +1,5 @@
 'use client';
+
 import Navbar from "./components/navbar";
 import styles from "@/app/page.module.css";
 import { useEffect, useState } from "react";
@@ -18,13 +19,15 @@ const Overview = () => {
   ];
 
   const [randomTip, setRandomTip] = useState("");
-  const { account } = useContext(NavbarContext);
+  const { account, setAccount } = useContext(NavbarContext);
   const {data:session, status} = useSession();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * ecoTips.length);
     setRandomTip(ecoTips[randomIndex]);
+    console.log("Account: ", account);
   }, []);
+
 
   const f_name = session?.user?.name || 'User';
 

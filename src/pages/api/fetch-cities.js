@@ -19,7 +19,6 @@ export default async function handler(req, res) {
             }
             else if (accountTypeId === 2) {
                 const city = await fetchCity(cityFilterId)
-                console.log("this is the city: ", city);
                 if (city) {
                     res.status(200).json(city);
                 } else {
