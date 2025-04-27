@@ -18,10 +18,6 @@ import {
 } from "../components/muiStyledComponents";
 
 
-const vacantNetwork = [
-  'Network 1',
-  'Network 2'
-];
 
 const vacantCity = [
   'Halland',
@@ -32,22 +28,40 @@ const vacantCity = [
 let userRecords = [];
 let unfilterdPagesCount = 1; // to keep track of the total pages for the filtered users
 
+
 const Admin = () => {
   // Dialog states
   const [openNewUserDialog, setOpenNewUserDialog] = useState(false);
   const [openModifyUserDialog, setOpenModifyUserDialog] = useState(false);
 
-  // User management states
+  // User management
   const [users, setUsers] = useState([]);
   const [activeRole, setActiveRole] = useState("Network manager");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserDataModified, setIsUserDataModified] = useState(false);
   const [fetchingUsers, setFetchingUsers] = useState(true);
 
+  // Unassigned networks and cities states
+  const [unassignedNetworks, setUnassignedNetworks] = useState([]);
+  const [isNetworksFetched, setIsNetworksFetched] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState(null);
+  const [unassignedCities, setUnassignedCities] = useState([]);
+  const [isCitiesFetched, setIsCitiesFetched] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [fetchingNextSetOfCities, setfetchingNextSetOfCities] = useState(false);
+  const [cityQuery, setCityQuery] = useState(""); // to keep track of the last city query
+
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10; // Set the number of users displayed per page
+
+  const refetchData = () => {
+    fetchUsers(currentPage);
+    fetchUnassignedNetworks();
+    fetchUnassignedCities();
+  }
 
   const fetchUsers = async (page = 1) => {
     try {
@@ -57,6 +71,7 @@ const Admin = () => {
       setUsers(userRecords);
       setTotalPages(data.totalPages);
       unfilterdPagesCount = data.totalPages;
+      console.log(userRecords);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -64,13 +79,15 @@ const Admin = () => {
     setCurrentPage(page);
   };
 
+  // Fetch unassigned And assigned networks and cities on page load
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage]);
+    refetchData();
+  }, []);
 
+  // Reset isUserDataModified state when dialog is closed
   useEffect(() => {
     if (!openModifyUserDialog) {
-      setIsUserDataModified(false); // Reset isUserDataModified when dialog is closed
+      setIsUserDataModified(false);
     }
   }, [openModifyUserDialog]);
 
@@ -81,30 +98,7 @@ const Admin = () => {
     }
   };
 
-  const searchUser = async (query, page = 1) => {
-    setFetchingUsers(true);
-    if (query === "") {
-      console.log("Fetching all users");
-      setUsers(userRecords);
-      console.log("Unfiltered pages count:", userRecords);
-      setTotalPages(unfilterdPagesCount);
-      setCurrentPage(1);
-    }
-    else {
-      try {
-        console.log("Searching for users with query:", query, page, pageSize);
-        const response = await fetch(`/api/fetch-find-users?searchTerm=${query}&page=${page}&pageSize=${pageSize}`);
-        const data = await response.json();
-        setUsers(data.users);
-        setTotalPages(data.totalPages);
-      }
-      catch (error) {
-        console.error("Error searching users:", error);
-      }
-    }
-    setFetchingUsers(false);
-  };
-
+  // Resetting the dialog state when closed, for when the dialog is opened again
   const handleManageUser = (user) => {
     setSelectedUser(user);
     setOpenModifyUserDialog(true);
@@ -201,7 +195,7 @@ const Admin = () => {
         allFieldsFilled = false;
         newWarnings[id] = emptyFieldMsg;
         console.log("Empty field:", id);
-        if (inputElement) inputElement.value = ""; // Clear the value if empty
+        console.log("Value:", value);
       } else {
         if (id === "email" && !validateEmail(value)) {
           allFieldsFilled = false;
@@ -228,10 +222,10 @@ const Admin = () => {
   };
 
   const handleAddUser = async () => {
-    // if (!checkUserInputMeetsRequirements()) {
-    //   alert("Please fill all fields correctly");
-    //   return;
-    // }
+    if (!checkUserInputMeetsRequirements()) {
+      alert("Please fill all fields correctly");
+      return;
+    }
 
     const userData = {
       email: document.getElementById('email').value,
@@ -239,10 +233,11 @@ const Admin = () => {
       l_name: document.getElementById('lastName').value,
       password: document.getElementById('password').value,
       account_type_id: activeRole === 'City council' ? 2 : 3,
-      city_filter_id: activeRole === 'City council' ? 1 : null,
-      network_filter_id: activeRole === 'Network manager' ? 2 : null,
+      city_filter_id: activeRole === 'City council' ? selectedCity?.city_filter_id : null,
+      network_filter_id: activeRole === 'Network manager' ? selectedNetwork.network_filter_id === 0 ? "0" : selectedNetwork?.network_filter_id : null,
     };
 
+    console.log("network value is :", userData.network_filter_id, selectedNetwork.network_filter_id === 0 ? "0" : "false");
 
     try {
       const response = await fetch('/api/fetch-add-user', {
@@ -254,9 +249,8 @@ const Admin = () => {
       if (response.ok) {
         alert('User added successfully');
         setOpenNewUserDialog(false);
-        fetchUsers(); // Refresh the user list
+        refetchData(); // Refresh the user list
       } else {
-        console.log("Here"); // Debugging the payload
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
       }
@@ -288,10 +282,10 @@ const Admin = () => {
   }
 
   const handleModifyUser = async () => {
-    // if (!checkUserInputMeetsRequirements()) {
-    //   alert("Please fill all fields correctly");
-    //   return;
-    // }
+    if (!checkUserInputMeetsRequirements()) {
+      alert("Please fill all fields correctly");
+      return;
+    }
 
     const userData = {
       account_id: selectedUser.account_id,
@@ -332,7 +326,7 @@ const Admin = () => {
       if (response.ok) {
         alert('User deleted successfully');
         setOpenModifyUserDialog(false);
-        fetchUsers(); // Refresh the user list
+        refetchData(); // Refresh the user list
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.error}`);
@@ -344,6 +338,97 @@ const Admin = () => {
     }
   }
 
+  const searchUser = async (query, page = 1) => {
+    setFetchingUsers(true);
+    if (query === "") {
+      console.log("Fetching all users");
+      setUsers(userRecords);
+      console.log("Unfiltered pages count:", userRecords);
+      setTotalPages(unfilterdPagesCount);
+      setCurrentPage(1);
+    }
+    else {
+      try {
+        console.log("Searching for users with query:", query, page, pageSize);
+        const response = await fetch(`/api/fetch-find-users?searchTerm=${query}&page=${page}&pageSize=${pageSize}`);
+        const data = await response.json();
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+      }
+      catch (error) {
+        console.error("Error searching users:", error);
+      }
+    }
+    setFetchingUsers(false);
+  };
+
+  const fetchUnassignedNetworks = async () => {
+    try {
+      const response = await fetch('/api/fetch-unassigned-networks');
+      const data = await response.json();
+
+      console.log("API Response for Unassigned Networks:", data); // Debugging the response
+
+      if (Array.isArray(data)) {
+        const formattedData = data.map((network) => {
+          network.label = network.net_manager;
+          delete network.net_manager;
+          return network;
+        });
+        setUnassignedNetworks(formattedData);
+      } else {
+        console.error("Unexpected API response format:", data);
+        setUnassignedNetworks([]); // Fallback to an empty array
+      }
+
+      setIsNetworksFetched(true);
+      return data;
+    } catch (error) {
+      console.error('Error fetching unassigned networks:', error);
+      setUnassignedNetworks([]); // Fallback to an empty array in case of error
+      return [];
+    }
+  }
+
+  const searchUnassignedCities = async (searchInput) => {
+    try {
+      const response = await fetch(`/api/fetch-unassigned-cities?searchString=${searchInput}&searchInitiated=${true}&listLength=${unassignedCities.length}`);
+      const data = await response.json();
+      let fetchedCities = unassignedCities;
+      const formattedData = data.map((city) => ({
+        label: city.city, // Place label first
+        city_filter_id: city.city_filter_id,
+      }));
+      const combinedData = [...fetchedCities, ...formattedData];
+      setUnassignedCities(combinedData);
+      console.log(" API response :", combinedData);
+      setIsCitiesFetched(true);
+      return data;
+    } catch (error) {
+      console.error('Error searching unassigned cities:', error);
+      return [];
+    }
+  }
+
+  const fetchUnassignedCities = async () => {
+    try {
+      const response = await fetch(`/api/fetch-unassigned-cities?nextListInitiated=${true}&listLength=${unassignedCities.length}`);
+      const data = await response.json();
+      let fetchedCities = unassignedCities;
+      const formattedData = data.map((city) => ({
+        label: city.city, // Place label first
+        city_filter_id: city.city_filter_id,
+      }));
+      const combinedData = [...fetchedCities, ...formattedData];
+      setUnassignedCities(combinedData);
+      console.log("API response :", combinedData);
+      setIsCitiesFetched(true);
+      return data;
+    } catch (error) {
+      console.error('Error fetching unassigned cities:', error);
+      return [];
+    }
+  }
 
   return (
     <main className={styles.content}>
@@ -446,28 +531,95 @@ const Admin = () => {
                   </div>
                 </div>
 
-                {activeRole === "Network manager" ?
+                {activeRole === "Network manager" && (
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>Select Network </InputLabel>
+                    <InputLabel htmlFor="network" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Select Network
+                    </InputLabel>
                     <AutocompleteField
                       id="network"
-                      options={vacantNetwork}
-                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter network name" value="" onBlur={() => handleBlur("network")} />}
+                      options={unassignedNetworks}
+                      loading={!isNetworksFetched}
+                      onChange={(event, value) => {
+                        setSelectedNetwork(value);
+                        console.log("Selected network:", value);
+                      }}
+                      renderInput={(params) => (
+                        <LargeInputBox
+                          {...params}
+                          placeholder="Enter network name"
+                          onBlur={() => handleBlur("network")}
+                        />
+                      )}
                     />
-                    <span className={styles.warning} id="warningForSelection"> {warnings.network}</span>
-
+                    <span className={styles.warning} id="warningForSelection">
+                      {warnings.network}
+                    </span>
                   </div>
-                  :
+                )}
+
+                {activeRole === "City council" && (
                   <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
-                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>Select City</InputLabel>
+                    <InputLabel htmlFor="city" sx={{ fontSize: "15px", fontWeight: "600" }}>
+                      Select City
+                    </InputLabel>
                     <AutocompleteField
                       id="city"
-                      options={vacantCity}
-                      renderInput={(params) => <LargeInputBox {...params} placeholder="Enter city name" value="" onBlur={() => handleBlur("city")} />}
+                      options={unassignedCities}
+                      loading={!isCitiesFetched}
+                      getOptionDisabled={(option) =>
+                        option.disabled || option.label === "Loading..."
+                      }
+                      onChange={(value) => {
+                        setSelectedCity(value);
+                        console.log("Selected city:", value);
+                      }}
+                      onInputChange={(event, value) => {
+                        setCityQuery(value);
+                        if (value === "") {
+                          setUnassignedCities([]);
+                          setIsCitiesFetched(false);
+                          fetchUnassignedCities();
+                        }
+                        else {
+                          setUnassignedCities([]);
+                          setIsCitiesFetched(false);
+                          searchUnassignedCities(cityQuery);
+                        }
+                      }}
+                      slotProps={{
+                        listbox: {
+                          onScroll: async (event) => {
+                            const listboxNode = event.currentTarget;
+                            // REF: https://codesandbox.io/p/sandbox/confident-kare-5n6i6?file=%2Fsrc%2FAutocomplete.js
+                            // https://github.com/mui/material-ui/issues/30249
+                            // Check if scrolled to the bottom
+                            if (listboxNode.scrollTop + listboxNode.clientHeight >= listboxNode.scrollHeight - 50 && fetchingNextSetOfCities === false) {
+                              console.log("Reached the bottom of the dropdown");
+                              setfetchingNextSetOfCities(true);
+                              setUnassignedCities((prevCity) => [...prevCity, { label: "Loading...", network_filter_id: null, disabled: true }]);
+
+                              if (cityQuery !== "") {
+                                await searchUnassignedCities(cityQuery);
+                              }
+                              else {
+                                await fetchUnassignedCities();
+                              }
+
+
+                              setfetchingNextSetOfCities(false);
+                            }
+                          },
+                        },
+                      }}
+                      renderInput={(params) =>
+                        <LargeInputBox {...params}
+                          placeholder="Enter city name"
+                          onBlur={() => handleBlur("city")} />}
                     />
                     <span className={styles.warning} id="warningForSelection"> {warnings.city}</span>
                   </div>
-                }
+                )}
 
                 <div className={styles.left_start_flex_column} style={{ gap: "5px" }}>
                   <InputLabel htmlFor="firstName" sx={{ fontSize: "15px", fontWeight: "600" }} >First Name</InputLabel>
@@ -556,7 +708,8 @@ const Admin = () => {
                       Managed city
                     </InputLabel>
                     <LargeInputBox
-                      value={selectedUser?.city_filter_id || ""}
+                      id="city"
+                      value={selectedUser.city_name}
                       disabled
                     />
                   </div>
@@ -567,7 +720,8 @@ const Admin = () => {
                       Managed network
                     </InputLabel>
                     <LargeInputBox
-                      value={selectedUser?.network_filter_id || ""}
+                      id="network"
+                      value={selectedUser.network_name}
                       disabled
                     />
                   </div>
@@ -687,62 +841,71 @@ const Admin = () => {
                 <TbHeadCell>User Name</TbHeadCell>
                 <TbHeadCell>Role</TbHeadCell>
                 <TbHeadCell>Role ID</TbHeadCell>
+                <TbHeadCell>Role name</TbHeadCell>
                 <TbHeadCell>Manage User</TbHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {fetchingUsers ? (
                 <TableRow>
-                  <TbBodyCell colSpan={6} style={{ textAlign: "center" }}>
+                  <TbBodyCell colSpan={1000} style={{ textAlign: "center" }}>
                     Loading...
                   </TbBodyCell>
                 </TableRow>
               ) : users?.length > 0 ? (
-                  users.map((user, index) => (
-                    // console.log(user),
-                    <TableRow key={index}>
-                      <TbBodyCell>{user.account_id}</TbBodyCell>
-                      <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
-                      <TbBodyCell>{`${user.username}`}</TbBodyCell>
-                      <TbBodyCell>
-                        {user.account_type_id === 1
-                          ? "Admin"
-                          : user.account_type_id === 2
-                            ? "City Council"
-                            : "Network Manager"}
-                      </TbBodyCell>
-                      <TbBodyCell>
-                        {user.account_type_id === 2
-                          ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
-                          : user.account_type_id === 3
-                            ? user.network_filter_id || "No network assigned" // Fallback for null or undefined
-                            : "N/A"}
-                      </TbBodyCell>
-                      <TbBodyCell>
-                        <Button onClick={() => handleManageUser(user)}>Manage user</Button>
-                      </TbBodyCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TbBodyCell colSpan={6} style={{ textAlign: "center" }}>
-                      {userRecords?.length > 0
-                        ? "No users found"
-                        : "No users available! Create one to get started."}
+                users.map((user, index) => (
+                  // console.log(user),
+                  <TableRow key={index}>
+                    <TbBodyCell>{user.account_id}</TbBodyCell>
+                    <TbBodyCell>{`${user.f_name} ${user.l_name}`}</TbBodyCell>
+                    <TbBodyCell>{`${user.username}`}</TbBodyCell>
+                    <TbBodyCell>
+                      {user.account_type_id === 1
+                        ? "Admin"
+                        : user.account_type_id === 2
+                          ? "City Council"
+                          : "Network Manager"}
+                    </TbBodyCell>
+                    <TbBodyCell>
+                      {user.account_type_id === 2
+                        ? user.city_filter_id || "No city assigned" // Fallback for null or undefined
+                        : user.account_type_id === 3
+                          ? user.network_filter_id === 0 ? "0" //Check if network_filter_id is 0 for exclusive network (Coteq Netbeheer BV) because 0 is marked as null
+                            : user.network_filter_id || "No network assigned" // Fallback for null or undefined
+                          : "N/A"}
+                    </TbBodyCell>
+                    <TbBodyCell>
+                      {user.account_type_id === 2
+                        ? user.city_name || "No city assigned" // Fallback for null or undefined
+                        : user.account_type_id === 3
+                          ? user.network_name || "No network assigned" // Fallback for null or undefined
+                          : "N/A"}
+                    </TbBodyCell>
+                    <TbBodyCell>
+                      <Button onClick={() => handleManageUser(user)}>Manage user</Button>
                     </TbBodyCell>
                   </TableRow>
-                )}
+                ))
+              ) : (
+                <TableRow>
+                  <TbBodyCell colSpan={1000} style={{ textAlign: "center" }}>
+                    {userRecords?.length > 0
+                      ? "No users found"
+                      : "No users available! Create one to get started."}
+                  </TbBodyCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
         <div className={styles.space_between_center_flex_row}>
-          <Button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          <Button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)} >
             Previous
           </Button>
           <span>
             Page {currentPage} of {totalPages}
           </span>
-          <Button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+          <Button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
             Next
           </Button>
         </div>
