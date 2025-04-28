@@ -3,9 +3,13 @@ import { Box, Button, Skeleton } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { NavbarContext } from '../context/NavbarContext';
+import { useSession } from "next-auth/react";
 
 export default function CitySelect() {
-    const { city, setCity, resetGraphData, account } = React.useContext(NavbarContext);
+    const { city, setCity, resetGraphData } = React.useContext(NavbarContext);
+    const { data: session } = useSession();
+    const account = session?.user;
+
     const cityFilterId = account ? account.city_filter_id : null;
     const accountTypeId = account ? account.account_type_id : null;
 
