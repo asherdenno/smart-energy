@@ -365,8 +365,8 @@ const modifyUser = async (account_id, email, f_name, l_name, password) => {
       SET email = @email,
           f_name = @fName,
           l_name = @lName,
-          password = @password
-          username = @fName + @fName + CAST(account_id AS NVARCHAR(10)), 
+          password = @password,
+          username = @fName + @lName + CAST(account_id AS NVARCHAR(10))
       WHERE account_id = @accountId;
     `;
     const request = new sql.Request();

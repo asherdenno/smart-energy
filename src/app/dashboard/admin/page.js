@@ -223,6 +223,7 @@ const Admin = () => {
 
   const handleAddUser = async () => {
     if (!checkUserInputMeetsRequirements()) {
+      console.log("active role is :", selectedCity);
       alert("Please fill all fields correctly");
       return;
     }
@@ -233,11 +234,9 @@ const Admin = () => {
       l_name: document.getElementById('lastName').value,
       password: document.getElementById('password').value,
       account_type_id: activeRole === 'City council' ? 2 : 3,
-      city_filter_id: activeRole === 'City council' ? selectedCity?.city_filter_id : null,
+      city_filter_id: activeRole === 'City council' ? selectedCity?.city_filter_id  === 0 ? "0" : selectedCity?.city_filter_id : null,
       network_filter_id: activeRole === 'Network manager' ? selectedNetwork.network_filter_id === 0 ? "0" : selectedNetwork?.network_filter_id : null,
     };
-
-    console.log("network value is :", userData.network_filter_id, selectedNetwork.network_filter_id === 0 ? "0" : "false");
 
     try {
       const response = await fetch('/api/fetch-add-user', {
@@ -370,7 +369,7 @@ const Admin = () => {
       console.log("API Response for Unassigned Networks:", data); // Debugging the response
 
       if (Array.isArray(data)) {
-        const formattedData = data.map((network) => {
+        const formattedData = await data.map((network) => {
           network.label = network.net_manager;
           delete network.net_manager;
           return network;
@@ -395,7 +394,7 @@ const Admin = () => {
       const response = await fetch(`/api/fetch-unassigned-cities?searchString=${searchInput}&searchInitiated=${true}&listLength=${unassignedCities.length}`);
       const data = await response.json();
       let fetchedCities = unassignedCities;
-      const formattedData = data.map((city) => ({
+      const formattedData = await data.map((city) => ({
         label: city.city, // Place label first
         city_filter_id: city.city_filter_id,
       }));
@@ -570,7 +569,7 @@ const Admin = () => {
                       getOptionDisabled={(option) =>
                         option.disabled || option.label === "Loading..."
                       }
-                      onChange={(value) => {
+                      onChange={(event, value) => {
                         setSelectedCity(value);
                         console.log("Selected city:", value);
                       }}
