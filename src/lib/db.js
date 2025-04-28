@@ -58,10 +58,76 @@ const fetchCity = async (cityFilterId) => {
   }
 }
 
+const fetchUnassignedNetworks = async () => {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT n.*
+      FROM network_has_id n
+      LEFT JOIN account a ON n.network_filter_id = a.network_filter_id
+      WHERE a.network_filter_id IS NULL
+    `;
+    const result = await sql.query(query);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch unassigned networks: " + error.message);
+  }
+}
+
+const fetchUnassignedCities = async (listLength, listSize) => {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT c.*
+      FROM city_has_id c
+      LEFT JOIN account a ON c.city_filter_id = a.city_filter_id
+      WHERE a.city_filter_id IS NULL
+      ORDER BY c.city
+      OFFSET @offset ROWS 
+      FETCH NEXT @listSize ROWS ONLY;
+    `;
+    let request = new sql.Request();
+    request.input('offset', sql.Int, listLength);
+    request.input('listSize', sql.Int, listSize);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch unassigned cities: " + error.message);
+  }
+}
+
+const searchUnassignedCities = async (searchString, listLength, listSize) => {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT c.*
+      FROM city_has_id c
+      LEFT JOIN account a ON c.city_filter_id = a.city_filter_id
+      WHERE a.city_filter_id IS NULL
+      AND c.city LIKE @searchString
+      ORDER BY c.city
+      OFFSET @offset ROWS 
+      FETCH NEXT @listSize ROWS ONLY;
+    `;
+    const request = new sql.Request();
+    request.input('searchString', sql.VarChar, `%${searchString}%`);
+    request.input('offset', sql.Int, listLength);
+    request.input('listSize', sql.Int, listSize);
+    const result = await request.query(query);
+    await sql.close();
+    return result.recordset;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch unassigned cities: " + error.message);
+  }
+}
+
 const fetchNetworks = async () => {
   try {
-    // console.log("Executing query:", query);
-    // console.log("Query result:", result.recordset);
     await sql.connect(config);
     const query = 'SELECT TOP (1000) * FROM network_has_id';
     const result = await sql.query(query);
@@ -114,13 +180,26 @@ const fetchAllUserFilterIds = async () => {
   }
 }
 
-const fetchUsersInPages = async (page = 1, pageSize = 20) => {
+const fetchUsersInPages = async (page, pageSize) => {
   try {
     const skipRows = (page - 1) * pageSize;
     await sql.connect(config);
     const query = `
-      SELECT *
-      FROM dbo.account
+      SELECT         
+        a.account_id,
+        a.username,
+        a.f_name,
+        a.l_name,
+        a.email,
+        a.password,
+        a.account_type_id,
+        a.city_filter_id,
+        a.network_filter_id,
+        c.city AS city_name,
+        n.net_manager AS network_name
+      FROM dbo.account a
+      LEFT JOIN city_has_id c ON a.city_filter_id = c.city_filter_id
+      LEFT JOIN network_has_id n ON a.network_filter_id = n.network_filter_id
       ORDER BY account_id
       OFFSET @offset ROWS 
       FETCH NEXT @pageSize ROWS ONLY;
@@ -163,9 +242,21 @@ const findUsers = async (userInput, page = 1, pageSize = 20) => {
     request.input('pageSize', sql.Int, pageSize);
 
     const query = `
-      SELECT *
-      FROM dbo.account
-      WHERE username LIKE @userInput
+        a.account_id,
+        a.username,
+        a.f_name,
+        a.l_name,
+        a.email,
+        a.password,
+        a.account_type_id,
+        a.city_filter_id,
+        a.network_filter_id,
+        c.city AS city_name,
+        n.net_manager AS network_name
+      FROM dbo.account a
+      LEFT JOIN city_has_id c ON a.city_filter_id = c.city_filter_id
+      LEFT JOIN network_has_id n ON a.network_filter_id = n.network_filter_id
+      WHERE a.username LIKE @userInput
       ORDER BY account_id
       OFFSET @offset ROWS 
       FETCH NEXT @pageSize ROWS ONLY;
@@ -216,14 +307,13 @@ const findUsername = async () => {
   }
 }
 
-
 const insertNewUser = async (email, f_name, l_name, password, account_type_id, network_filter_id, city_filter_id) => {
   try {
     await sql.connect(config);
     const query = `
 
       INSERT INTO dbo.account (email, f_name, l_name, username, password, account_type_id, network_filter_id, city_filter_id)
-      VALUES (@Email, @FName, @LName, @Username, @Password, @AccountTypeId, @NetworkFilterId, @CityFilterId);
+      VALUES                 (@Email, @FName, @LName, @Username, @Password, @AccountTypeId, @NetworkFilterId, @CityFilterId);
       SELECT SCOPE_IDENTITY() AS account_id;
     `;
     // SCOPE_IDENTITY() is used to get the last inserted identity value (account_id)
@@ -272,18 +362,19 @@ const modifyUser = async (account_id, email, f_name, l_name, password) => {
     await sql.connect(config);
     const query = `
       UPDATE dbo.account
-      SET email = @Email,
-          f_name = @FName,
-          l_name = @LName,
-          password = @Password
-      WHERE account_id = @AccountId;
+      SET email = @email,
+          f_name = @fName,
+          l_name = @lName,
+          password = @password,
+          username = @fName + @lName + CAST(account_id AS NVARCHAR(10))
+      WHERE account_id = @accountId;
     `;
     const request = new sql.Request();
-    request.input('AccountId', sql.Int, account_id);
-    request.input('Email', sql.NVarChar, email);
-    request.input('FName', sql.NVarChar, f_name);
-    request.input('LName', sql.NVarChar, l_name);
-    request.input('Password', sql.NVarChar, password);
+    request.input('accountId', sql.Int, account_id);
+    request.input('email', sql.NVarChar, email);
+    request.input('fName', sql.NVarChar, f_name);
+    request.input('lName', sql.NVarChar, l_name);
+    request.input('password', sql.NVarChar, password);
     await request.query(query);
     await sql.close();
     return { success: true };
@@ -292,7 +383,6 @@ const modifyUser = async (account_id, email, f_name, l_name, password) => {
     throw new Error("Failed to modify user: " + error.message);
   }
 };
-
 
 const deleteUser = async (userId) => {
   try {
@@ -403,43 +493,6 @@ const fetchFilteredEnergyData = async (filterString) => {
     throw new Error("Filtering by city is not yet implemented");
   }
 }
-
-// const fetchFilteredEnergyData = async (filterString) => {
-//   if (filterString) {
-//     try {
-//       await sql.connect(config);
-//       const query = `
-//         SELECT
-//           e.*,
-//           d.net_manager,
-//           d.city
-//         FROM
-//           dbo.energy_data e
-//         INNER JOIN
-//           data_filter d
-//         ON
-//           (e.data_id = d.data_id)
-//         WHERE
-//           `+filterString+`
-//         ORDER BY 
-//           e.year, e.electric_or_gas;
-//       `;
-//       const request = new sql.Request();
-//       request.input('filterString', sql.VarChar, `%${filterString}%`);
-//       console.log("FilterString:", filterString);
-//       console.log("Executing query:", query);
-//       const result = await request.query(query);
-//       console.log("Query result:", result.recordset);
-//       await sql.close();
-//       return result.recordset;
-//     } catch (error) {
-//       console.error("Database Error:", error);
-//       throw new Error("Failed to fetch usage data: " + error.message);
-//     }
-//   } else {
-//     throw new Error("Filtering by city is not yet implemented");
-//   }
-// }
 
 const fetchAnnualNetworkEnergy = async (userNetwork) => {
   if (userNetwork) {
@@ -632,7 +685,7 @@ const fetchUsageSumPerYear = async (city_filter_id, network_filter_id) => {
       throw new Error("Failed to fetch usage data: " + error.message);
     }
   }
-  
+
   else {
     throw new Error("City filter ID not detected. Please provide a valid ID.");
   }
@@ -667,31 +720,31 @@ const fetchElectricityUsagePerZipcode = async (city) => {
 }
 
 const fetchAllNotif = async () => {
-  try{
-    const pool =await sql.connect(config);
+  try {
+    const pool = await sql.connect(config);
     const result = await pool.request().query(
       'select n.notif_id, n.target_account_id, a.f_name, n.type, n.from_account_id, b.f_name, n.detail, n.resource, n.isRead, n.time from notification n inner join account a on a.account_id = n.target_account_id inner join account b on b.account_id = n.from_account_id order by n.time desc;'
     );
     return result.recordset;
-  }catch (err) {
+  } catch (err) {
     console.error('database query error:', err);
-    return[];
+    return [];
   }
 }
 
 const markAsRead = async (notif_id) => {
-  try{
-    const pool =await sql.connect(config);
+  try {
+    const pool = await sql.connect(config);
     const result = await pool
       .request()
       .input('notif_id', sql.Int, notif_id)
       .query(`Update notification set isRead = 1 where notif_id=@notif_id`);
 
     console.log('Notification marked as read')
-    return {success: true};
-  }catch (err) {
+    return { success: true };
+  } catch (err) {
     console.error('Error marking as read:', err);
-    return {success: false};
+    return { success: false };
   }
 };
 
@@ -699,7 +752,7 @@ export {
   fetchAll, fetchCities, fetchCity, fetchAnnualFilteredEnergy, fetchFilteredEnergyData, findUsername, fetchUserData, fetchNetworks,
   fetchNetwork, fetchAnnualCityEnergy, fetchAnnualNetworkEnergy, fetchDoubleFilteredData, fetchUsageSumPerYear, fetchElectricityUsagePerZipcode,
   fetchUsersInPages, fetchAllUserFilterIds, findUsers, insertNewUser, modifyUser, deleteUser,
-  fetchAllNotif, markAsRead
+  fetchAllNotif, markAsRead, fetchUnassignedNetworks, fetchUnassignedCities, searchUnassignedCities
 }
 
 // fetchAllUsersInPages, totalUsersCount,
