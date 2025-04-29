@@ -48,12 +48,6 @@ export default function NotificationBell() {
         const year = String(date.getFullYear()).slice(2); // get last 2 digits
         return `${month}/${year}`;
     };
-    const externalLink = (link) => {
-        if (!link.startsWith('http://') && !link.startsWith('https://')){
-            return 'https://'+ link;
-        }
-        return link;
-    };
     
     useEffect(() => {
         fetch('/api/fetchNotifications')
@@ -124,7 +118,9 @@ export default function NotificationBell() {
                                 <Typography><strong>From: </strong>{selectedNotif.f_name[1]}</Typography>
                                 <Typography><strong>Type: </strong>{selectedNotif.type}</Typography>
                                 <Typography><strong>Message: </strong>{selectedNotif.detail}</Typography>
-                                <Typography><strong>resource: </strong><a href={externalLink(selectedNotif.resource)} target="_blank" rel="noopener noreferrer">{selectedNotif.resource}</a></Typography>
+                                {selectedNotif.resource ? (
+                                    <Typography><strong>Resource: </strong><a href={selectedNotif.resource} target="_blank" rel="noopener noreferrer">{selectedNotif.resource}</a></Typography>
+                                ) : null}
                             </List>
                         </>
                         
