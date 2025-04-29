@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 const LoginPage = () => {
   const session = useSession();
   const router = useRouter();
+  const [error, setError] = useState("");
   const [data, setData] = useState({
     username: "",
     password: "",
@@ -21,10 +22,17 @@ const LoginPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    signIn("credentials", {
+    setError("");
+
+    const result = await signIn("credentials", {
       ...data,
       redirect: false,
     });
+    if (result?.error) {
+      setError("Invalid credentials");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -46,12 +54,14 @@ const LoginPage = () => {
               value={data.password}
               onChange={(e) => {
                 setData({ ...data, password: e.target.value});
-                }} />
+                }}
+                />
               <Button
                 onClick={onSubmit}
               >Log in</Button>
             </Stack>
           </Box>
+          {error && <Typography sx={{ color: "red", textAlign: "center" }}>{error}</Typography>}
         </FormControl>
       </Paper>
     </Container>
