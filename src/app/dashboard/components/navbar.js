@@ -1,7 +1,7 @@
 import { Button, Box } from "@mui/material";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import "@/app/globals.css";
-import "./Navbar.css";
+import "./navbar.css";
 import CitySelect from "./CitySelect";
 import NetworkSelect from "./NetworkSelect";
 import NotificationBell from "./NotificationBell";
